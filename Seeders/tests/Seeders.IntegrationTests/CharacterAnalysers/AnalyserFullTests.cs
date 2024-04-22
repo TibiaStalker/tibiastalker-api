@@ -2,8 +2,8 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace Seeders.IntegrationTests.CharacterAnalysers;
 
@@ -25,7 +25,7 @@ public class AnalyserFullTests : IAsyncLifetime
         // Arrange
         using var scope = _factory.Services.CreateScope();
         var analyser = scope.ServiceProvider.GetRequiredService<IAnalyserService>();
-        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaStalkerDbContext>();
         
         await _factory.ClearDatabaseAsync(dbContext);
         await SeedDatabaseAsync(dbContext);
@@ -75,7 +75,7 @@ public class AnalyserFullTests : IAsyncLifetime
         return _resetDatabase();
     }
     
-    private async Task SeedDatabaseAsync(TibiaCharacterFinderDbContext dbContext)
+    private async Task SeedDatabaseAsync(TibiaStalkerDbContext dbContext)
     {
         await dbContext.Worlds.AddRangeAsync(GetWorlds());
         await dbContext.WorldScans.AddRangeAsync(GetWorldScans());

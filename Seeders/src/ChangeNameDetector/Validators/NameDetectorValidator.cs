@@ -1,5 +1,5 @@
-﻿using TibiaEnemyOtherCharactersFinder.Application.TibiaData.Dtos;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
+﻿using TibiaStalker.Application.TibiaData.Dtos;
+using TibiaStalker.Domain.Entities;
 
 namespace ChangeNameDetector.Validators;
 
