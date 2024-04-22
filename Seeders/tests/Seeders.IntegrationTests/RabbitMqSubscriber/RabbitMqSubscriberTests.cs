@@ -11,8 +11,8 @@ using Shared.RabbitMq.Conventions;
 using Shared.RabbitMQ.Conventions;
 using Shared.RabbitMQ.Events;
 using Shared.RabbitMQ.Initializers;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace Seeders.IntegrationTests.RabbitMqSubscriber;
 
@@ -35,7 +35,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         // Arrange
         using var scope = _factory.Services.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<TibiaSubscriber>>();
-        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaStalkerDbContext>();
         var options = scope.ServiceProvider.GetRequiredService<IOptions<RabbitMqSection>>();
 
         var publisherConnection = GetRabbitMqConnection(options, "publisher");
@@ -59,7 +59,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
 
 
         // Assert
-        var dbContextAfterSubscribe = scope.ServiceProvider.GetRequiredService<TibiaCharacterFinderDbContext>();
+        var dbContextAfterSubscribe = scope.ServiceProvider.GetRequiredService<TibiaStalkerDbContext>();
         var charactersAfterSubscriber = dbContextAfterSubscribe.Characters.AsNoTracking().ToList();
         var characterCorrelationsAfterSubscriber = dbContextAfterSubscribe.CharacterCorrelations.AsNoTracking().ToList();
 
@@ -79,7 +79,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         var publisherConnection = GetRabbitMqConnection(options, "publisher");
         var subscriberConnection = GetRabbitMqConnection(options, "subscriber");
 
-        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaStalkerDbContext>();
 
         await _factory.ClearDatabaseAsync(dbContext);
         await SeedDatabaseAsync(dbContext);
@@ -99,7 +99,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
 
 
         // Assert
-        var dbContextAfterSubscribe = scope.ServiceProvider.GetRequiredService<TibiaCharacterFinderDbContext>();
+        var dbContextAfterSubscribe = scope.ServiceProvider.GetRequiredService<TibiaStalkerDbContext>();
         var charactersAfterSubscriber = dbContextAfterSubscribe.Characters.AsNoTracking().ToList();
         var characterCorrelationsAfterSubscriber =
             dbContextAfterSubscribe.CharacterCorrelations.AsNoTracking().ToList();
@@ -121,7 +121,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         var publisherConnection = GetRabbitMqConnection(options, "publisher");
         var subscriberConnection = GetRabbitMqConnection(options, "subscriber");
 
-        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaStalkerDbContext>();
 
         await _factory.ClearDatabaseAsync(dbContext);
         await SeedDatabaseAsync(dbContext);
@@ -140,7 +140,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         subscriberConnection.Connection.Close();
 
         // Assert
-        var dbContextAfterSubscribe = scope.ServiceProvider.GetRequiredService<TibiaCharacterFinderDbContext>();
+        var dbContextAfterSubscribe = scope.ServiceProvider.GetRequiredService<TibiaStalkerDbContext>();
         var charactersAfterSubscriber = dbContextAfterSubscribe.Characters.AsNoTracking().ToList();
         var characterCorrelationsAfterSubscriber = dbContextAfterSubscribe.CharacterCorrelations.AsNoTracking().ToList();
 
@@ -205,7 +205,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         return new RabbitMqConnection(connection);
     }
 
-    private async Task SeedDatabaseAsync(TibiaCharacterFinderDbContext dbContext)
+    private async Task SeedDatabaseAsync(TibiaStalkerDbContext dbContext)
     {
         await dbContext.Worlds.AddRangeAsync(GetWorlds());
         await dbContext.Characters.AddRangeAsync(GetCharacters());

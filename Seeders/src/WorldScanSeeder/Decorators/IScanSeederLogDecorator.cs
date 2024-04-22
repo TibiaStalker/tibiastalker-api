@@ -1,5 +1,5 @@
-﻿using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Configuration;
+﻿using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Configuration;
 
 namespace WorldScanSeeder.Decorators;
 

@@ -1,4 +1,4 @@
-﻿using TibiaEnemyOtherCharactersFinder.Application.Interfaces;
+﻿using TibiaStalker.Application.Interfaces;
 
 namespace WorldSeeder;
 

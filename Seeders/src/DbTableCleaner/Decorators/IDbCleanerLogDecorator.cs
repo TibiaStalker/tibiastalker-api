@@ -1,4 +1,4 @@
-﻿using TibiaEnemyOtherCharactersFinder.Infrastructure.Configuration;
+﻿using TibiaStalker.Infrastructure.Configuration;
 
 namespace DbCleaner.Decorators;
 

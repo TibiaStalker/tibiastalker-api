@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Shared.RabbitMQ.Extensions;
 using Shared.RabbitMQ.Initializers;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Builders;
+using TibiaStalker.Infrastructure.Builders;
 
 namespace ChangeNameDetector;
 
