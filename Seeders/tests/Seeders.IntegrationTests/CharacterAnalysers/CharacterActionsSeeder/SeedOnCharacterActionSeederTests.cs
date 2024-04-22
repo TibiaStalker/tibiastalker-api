@@ -2,7 +2,7 @@ using CharacterAnalyser.Managers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace Seeders.IntegrationTests.CharacterAnalysers.CharacterActionsSeeder;
 
@@ -24,7 +24,7 @@ public class SeedOnCharacterActionSeederTests : IAsyncLifetime
         // Arrange
         using var scope = _factory.Services.CreateScope();
         var seeder = scope.ServiceProvider.GetRequiredService<CharacterActionsManager>();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
 
         var worldScans = await dbContext.WorldScans
             .Where(scan => scan.WorldId == 11 && !scan.IsDeleted)

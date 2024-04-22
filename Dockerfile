@@ -5,7 +5,7 @@ WORKDIR /source
 COPY . .
 
 RUN dotnet restore
-RUN dotnet publish API/src/TibiaEnemyOtherCharactersFinder.Api/TibiaEnemyOtherCharactersFinder.Api.csproj -c Release -o /app --no-restore
+RUN dotnet publish API/src/TibiaStalker.Api/TibiaStalker.Api.csproj -c Release -o /app --no-restore
 RUN dotnet publish Seeders/src/CharacterAnalyser/CharacterAnalyser.csproj -c Release -o /app --no-restore
 RUN dotnet publish Seeders/src/DbTableCleaner/DbCleaner.csproj -c Release -o /app --no-restore
 RUN dotnet publish Seeders/src/WorldScanSeeder/WorldScanSeeder.csproj -c Release -o /app --no-restore

@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using TibiaEnemyOtherCharactersFinder.Application.Interfaces;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Application.Interfaces;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace Seeders.IntegrationTests.WorldSeeders;
 
@@ -32,7 +32,7 @@ public class TurnOffIfWorldIsUnavailableOnWorldSeederTests : IAsyncLifetime
     {
         // Arrange
         using var scope = _factory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var worldSeeder = new WorldSeeder.WorldSeederService(dbContext, _tibiaDataClientMock.Object);
         await worldSeeder.SetProperties();
         

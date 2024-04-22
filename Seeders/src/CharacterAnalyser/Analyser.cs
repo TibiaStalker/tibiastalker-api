@@ -4,19 +4,19 @@ using CharacterAnalyser.Decorators;
 using CharacterAnalyser.Managers;
 using Microsoft.EntityFrameworkCore;
 using Shared.Database.Queries.Sql;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace CharacterAnalyser;
 
 public class Analyser : ActionRule, IAnalyser
 {
-    private readonly ITibiaCharacterFinderDbContext _dbContext;
+    private readonly ITibiaStalkerDbContext _dbContext;
     private readonly IAnalyserLogDecorator _logDecorator;
     private readonly CharacterActionsManager _characterActionsManager;
     private readonly WorldScansProcessor _processor;
 
-    public Analyser(ITibiaCharacterFinderDbContext dbContext, IAnalyserLogDecorator logDecorator)
+    public Analyser(ITibiaStalkerDbContext dbContext, IAnalyserLogDecorator logDecorator)
     {
         _dbContext = dbContext;
         _logDecorator = logDecorator;

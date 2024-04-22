@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Microsoft.EntityFrameworkCore;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace Seeders.Benchmark;
 
@@ -14,7 +14,7 @@ public class CharacterActionSeederBenchmark
     public async Task CharacterActionSeederDelete()
     {
         var connectionString = "Server=localhost;Port=5432;Database=local_database2;User Id=sa;Password=pass;";
-        TibiaCharacterFinderDbContext dbContext = new(new DbContextOptionsBuilder<TibiaCharacterFinderDbContext>()
+        TibiaStalkerDbContext dbContext = new(new DbContextOptionsBuilder<TibiaStalkerDbContext>()
             .UseNpgsql(connectionString).UseSnakeCaseNamingConvention().Options);
 
         List<WorldScan> GetFirstTwoWorldScansAsync(short worldId)

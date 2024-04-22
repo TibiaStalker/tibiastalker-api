@@ -30,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\API\src\TibiaEnemyOtherCharactersFinder.Api\TibiaEnemyOtherCharactersFinder.Api.csproj" />
+      <ProjectReference Include="..\..\..\API\src\TibiaStalker.Api\TibiaStalker.Api.csproj" />
       <ProjectReference Include="..\..\src\ChangeNameDetector\ChangeNameDetector.csproj" />
       <ProjectReference Include="..\..\src\CharacterAnalyser\CharacterAnalyser.csproj" />
       <ProjectReference Include="..\..\src\DbTableCleaner\DbCleaner.csproj" />
