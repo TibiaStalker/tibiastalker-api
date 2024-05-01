@@ -16,7 +16,7 @@ public static class RabbitMqExtension
 {
     public static void AddRabbitMqPublisher(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionName = "tibia-eocf-publisher";
+        var connectionName = "tibia-stalker-publisher";
 
         services.AddRabbitMqCommonSettings(configuration, connectionName)
             .AddSingleton<IEventPublisher, RabbitMqPublisher>();
@@ -24,7 +24,7 @@ public static class RabbitMqExtension
 
     public static void AddRabbitMqSubscriber(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionName = "tibia-eocf-subscriber";
+        var connectionName = "tibia-stalker-subscriber";
 
         services.AddRabbitMqCommonSettings(configuration, connectionName);
     }

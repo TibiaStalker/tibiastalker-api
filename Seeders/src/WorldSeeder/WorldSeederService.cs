@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using TibiaEnemyOtherCharactersFinder.Application.Interfaces;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Application.Interfaces;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace WorldSeeder;
 
@@ -9,13 +9,13 @@ public class WorldSeederService : IWorldSeederService
 {
     private const string MainUrl = "https://www.tibia.com/community/?subtopic=worlds";
 
-    private readonly ITibiaCharacterFinderDbContext _dbContext;
+    private readonly ITibiaStalkerDbContext _dbContext;
     private readonly ITibiaDataClient _tibiaDataClient;
 
     private IReadOnlyList<string> _worldsNamesFromTibiaDataProvider;
     private List<World> _worldsFromDb;
 
-    public WorldSeederService(ITibiaCharacterFinderDbContext dbContext, ITibiaDataClient tibiaDataClient)
+    public WorldSeederService(ITibiaStalkerDbContext dbContext, ITibiaDataClient tibiaDataClient)
     {
         _dbContext = dbContext;
         _tibiaDataClient = tibiaDataClient;
