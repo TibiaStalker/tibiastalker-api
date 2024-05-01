@@ -18,10 +18,10 @@ using Shared.RabbitMQ.Extensions;
 using Shared.RabbitMQ.Initializers;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
-using TibiaEnemyOtherCharactersFinder.Api;
-using TibiaEnemyOtherCharactersFinder.Application.Configuration.Settings;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Api;
+using TibiaStalker.Application.Configuration.Settings;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 using WorldScanSeeder.Decorators;
 using WorldSeeder.Decorators;
 
@@ -57,13 +57,13 @@ public class TibiaSeederFactory : WebApplicationFactory<Startup>, IAsyncLifetime
     public async Task ResetDatabaseAsync()
     {
         using var scope = Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaStalkerDbContext>();
 
         await ClearDatabaseAsync(dbContext);
         await SeedDatabase(dbContext);
     }
 
-    public async Task ClearDatabaseAsync(TibiaCharacterFinderDbContext dbContext)
+    public async Task ClearDatabaseAsync(TibiaStalkerDbContext dbContext)
     {
         var tableNames = dbContext.Model.GetEntityTypes().Select(t => t.GetTableName()).Distinct().ToList();
 
@@ -80,13 +80,13 @@ public class TibiaSeederFactory : WebApplicationFactory<Startup>, IAsyncLifetime
 
         using var scope = Services.CreateScope();
 
-        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaStalkerDbContext>();
 
         await dbContext.Database.MigrateAsync();
         await SeedDatabase(dbContext);
     }
 
-    private async Task SeedDatabase(TibiaCharacterFinderDbContext dbContext)
+    private async Task SeedDatabase(TibiaStalkerDbContext dbContext)
     {
         await dbContext.Worlds.AddRangeAsync(GetWorlds());
         await dbContext.WorldScans.AddRangeAsync(GetWorldScans());
@@ -100,12 +100,12 @@ public class TibiaSeederFactory : WebApplicationFactory<Startup>, IAsyncLifetime
     {
         builder.ConfigureTestServices(services =>
         {
-            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<TibiaCharacterFinderDbContext>));
+            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<TibiaStalkerDbContext>));
             if (descriptor != null)
                 services.Remove(descriptor);
 
             services.AddSingleton(Options.Create(new ConnectionStringsSection { PostgreSql = _dbContainer.GetConnectionString() }));
-            services.AddDbContext<TibiaCharacterFinderDbContext>(options => options.UseNpgsql(_dbContainer.GetConnectionString()).UseSnakeCaseNamingConvention());
+            services.AddDbContext<TibiaStalkerDbContext>(options => options.UseNpgsql(_dbContainer.GetConnectionString()).UseSnakeCaseNamingConvention());
             services.AddSingleton<CharacterActionsManager>();
             services.AddSingleton<IAnalyserService, AnalyserService>();
             services.AddSingleton<IAnalyser, Analyser>();
