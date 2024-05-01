@@ -9,8 +9,8 @@ using RabbitMqSubscriber.Subscribers;
 using Shared.Database.Queries.Sql;
 using Shared.RabbitMQ.Conventions;
 using Shared.RabbitMQ.Events;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace RabbitMqSubscriber.Events;
 
@@ -19,13 +19,13 @@ public class MergeTwoCharactersEventSubscriber : IEventSubscriber
     private readonly ILogger<MergeTwoCharactersEventSubscriber> _logger;
     private readonly IEventResultHandler _eventResultHandler;
     private readonly IRabbitMqConventionProvider _conventionProvider;
-    private readonly ITibiaCharacterFinderDbContext _dbContext;
+    private readonly ITibiaStalkerDbContext _dbContext;
 
     public MergeTwoCharactersEventSubscriber(
         ILogger<MergeTwoCharactersEventSubscriber> logger,
         IEventResultHandler eventResultHandler,
         IRabbitMqConventionProvider conventionProvider,
-        ITibiaCharacterFinderDbContext dbContext)
+        ITibiaStalkerDbContext dbContext)
     {
         _logger = logger;
         _eventResultHandler = eventResultHandler;

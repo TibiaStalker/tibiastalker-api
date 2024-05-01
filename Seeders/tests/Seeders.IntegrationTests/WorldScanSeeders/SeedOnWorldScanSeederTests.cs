@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using TibiaEnemyOtherCharactersFinder.Application.Interfaces;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Application.Interfaces;
+using TibiaStalker.Infrastructure.Persistence;
 using WorldScanSeeder;
 
 namespace Seeders.IntegrationTests.WorldScanSeeders;
@@ -27,7 +27,7 @@ public class SeedOnWorldScanSeederTests : IAsyncLifetime
         // Arrange
         var listOfNames = new List<string>() { "aphov", "armystrong", "asiier", "braws" };
         using var scope = _factory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var worlds = dbContext.Worlds.AsNoTracking().ToList();
         _tibiaDataClientMock.Setup(r => r.FetchCharactersOnline(worlds[0].Name)).ReturnsAsync(listOfNames);
         var worldScanSeeder = new ScanSeeder(dbContext, _tibiaDataClientMock.Object);

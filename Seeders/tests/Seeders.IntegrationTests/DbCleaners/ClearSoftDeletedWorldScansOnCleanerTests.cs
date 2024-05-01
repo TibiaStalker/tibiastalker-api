@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace Seeders.IntegrationTests.DbCleaners;
 
@@ -24,7 +24,7 @@ public class ClearSoftDeletedWorldScansOnCleanerTests : IAsyncLifetime
         // Arrange
         using var scope = _factory.Services.CreateScope();
         var cleaner = scope.ServiceProvider.GetRequiredService<ICleaner>();
-        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TibiaStalkerDbContext>();
         var toDelete = dbContext.WorldScans.OrderBy(ws => ws.ScanCreateDateTime).Skip(2).ToList();
         toDelete.ForEach(ws => ws.IsDeleted = true);
         await dbContext.SaveChangesAsync();

@@ -1,5 +1,5 @@
-﻿using TibiaEnemyOtherCharactersFinder.Application.Interfaces;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
+﻿using TibiaStalker.Application.Interfaces;
+using TibiaStalker.Domain.Entities;
 
 namespace CharacterAnalyser;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace CharacterAnalyser.Managers;
 
@@ -10,9 +10,9 @@ public class CharacterActionsManager
     private IReadOnlyList<string> _logoutNames;
     private IReadOnlyList<string> _firstScanNames;
 
-    private readonly ITibiaCharacterFinderDbContext _dbContext;
+    private readonly ITibiaStalkerDbContext _dbContext;
 
-    public CharacterActionsManager(ITibiaCharacterFinderDbContext dbContext)
+    public CharacterActionsManager(ITibiaStalkerDbContext dbContext)
     {
         _dbContext = dbContext;
     }
