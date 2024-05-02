@@ -2,7 +2,7 @@
 using DbCleaner.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Builders;
+using TibiaStalker.Infrastructure.Builders;
 
 namespace DbCleaner;
 

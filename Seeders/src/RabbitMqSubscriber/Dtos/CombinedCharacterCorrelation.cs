@@ -1,4 +1,4 @@
-﻿using TibiaEnemyOtherCharactersFinder.Domain.Entities;
+﻿using TibiaStalker.Domain.Entities;
 
 namespace RabbitMqSubscriber.Dtos;
 

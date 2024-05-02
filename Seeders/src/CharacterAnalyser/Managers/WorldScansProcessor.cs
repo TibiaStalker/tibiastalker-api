@@ -1,17 +1,17 @@
 ﻿using CharacterAnalyser.Decorators;
 using Microsoft.EntityFrameworkCore;
 using Shared.Database.Queries.Sql;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace CharacterAnalyser.Managers;
 
 public class WorldScansProcessor
 {
-    private readonly ITibiaCharacterFinderDbContext _dbContext;
+    private readonly ITibiaStalkerDbContext _dbContext;
     private readonly IAnalyserLogDecorator _logDecorator;
 
-    public WorldScansProcessor(ITibiaCharacterFinderDbContext dbContext,
+    public WorldScansProcessor(ITibiaStalkerDbContext dbContext,
         IAnalyserLogDecorator logDecorator)
     {
         _dbContext = dbContext;

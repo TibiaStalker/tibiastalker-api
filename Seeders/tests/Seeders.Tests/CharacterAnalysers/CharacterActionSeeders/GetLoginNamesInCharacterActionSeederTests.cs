@@ -1,14 +1,14 @@
 using CharacterAnalyser.Managers;
 using FluentAssertions;
 using Moq;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace Seeders.Tests.CharacterAnalysers.CharacterActionSeeders;
 
 public class GetLoginNamesInCharacterActionSeederTests
 {
-    private readonly Mock<ITibiaCharacterFinderDbContext> _dbContextMock = new();
+    private readonly Mock<ITibiaStalkerDbContext> _dbContextMock = new();
 
     public GetLoginNamesInCharacterActionSeederTests()
     {

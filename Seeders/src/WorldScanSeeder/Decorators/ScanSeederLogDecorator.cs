@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
+using TibiaStalker.Domain.Entities;
 
 namespace WorldScanSeeder.Decorators;
 
