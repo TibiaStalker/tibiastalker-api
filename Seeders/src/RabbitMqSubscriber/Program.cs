@@ -6,7 +6,7 @@ using RabbitMqSubscriber.Subscribers;
 using Serilog;
 using Shared.RabbitMQ.Extensions;
 using Shared.RabbitMQ.Initializers;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Builders;
+using TibiaStalker.Infrastructure.Builders;
 
 namespace RabbitMqSubscriber;
 

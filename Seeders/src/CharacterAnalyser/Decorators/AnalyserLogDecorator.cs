@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
+using TibiaStalker.Domain.Entities;
 
 namespace CharacterAnalyser.Decorators;
 

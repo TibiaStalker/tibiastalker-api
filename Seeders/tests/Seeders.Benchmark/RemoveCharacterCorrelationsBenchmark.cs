@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Microsoft.EntityFrameworkCore;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace Seeders.Benchmark;
 
@@ -36,7 +36,7 @@ public class RemoveCharacterCorrelationsBenchmark
 
     private const string _connectionString = "Server=localhost;Port=5432;Database=local_database;User Id=sa;Password=pass;";
 
-    private readonly TibiaCharacterFinderDbContext _dbContext = new (new DbContextOptionsBuilder<TibiaCharacterFinderDbContext>()
+    private readonly TibiaStalkerDbContext _dbContext = new (new DbContextOptionsBuilder<TibiaStalkerDbContext>()
             .UseNpgsql(_connectionString).UseSnakeCaseNamingConvention().Options);
     
     [Benchmark(Baseline = true)]

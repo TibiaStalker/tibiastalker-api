@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Database.Queries.Sql;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace DbCleaner;
 
 public class Cleaner : ICleaner
 {
-    private readonly ITibiaCharacterFinderDbContext _dbContext;
+    private readonly ITibiaStalkerDbContext _dbContext;
 
-    public Cleaner(ITibiaCharacterFinderDbContext dbContext)
+    public Cleaner(ITibiaStalkerDbContext dbContext)
     {
         _dbContext = dbContext;
     }
