@@ -8,7 +8,7 @@ on:
 
 env:
   DOCKER_REGISTRY: ghcr.io
-  REPOSITORY_OWNER: tibiastalker
+  REPOSITORY_OWNER: tibiastalkerr
   IMAGE_NAME: tibia-stalker-api
   IMAGE_VERSION: ${{ github.event.inputs.image_version }}
 
