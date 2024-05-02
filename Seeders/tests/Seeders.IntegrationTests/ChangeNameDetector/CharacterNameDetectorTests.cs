@@ -14,9 +14,9 @@ using Shared.RabbitMq.Conventions;
 using Shared.RabbitMQ.EventBus;
 using Shared.RabbitMQ.Events;
 using Shared.RabbitMQ.Initializers;
-using TibiaEnemyOtherCharactersFinder.Application.Interfaces;
-using TibiaEnemyOtherCharactersFinder.Application.TibiaData.Dtos;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Application.Interfaces;
+using TibiaStalker.Application.TibiaData.Dtos;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace Seeders.IntegrationTests.ChangeNameDetector;
 
@@ -39,10 +39,10 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         // Arrange
         using var scope = _factory.Services.CreateScope();
 
-        var dbContextForMock = scope.ServiceProvider.GetRequiredService<ITibiaCharacterFinderDbContext>();
+        var dbContextForMock = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeNameDetectorService>>();
         var busPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
-        var dbContextBefore = scope.ServiceProvider.GetRequiredService<ITibiaCharacterFinderDbContext>();
+        var dbContextBefore = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var validator = scope.ServiceProvider.GetRequiredService<INameDetectorValidator>();
 
         var charactersBeforeDetector = dbContextForMock.Characters.AsNoTracking().ToList();
@@ -60,7 +60,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
 
 
         // Assert
-        var dbContextAfter = scope.ServiceProvider.GetRequiredService<ITibiaCharacterFinderDbContext>();
+        var dbContextAfter = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var charactersAfterDetector = dbContextAfter.Characters.AsNoTracking().ToList();
 
         charactersAfterDetector.Select(c => c.VerifiedDate).Should().AllBeEquivalentTo(DateOnly.FromDateTime(DateTime.Now));
@@ -76,7 +76,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeNameDetectorService>>();
         var busPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var validator = scope.ServiceProvider.GetRequiredService<INameDetectorValidator>();
 
         var charactersBeforeDetector = dbContext.Characters.AsNoTracking().ToList();
@@ -115,7 +115,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeNameDetectorService>>();
         var busPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var validator = scope.ServiceProvider.GetRequiredService<INameDetectorValidator>();
 
         var charactersBeforeDetector = dbContext.Characters.AsNoTracking().ToList();
@@ -154,7 +154,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeNameDetectorService>>();
         var busPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var validator = scope.ServiceProvider.GetRequiredService<INameDetectorValidator>();
 
         var charactersBeforeDetector = dbContext.Characters.AsNoTracking().ToList();
@@ -194,7 +194,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeNameDetectorService>>();
         var busPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaCharacterFinderDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var validator = scope.ServiceProvider.GetRequiredService<INameDetectorValidator>();
 
         var charactersBeforeDetector = dbContext.Characters.AsNoTracking().ToList();
@@ -243,7 +243,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         var options = GetOptions();
         var factory = GetFactory(options);
 
-        using var connection = factory.CreateConnection("tibia-eocf-subscriber");
+        using var connection = factory.CreateConnection("tibia-stalker-subscriber");
         using var channel = connection.CreateModel();
         var exchangeOptions = options.Exchange;
         var deadLetterOptions = options.DeadLetter;

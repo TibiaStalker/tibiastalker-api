@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Builders;
+using TibiaStalker.Infrastructure.Builders;
 using WorldScanSeeder.Configuration;
 
 namespace WorldScanSeeder;

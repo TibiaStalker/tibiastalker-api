@@ -7,8 +7,8 @@ using RabbitMqSubscriber.Handlers;
 using RabbitMqSubscriber.Subscribers;
 using Shared.RabbitMQ.Conventions;
 using Shared.RabbitMQ.Events;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace RabbitMqSubscriber.Events;
 
@@ -17,13 +17,13 @@ public class DeleteCharacterCorrelationsEventSubscriber : IEventSubscriber
     private readonly ILogger<DeleteCharacterCorrelationsEventSubscriber> _logger;
     private readonly IEventResultHandler _eventResultHandler;
     private readonly IRabbitMqConventionProvider _conventionProvider;
-    private readonly ITibiaCharacterFinderDbContext _dbContext;
+    private readonly ITibiaStalkerDbContext _dbContext;
 
     public DeleteCharacterCorrelationsEventSubscriber(
         ILogger<DeleteCharacterCorrelationsEventSubscriber> logger,
         IEventResultHandler eventResultHandler,
         IRabbitMqConventionProvider conventionProvider,
-        ITibiaCharacterFinderDbContext dbContext)
+        ITibiaStalkerDbContext dbContext)
     {
         _logger = logger;
         _eventResultHandler = eventResultHandler;

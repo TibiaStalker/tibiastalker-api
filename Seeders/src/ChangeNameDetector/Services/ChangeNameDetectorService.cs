@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.RabbitMQ.EventBus;
 using Shared.RabbitMQ.Events;
-using TibiaEnemyOtherCharactersFinder.Application.Interfaces;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Application.Interfaces;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace ChangeNameDetector.Services;
 
@@ -14,13 +14,13 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
 {
     private readonly ILogger<ChangeNameDetectorService> _logger;
     private readonly INameDetectorValidator _validator;
-    private readonly ITibiaCharacterFinderDbContext _dbContext;
+    private readonly ITibiaStalkerDbContext _dbContext;
     private readonly ITibiaDataClient _tibiaDataClient;
     private readonly IEventPublisher _publisher;
 
     public ChangeNameDetectorService(ILogger<ChangeNameDetectorService> logger,
         INameDetectorValidator validator,
-        ITibiaCharacterFinderDbContext dbContext,
+        ITibiaStalkerDbContext dbContext,
         ITibiaDataClient tibiaDataClient,
         IEventPublisher publisher)
     {
@@ -36,21 +36,32 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
         while (true)
         {
             var stopwatch = Stopwatch.StartNew();
+            var stopwatch2 = Stopwatch.StartNew();
 
             var character = await GetFirstCharacterByVerifiedDateAsync();
+
             if (character is null)
             {
                 break;
             }
 
-            var fechedCharacter = await _tibiaDataClient.FetchCharacter(character.Name);
-            if (fechedCharacter is null)
+            stopwatch2.Stop();
+            _logger.LogInformation("Get character '{characterName}' from DB. Execution time : {time} ms",
+                character.Name, stopwatch2.ElapsedMilliseconds);
+
+            var stopwatch3 = Stopwatch.StartNew();
+            var fetchedCharacter = await _tibiaDataClient.FetchCharacter(character.Name);
+            if (fetchedCharacter is null)
             {
                 continue;
             }
 
+            stopwatch3.Stop();
+            _logger.LogInformation("Fetch character '{characterName}' from API. Execution time : {time} ms",
+                character.Name, stopwatch3.ElapsedMilliseconds);
+
             // If Character was not Traded and Character Name is still in database just Update Verified Date.
-            if (!_validator.IsCharacterChangedName(fechedCharacter, character) && !_validator.IsCharacterTraded(fechedCharacter))
+            if (!_validator.IsCharacterChangedName(fetchedCharacter, character) && !_validator.IsCharacterTraded(fetchedCharacter))
             {
                 stopwatch.Stop();
                 _logger.LogInformation("Character '{characterName}' was not traded, was not changed name. Checked in execution time : {time} ms",
@@ -59,7 +70,7 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
 
 
             // If TibiaData cannot find character just delete with all correlations.
-            else if (!_validator.IsCharacterExist(fechedCharacter))
+            else if (!_validator.IsCharacterExist(fetchedCharacter))
             {
                 await _publisher.PublishAsync($"'{character.Name}' ({DateTime.Now})",
                     new DeleteCharacterWithCorrelationsEvent(character.CharacterId));
@@ -67,25 +78,25 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
 
 
             // If Character was Traded just delete all correlations.
-            else if (_validator.IsCharacterTraded(fechedCharacter))
+            else if (_validator.IsCharacterTraded(fetchedCharacter))
             {
                 await _publisher.PublishAsync($"'{character.Name}' ({DateTime.Now})",
                     new DeleteCharacterCorrelationsEvent(character.CharacterId));
             }
 
 
-            // If name from databese was found in former names than merge proper correlations.
+            // If name from database was found in former names than merge proper correlations.
             else
             {
-                var fechedCharacterName = fechedCharacter.Name;
+                var fetchedCharacterName = fetchedCharacter.Name;
 
-                var newCharacter = await _dbContext.Characters.Where(c => c.Name == fechedCharacterName.ToLower()).FirstOrDefaultAsync();
+                var newCharacter = await _dbContext.Characters.Where(c => c.Name == fetchedCharacterName.ToLower()).FirstOrDefaultAsync();
 
                 if (newCharacter is null)
                 {
-                    // If new character name is not yet in the databese just change old name to new one.
-                    await UpdateCharacterNameAsync(character.Name, fechedCharacterName);
-                    _logger.LogInformation("Character name '{character}' updated to '{newCharacter}'", character.Name, fechedCharacterName.ToLower());
+                    // If new character name is not yet in the database just change old name to new one.
+                    await UpdateCharacterNameAsync(character.Name, fetchedCharacterName);
+                    _logger.LogInformation("Character name '{character}' updated to '{newCharacter}'", character.Name, fetchedCharacterName.ToLower());
                 }
                 else
                 {

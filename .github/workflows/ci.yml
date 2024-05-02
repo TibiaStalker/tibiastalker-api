@@ -21,7 +21,7 @@ jobs:
       - name: App Settings Variable Substitution
         uses: microsoft/variable-substitution@v1
         with:
-          files: './API/src/TibiaEnemyOtherCharactersFinder.Api/appsettings.json'
+          files: './API/src/TibiaStalker.Api/appsettings.json'
         env:
           Serilog.WriteTo.2.Args.serverUrl: http://localhost:5341
           Serilog.WriteTo.2.Args.apiKey: xxxxxx

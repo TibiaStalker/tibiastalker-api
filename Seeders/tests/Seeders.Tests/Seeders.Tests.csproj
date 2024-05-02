@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\API\src\TibiaEnemyOtherCharactersFinder.Infrastructure\TibiaEnemyOtherCharactersFinder.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\API\src\TibiaStalker.Infrastructure\TibiaStalker.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\CharacterAnalyser\CharacterAnalyser.csproj" />
   </ItemGroup>
 

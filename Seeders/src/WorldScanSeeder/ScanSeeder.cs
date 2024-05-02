@@ -1,20 +1,20 @@
 using Microsoft.EntityFrameworkCore;
-using TibiaEnemyOtherCharactersFinder.Application.Interfaces;
-using TibiaEnemyOtherCharactersFinder.Domain.Entities;
-using TibiaEnemyOtherCharactersFinder.Infrastructure.Persistence;
+using TibiaStalker.Application.Interfaces;
+using TibiaStalker.Domain.Entities;
+using TibiaStalker.Infrastructure.Persistence;
 
 namespace WorldScanSeeder;
 
 public class ScanSeeder : IScanSeeder
 {
-    private readonly ITibiaCharacterFinderDbContext _dbContext;
+    private readonly ITibiaStalkerDbContext _dbContext;
     private readonly ITibiaDataClient _tibiaDataClient;
 
     private List<World> _availableWorlds;
 
     public List<World> AvailableWorlds => _availableWorlds;
 
-    public ScanSeeder(ITibiaCharacterFinderDbContext dbContext, ITibiaDataClient tibiaDataClient)
+    public ScanSeeder(ITibiaStalkerDbContext dbContext, ITibiaDataClient tibiaDataClient)
     {
         _dbContext = dbContext;
         _tibiaDataClient = tibiaDataClient;
