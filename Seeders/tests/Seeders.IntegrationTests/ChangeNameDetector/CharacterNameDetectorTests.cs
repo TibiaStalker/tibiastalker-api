@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -14,6 +15,7 @@ using Shared.RabbitMq.Conventions;
 using Shared.RabbitMQ.EventBus;
 using Shared.RabbitMQ.Events;
 using Shared.RabbitMQ.Initializers;
+using TibiaStalker.Application.Configuration.Settings;
 using TibiaStalker.Application.Interfaces;
 using TibiaStalker.Application.TibiaData.Dtos;
 using TibiaStalker.Infrastructure.Persistence;
@@ -44,6 +46,8 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         var busPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
         var dbContextBefore = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var validator = scope.ServiceProvider.GetRequiredService<INameDetectorValidator>();
+        var options = scope.ServiceProvider.GetRequiredService<IOptions<SeederVariablesSection>>();
+
 
         var charactersBeforeDetector = dbContextForMock.Characters.AsNoTracking().ToList();
 
@@ -52,7 +56,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
             _tibiaDataClientMock.Setup(r => r.FetchCharacter(character.Name, false)).ReturnsAsync(PrepareExistingTibiaDataCharacter(character.Name));
         }
 
-        var changeNameDetector = new ChangeNameDetectorService(logger, validator, dbContextBefore, _tibiaDataClientMock.Object, busPublisher);
+        var changeNameDetector = new ChangeNameDetectorService(logger, validator, dbContextBefore, _tibiaDataClientMock.Object, busPublisher, options);
 
 
         // Act
@@ -78,6 +82,8 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         var busPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
         var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var validator = scope.ServiceProvider.GetRequiredService<INameDetectorValidator>();
+        var options = scope.ServiceProvider.GetRequiredService<IOptions<SeederVariablesSection>>();
+
 
         var charactersBeforeDetector = dbContext.Characters.AsNoTracking().ToList();
 
@@ -86,7 +92,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
             SetupTibiaDataServiceMock(charactersBeforeDetector[i].Name, (i < 2, PrepareNonExistingTibiaDataCharacter));
         }
 
-        var changeNameDetector = new ChangeNameDetectorService(logger, validator, dbContext, _tibiaDataClientMock.Object, busPublisher);
+        var changeNameDetector = new ChangeNameDetectorService(logger, validator, dbContext, _tibiaDataClientMock.Object, busPublisher, options);
 
 
         // Act
@@ -103,7 +109,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         charactersAfterDetector.Count.Should().Be(4);
         charactersBeforeDetector.Select(c => c.VerifiedDate).Should().OnlyContain(date => date == null);
 
-        receivedObjects.Select(o => o.CharacterId).Should().Contain(new[] { 120, 121 });
+        receivedObjects.Select(o => o.CharacterName).Should().Contain(new[] { "aphov", "asiier" });
         receivedObjects.Count.Should().Be(2);
     }
 
@@ -117,6 +123,8 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         var busPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
         var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var validator = scope.ServiceProvider.GetRequiredService<INameDetectorValidator>();
+        var options = scope.ServiceProvider.GetRequiredService<IOptions<SeederVariablesSection>>();
+
 
         var charactersBeforeDetector = dbContext.Characters.AsNoTracking().ToList();
 
@@ -125,7 +133,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
             SetupTibiaDataServiceMock(charactersBeforeDetector[i].Name, (i < 2, () => PrepareTradedTibiaDataCharacter(charactersBeforeDetector[i].Name)));
         }
 
-        var changeNameDetector = new ChangeNameDetectorService(logger, validator, dbContext, _tibiaDataClientMock.Object, busPublisher);
+        var changeNameDetector = new ChangeNameDetectorService(logger, validator, dbContext, _tibiaDataClientMock.Object, busPublisher, options);
 
 
         // Act
@@ -142,7 +150,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         charactersAfterDetector.Count.Should().Be(4);
         charactersBeforeDetector.Select(c => c.VerifiedDate).Should().OnlyContain(date => date == null);
 
-        receivedObjects.Select(o => o.CharacterId).Should().Contain(new[] { 120, 121 });
+        receivedObjects.Select(o => o.CharacterName).Should().Contain(new[] { "aphov", "asiier" });
         receivedObjects.Count.Should().Be(2);
     }
 
@@ -156,6 +164,8 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         var busPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
         var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var validator = scope.ServiceProvider.GetRequiredService<INameDetectorValidator>();
+        var options = scope.ServiceProvider.GetRequiredService<IOptions<SeederVariablesSection>>();
+
 
         var charactersBeforeDetector = dbContext.Characters.AsNoTracking().ToList();
 
@@ -164,7 +174,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
             SetupTibiaDataServiceMock(charactersBeforeDetector[i].Name, (i < 1, () => PrepareChangedNameCharacter(charactersBeforeDetector[i].Name)));
         }
 
-        var changeNameDetector = new ChangeNameDetectorService(logger, validator, dbContext, _tibiaDataClientMock.Object, busPublisher);
+        var changeNameDetector = new ChangeNameDetectorService(logger, validator, dbContext, _tibiaDataClientMock.Object, busPublisher, options);
 
 
         // Act
@@ -181,8 +191,8 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         charactersAfterDetector.Count.Should().Be(4);
         charactersBeforeDetector.Select(c => c.VerifiedDate).Should().OnlyContain(date => date == null);
 
-        receivedObjects[0].OldCharacterId.Should().Be(120);
-        receivedObjects[0].NewCharacterId.Should().Be(121);
+        receivedObjects[0].OldCharacterName.Should().Be("aphov");
+        receivedObjects[0].NewCharacterName.Should().Be("asiier");
         receivedObjects.Count.Should().Be(1);
     }
 
@@ -196,6 +206,8 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         var busPublisher = scope.ServiceProvider.GetRequiredService<IEventPublisher>();
         var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
         var validator = scope.ServiceProvider.GetRequiredService<INameDetectorValidator>();
+        var options = scope.ServiceProvider.GetRequiredService<IOptions<SeederVariablesSection>>();
+
 
         var charactersBeforeDetector = dbContext.Characters.AsNoTracking().ToList();
 
@@ -205,7 +217,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
                 (i < 1, () => PrepareChangedNameCharacterWithNameNonExistentInDatabase(charactersBeforeDetector[i].Name)));
         }
 
-        var changeNameDetector = new ChangeNameDetectorService(logger, validator, dbContext, _tibiaDataClientMock.Object, busPublisher);
+        var changeNameDetector = new ChangeNameDetectorService(logger, validator, dbContext, _tibiaDataClientMock.Object, busPublisher, options);
 
 
         // Act

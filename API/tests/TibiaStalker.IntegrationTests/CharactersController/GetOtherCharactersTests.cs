@@ -47,7 +47,7 @@ public class GetOtherCharactersTests : CharactersControllerTestTemplate, IClassF
 
     [Theory]
     [MemberData(nameof(GetInvalidLengthRouteParameters))]
-    public async Task GetOtherCharactersEndpoint_WithInvalidLenghtRouteParameters_ShouldReturnsStatusBadRequest(string parameter)
+    public async Task GetOtherCharactersEndpoint_WithInvalidLengthRouteParameters_ShouldReturnsStatusBadRequest(string parameter)
     {
         // Arrange
         var client = _factory.CreateClient();

@@ -31,13 +31,13 @@ public static class RabbitMqExtension
 
     private static IServiceCollection AddRabbitMqCommonSettings(this IServiceCollection services, IConfiguration configuration, string connectionName)
     {
-        var section = configuration.GetSection(RabbitMqSection.SectionName);
+        var rabbitSection = configuration.GetSection(RabbitMqSection.SectionName);
         services.AddOptions<RabbitMqSection>()
-            .Bind(section)
+            .Bind(rabbitSection)
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        var options = section.Get<RabbitMqSection>();
+        var options = rabbitSection.Get<RabbitMqSection>();
 
         var factory = new ConnectionFactory
         {
@@ -65,6 +65,7 @@ public static class RabbitMqExtension
         {
             Log.Warning("RabbitMq connection is closed. Error message: {Message}", ex.Message);
             Log.Warning("RabbitMq configuration: {RabbitConfig}", JsonSerializer.Serialize(options));
+            throw;
         }
 
         return services;
