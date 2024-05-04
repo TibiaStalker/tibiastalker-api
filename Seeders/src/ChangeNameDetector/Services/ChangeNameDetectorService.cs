@@ -2,10 +2,11 @@
 using ChangeNameDetector.Validators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shared.RabbitMQ.EventBus;
 using Shared.RabbitMQ.Events;
+using TibiaStalker.Application.Configuration.Settings;
 using TibiaStalker.Application.Interfaces;
-using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
 
 namespace ChangeNameDetector.Services;
@@ -17,18 +18,21 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
     private readonly ITibiaStalkerDbContext _dbContext;
     private readonly ITibiaDataClient _tibiaDataClient;
     private readonly IEventPublisher _publisher;
+    private readonly ChangeNameDetectorSection _changeNameDetectorOptions;
 
     public ChangeNameDetectorService(ILogger<ChangeNameDetectorService> logger,
         INameDetectorValidator validator,
         ITibiaStalkerDbContext dbContext,
         ITibiaDataClient tibiaDataClient,
-        IEventPublisher publisher)
+        IEventPublisher publisher,
+        IOptions<SeederVariablesSection> options)
     {
         _logger = logger;
         _validator = validator;
         _dbContext = dbContext;
         _tibiaDataClient = tibiaDataClient;
         _publisher = publisher;
+        _changeNameDetectorOptions = options.Value.ChangeNameDetector;
     }
 
     public async Task Run()
@@ -38,19 +42,19 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
             var stopwatch = Stopwatch.StartNew();
             var stopwatch2 = Stopwatch.StartNew();
 
-            var character = await GetFirstCharacterByVerifiedDateAsync();
+            var characterNameFromDb = await GetFirstCharacterByVerifiedDateAsync();
 
-            if (character is null)
+            if (characterNameFromDb is null)
             {
                 break;
             }
 
             stopwatch2.Stop();
             _logger.LogInformation("Get character '{characterName}' from DB. Execution time : {time} ms",
-                character.Name, stopwatch2.ElapsedMilliseconds);
+                characterNameFromDb, stopwatch2.ElapsedMilliseconds);
 
             var stopwatch3 = Stopwatch.StartNew();
-            var fetchedCharacter = await _tibiaDataClient.FetchCharacter(character.Name);
+            var fetchedCharacter = await _tibiaDataClient.FetchCharacter(characterNameFromDb);
             if (fetchedCharacter is null)
             {
                 continue;
@@ -58,30 +62,30 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
 
             stopwatch3.Stop();
             _logger.LogInformation("Fetch character '{characterName}' from API. Execution time : {time} ms",
-                character.Name, stopwatch3.ElapsedMilliseconds);
+                characterNameFromDb, stopwatch3.ElapsedMilliseconds);
 
             // If Character was not Traded and Character Name is still in database just Update Verified Date.
-            if (!_validator.IsCharacterChangedName(fetchedCharacter, character) && !_validator.IsCharacterTraded(fetchedCharacter))
+            if (!_validator.IsCharacterChangedName(fetchedCharacter, characterNameFromDb) && !_validator.IsCharacterTraded(fetchedCharacter))
             {
                 stopwatch.Stop();
                 _logger.LogInformation("Character '{characterName}' was not traded, was not changed name. Checked in execution time : {time} ms",
-                    character.Name, stopwatch.ElapsedMilliseconds);
+                    characterNameFromDb, stopwatch.ElapsedMilliseconds);
             }
 
 
             // If TibiaData cannot find character just delete with all correlations.
             else if (!_validator.IsCharacterExist(fetchedCharacter))
             {
-                await _publisher.PublishAsync($"'{character.Name}' ({DateTime.Now})",
-                    new DeleteCharacterWithCorrelationsEvent(character.CharacterId));
+                await _publisher.PublishAsync($"'{characterNameFromDb}' ({DateTime.Now})",
+                    new DeleteCharacterWithCorrelationsEvent(characterNameFromDb));
             }
 
 
             // If Character was Traded just delete all correlations.
             else if (_validator.IsCharacterTraded(fetchedCharacter))
             {
-                await _publisher.PublishAsync($"'{character.Name}' ({DateTime.Now})",
-                    new DeleteCharacterCorrelationsEvent(character.CharacterId));
+                await _publisher.PublishAsync($"'{characterNameFromDb}' ({DateTime.Now})",
+                    new DeleteCharacterCorrelationsEvent(characterNameFromDb));
             }
 
 
@@ -95,32 +99,33 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
                 if (newCharacter is null)
                 {
                     // If new character name is not yet in the database just change old name to new one.
-                    await UpdateCharacterNameAsync(character.Name, fetchedCharacterName);
-                    _logger.LogInformation("Character name '{character}' updated to '{newCharacter}'", character.Name, fetchedCharacterName.ToLower());
+                    await UpdateCharacterNameAsync(characterNameFromDb, fetchedCharacterName);
+                    _logger.LogInformation("Character name '{character}' updated to '{newCharacter}'", characterNameFromDb, fetchedCharacterName.ToLower());
                 }
                 else
                 {
-                    await _publisher.PublishAsync($"'{character.Name}' / '{newCharacter.Name}' ({DateTime.Now})",
-                        new MergeTwoCharactersEvent(character.CharacterId, newCharacter.CharacterId));
+                    await _publisher.PublishAsync($"'{characterNameFromDb}' / '{newCharacter.Name}' ({DateTime.Now})",
+                        new MergeTwoCharactersEvent(characterNameFromDb, newCharacter.Name));
                 }
             }
 
-            await UpdateCharacterVerifiedDate(character.CharacterId);
+            await UpdateCharacterVerifiedDate(characterNameFromDb);
             _dbContext.ChangeTracker.Clear();
         }
     }
 
-    private async Task<Character> GetFirstCharacterByVerifiedDateAsync()
+    private async Task<string> GetFirstCharacterByVerifiedDateAsync()
     {
-        var visibilityOfTradeProperty = DateOnly.FromDateTime(DateTime.Now.AddDays(-31));
-        var scanPeriod = DateOnly.FromDateTime(DateTime.Now.AddDays(-20));
+        // Sign "-" is for back time
+        // var visibilityOfTradePeriodDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
+        var visibilityOfTradePeriodDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-_changeNameDetectorOptions.VisibilityOfTradePeriod));
+        var scanPeriodDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-_changeNameDetectorOptions.ScanPeriod));
+        // var scanPeriodDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-20));
 
         return await _dbContext.Characters
-            .Where(c => (!c.TradedDate.HasValue || c.TradedDate < visibilityOfTradeProperty)
-                        && (!c.VerifiedDate.HasValue || c.VerifiedDate < scanPeriod))
-            .OrderByDescending(c => c.VerifiedDate == null)
-            .ThenBy(c => c.VerifiedDate)
-            .AsNoTracking()
+            .Where(c => c.TradedDate < visibilityOfTradePeriodDate && c.VerifiedDate < scanPeriodDate)
+            .OrderBy(c => c.VerifiedDate)
+            .Select(c => c.Name)
             .FirstOrDefaultAsync();
     }
 
@@ -132,10 +137,10 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
                 .SetProperty(c => c.Name, newName.ToLower()));
     }
 
-    private async Task UpdateCharacterVerifiedDate(int characterId)
+    private async Task UpdateCharacterVerifiedDate(string characterName)
     {
         await _dbContext.Characters
-            .Where(c => c.CharacterId == characterId)
+            .Where(c => c.Name == characterName)
             .ExecuteUpdateAsync(update => update
                 .SetProperty(c => c.VerifiedDate, DateOnly.FromDateTime(DateTime.Now)));
     }
