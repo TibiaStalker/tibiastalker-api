@@ -43,20 +43,20 @@ public class DeleteCharacterWithCorrelationsEventSubscriber : IEventSubscriber
         var eventObject = JsonConvert.DeserializeObject<DeleteCharacterWithCorrelationsEvent>(payload);
         _logger.LogInformation("Event {Event} subscribed. Payload: {Payload}", eventObject.GetType().Name, payload);
 
-        Thread.Sleep(3000);
+        Thread.Sleep(1000);
 
         var character = new Character();
         var isCommitedProperly = await ExecuteInTransactionAsync(async () =>
         {
             character = await _dbContext.Characters
-                .Where(c => c.CharacterId == eventObject.CharacterId)
+                .Where(c => c.Name == eventObject.CharacterName)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
 
             await _dbContext.Characters
-                .Where(c => c.CharacterId == eventObject.CharacterId)
+                .Where(c => c.Name == eventObject.CharacterName)
                 .ExecuteUpdateAsync(update => update
-                    .SetProperty(c => c.DeleteApproachNumber, character.DeleteApproachNumber + 1));
+                    .SetProperty(c => c.DeleteApproachNumber, character.DeleteApproachNumber + 1), cancellationToken);
 
             if (character.DeleteApproachNumber > 3)
             {

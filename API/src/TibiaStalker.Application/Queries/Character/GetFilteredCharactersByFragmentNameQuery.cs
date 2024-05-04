@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Diagnostics;
+using Dapper;
 using MediatR;
 using Shared.Database.Queries.Sql;
 using TibiaStalker.Application.Dapper;
@@ -41,13 +42,15 @@ public class GetFilteredCharacterListByFragmentNameQueryHandler : IRequestHandle
             PageSize = request.PageSize
         };
 
-        var result =
-            (await connection.QueryAsync<(string name, int totalCount)>(GenerateQueries.GetFilteredCharactersWithCount,
-                parameters)).ToList();
 
-        var characterMatching = result.Count == 0
+        var names = await connection.QueryAsync<string>(GenerateQueries.GetFilteredCharacterNames, parameters);
+        var count = await connection.QueryFirstOrDefaultAsync<int>(GenerateQueries.GetFilteredCharactersCount, parameters);
+
+
+        var characterMatching = count == 0
             ? new FilteredCharactersDto { TotalCount = 0, Names = Array.Empty<string>() }
-            : new FilteredCharactersDto { TotalCount = result.First().totalCount, Names = result.Select(n => n.name).ToArray() };
+            : new FilteredCharactersDto { TotalCount = count, Names = names.ToArray() };
+
 
         return characterMatching;
     }

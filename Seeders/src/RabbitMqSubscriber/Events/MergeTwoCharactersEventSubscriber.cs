@@ -45,15 +45,15 @@ public class MergeTwoCharactersEventSubscriber : IEventSubscriber
         var eventObject = JsonConvert.DeserializeObject<MergeTwoCharactersEvent>(payload);
         _logger.LogInformation("Event {Event} subscribed. Payload: {Payload}", eventObject.GetType().Name, payload);
 
-        Thread.Sleep(3000);
+        Thread.Sleep(1000);
 
         var oldCharacter = await _dbContext.Characters
-            .Where(c => c.CharacterId == eventObject.OldCharacterId)
+            .Where(c => c.Name == eventObject.OldCharacterName)
             .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
 
         var newCharacter = await _dbContext.Characters
-            .Where(c => c.CharacterId == eventObject.NewCharacterId)
+            .Where(c => c.Name == eventObject.NewCharacterName)
             .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
 

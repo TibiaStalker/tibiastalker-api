@@ -45,7 +45,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         await SeedDatabaseAsync(dbContext);
 
         var subscribers = scope.ServiceProvider.GetServices<IEventSubscriber>();
-        var message = new DeleteCharacterWithCorrelationsEvent(121);
+        var message = new DeleteCharacterWithCorrelationsEvent("asiier");
         var tibiaSubscriber = new TibiaSubscriber(subscribers, logger, subscriberConnection, options);
 
         PublishRabbitMessagesToQueue(options, publisherConnection, message);
@@ -71,6 +71,8 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
     public async Task Subscribe_WhenCharacterWasTraded_ShouldDeleteCorrelations()
     {
         // Arrange
+        // TODO: get out initDateOnly to public static class
+        var initDateOnly = new DateOnly(2001, 01, 01);
         using var scope = _factory.Services.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<TibiaSubscriber>>();
 
@@ -85,7 +87,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         await SeedDatabaseAsync(dbContext);
 
         var subscribers = scope.ServiceProvider.GetServices<IEventSubscriber>();
-        var message = new DeleteCharacterCorrelationsEvent(121);
+        var message = new DeleteCharacterCorrelationsEvent("asiier");
         var tibiaSubscriber = new TibiaSubscriber(subscribers, logger, subscriberConnection, options);
 
         PublishRabbitMessagesToQueue(options, publisherConnection, message);
@@ -105,7 +107,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
             dbContextAfterSubscribe.CharacterCorrelations.AsNoTracking().ToList();
 
         charactersAfterSubscriber.Count.Should().Be(4);
-        charactersAfterSubscriber.Count(c => c.TradedDate is not null).Should().Be(1);
+        charactersAfterSubscriber.Count(c => c.TradedDate != initDateOnly).Should().Be(1);
         characterCorrelationsAfterSubscriber.Count.Should().Be(3);
     }
 
@@ -127,7 +129,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         await SeedDatabaseAsync(dbContext);
 
         var subscribers = scope.ServiceProvider.GetServices<IEventSubscriber>();
-        var message = new MergeTwoCharactersEvent(120, 121);
+        var message = new MergeTwoCharactersEvent("aphov", "asiier");
         var tibiaSubscriber = new TibiaSubscriber(subscribers, logger, subscriberConnection, options);
 
         PublishRabbitMessagesToQueue(options, publisherConnection, message);
