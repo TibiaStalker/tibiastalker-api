@@ -1,22 +1,21 @@
 ﻿using TibiaStalker.Application.TibiaData.Dtos;
-using TibiaStalker.Domain.Entities;
 
 namespace ChangeNameDetector.Validators;
 
 public class NameDetectorValidator : INameDetectorValidator
 {
-    public bool IsCharacterChangedName(CharacterResult fechedCharacter, Character character)
+    public bool IsCharacterChangedName(CharacterResult fetchedCharacter, string characterName)
     {
-        return fechedCharacter?.Name?.ToLower() != character.Name;
+        return fetchedCharacter?.Name?.ToLower() != characterName;
     }
 
-    public bool IsCharacterTraded(CharacterResult fechedCharacter)
+    public bool IsCharacterTraded(CharacterResult fetchedCharacter)
     {
-        return fechedCharacter.Traded;
+        return fetchedCharacter.Traded;
     }
 
-    public bool IsCharacterExist(CharacterResult fechedCharacter)
+    public bool IsCharacterExist(CharacterResult fetchedCharacter)
     {
-        return !string.IsNullOrWhiteSpace(fechedCharacter.Name);
+        return !string.IsNullOrWhiteSpace(fetchedCharacter.Name);
     }
 }

@@ -28,7 +28,7 @@ public class ClearTrackedCharactersInitializer : IInitializer
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while cleanning TrackedCharacters table");
+            _logger.LogError(ex, "An error occurred while cleaning TrackedCharacters table");
             Log.CloseAndFlush();
             throw;
         }

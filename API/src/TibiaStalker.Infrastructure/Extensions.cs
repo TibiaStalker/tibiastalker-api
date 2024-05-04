@@ -6,10 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TibiaStalker.Application.Configuration.Settings;
-using TibiaStalker.Application.Interfaces;
 using TibiaStalker.Infrastructure.Configuration;
-using TibiaStalker.Infrastructure.Policies;
-using TibiaStalker.Infrastructure.Traceability;
 using TibiaStalker.Infrastructure.Clients.TibiaData;
 using TibiaStalker.Infrastructure.Hubs;
 using TibiaStalker.Infrastructure.Persistence;
@@ -38,6 +35,10 @@ namespace TibiaStalker.Infrastructure
 
             services.AddOptions<TibiaDataSection>()
                 .Bind(configuration.GetSection(TibiaDataSection.SectionName))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+            services.AddOptions<SeederVariablesSection>()
+                .Bind(configuration.GetSection(SeederVariablesSection.SectionName))
                 .ValidateDataAnnotations()
                 .ValidateOnStart();
 

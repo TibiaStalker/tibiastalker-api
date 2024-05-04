@@ -3,5 +3,5 @@
 /// <summary>
 /// Event to delete character with all correlations
 /// </summary>
-/// <param name="CharacterId"></param>
-public record DeleteCharacterWithCorrelationsEvent(int CharacterId) : IntegrationEvent;
+/// <param name="CharacterName"></param>
+public record DeleteCharacterWithCorrelationsEvent(string CharacterName) : IntegrationEvent;

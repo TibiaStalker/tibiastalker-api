@@ -31,19 +31,24 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
             e.Property(w => w.Name)
                 .HasMaxLength(20)
                 .IsRequired();
+
             e.Property(w => w.Url)
                 .HasMaxLength(200)
                 .IsRequired();
+
             e.Property(w => w.IsAvailable)
                 .IsRequired();
+
             e.HasMany(w => w.WorldScans)
                 .WithOne(ws => ws.World)
                 .HasForeignKey(ws => ws.WorldId)
                 .OnDelete(DeleteBehavior.NoAction);
+
             e.HasMany(w => w.Characters)
                 .WithOne(c => c.World)
                 .HasForeignKey(c => c.WorldId)
                 .OnDelete(DeleteBehavior.NoAction);
+
             e.HasMany(w => w.CharacterLogoutOrLogins)
                 .WithOne(ca => ca.World)
                 .HasForeignKey(ca => ca.WorldId)
@@ -57,14 +62,20 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
 
         modelBuilder.Entity<WorldScan>(e =>
         {
+            e.HasIndex(ws => ws.ScanCreateDateTime);
+
             e.Property(ws => ws.WorldScanId)
                 .IsRequired();
+
             e.Property(ws => ws.CharactersOnline)
                 .IsRequired();
+
             e.Property(ws => ws.WorldId)
                 .IsRequired();
+
             e.Property(ws => ws.ScanCreateDateTime)
                 .IsRequired();
+
             e.Property(ws => ws.IsDeleted)
                 .IsRequired()
                 .HasDefaultValue(false);
@@ -78,24 +89,39 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
         {
             e.HasIndex(c => c.Name);
             e.HasIndex(c => c.CharacterId);
+            e.HasIndex(c => c.FoundInScan);
+            e.HasIndex(c => c.VerifiedDate);
+            e.HasIndex(c => c.TradedDate);
+
             e.Property(c => c.CharacterId)
                 .IsRequired();
+
             e.Property(c => c.Name)
                 .HasMaxLength(100)
                 .IsRequired();
+
             e.Property(c => c.FoundInScan)
                 .IsRequired()
                 .HasDefaultValue(false);
-            e.Property(c => c.VerifiedDate);
-            e.Property(c => c.TradedDate);
+
+            e.Property(c => c.VerifiedDate)
+                .IsRequired()
+                .HasDefaultValue(new DateOnly(2001, 01, 01));
+
+            e.Property(c => c.TradedDate)
+                .IsRequired()
+                .HasDefaultValue(new DateOnly(2001, 01, 01));
+
             e.HasMany(c => c.LogoutCharacterCorrelations)
                 .WithOne(cc => cc.LogoutCharacter)
                 .HasForeignKey(cc => cc.LogoutCharacterId)
                 .OnDelete(DeleteBehavior.Cascade);
+
             e.HasMany(c => c.LoginCharacterCorrelations)
                 .WithOne(cc => cc.LoginCharacter)
                 .HasForeignKey(cc => cc.LoginCharacterId)
                 .OnDelete(DeleteBehavior.Cascade);
+
             e.Property(c => c.DeleteApproachNumber)
                 .IsRequired()
                 .HasDefaultValue(0);
@@ -108,17 +134,25 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
         modelBuilder.Entity<CharacterAction>(e =>
         {
             e.HasIndex(ca => ca.CharacterName);
+            e.HasIndex(ca => ca.IsOnline);
+            e.HasIndex(ca => ca.WorldScanId);
+
             e.Property(ca => ca.CharacterActionId)
                 .IsRequired();
+
             e.Property(ca => ca.CharacterName)
                 .HasMaxLength(100)
                 .IsRequired();
+
             e.Property(ca => ca.WorldScanId)
                 .IsRequired();
+
             e.Property(ca => ca.IsOnline)
                 .IsRequired();
+
             e.Property(ca => ca.WorldId)
                 .IsRequired();
+
             e.Property(ca => ca.LogoutOrLoginDate)
                 .IsRequired();
         });
@@ -131,18 +165,25 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
         {
             e.HasIndex(cc => cc.LogoutCharacterId);
             e.HasIndex(cc => cc.LoginCharacterId);
+            e.HasIndex(cc => cc.NumberOfMatches);
             e.HasKey(cc => cc.CorrelationId);
+
             e.Property(cc => cc.CorrelationId)
                 .IsRequired();
+
             e.Property(cc => cc.LogoutCharacterId)
                 .IsRequired();
+
             e.Property(cc => cc.LoginCharacterId)
                 .IsRequired();
+
             e.Property(cc => cc.NumberOfMatches)
                 .IsRequired();
+
             e.Property(cc => cc.CreateDate)
                 .IsRequired()
                 .HasDefaultValue(new DateOnly(2022, 12, 06));
+
             e.Property(cc => cc.LastMatchDate)
                 .IsRequired()
                 .HasDefaultValue(new DateOnly(2022, 12, 06));
@@ -157,15 +198,19 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
             e.HasIndex(tc => tc.Name);
             e.HasIndex(tc => tc.WorldName);
             e.HasKey(tc => new { tc.Name, tc.ConnectionId });
+
             e.Property(tc => tc.Name)
                 .HasMaxLength(100)
                 .IsRequired();
+
             e.Property(tc => tc.WorldName)
                 .HasMaxLength(20)
                 .IsRequired();
+
             e.Property(tc => tc.ConnectionId)
                 .HasMaxLength(100)
                 .IsRequired();
+
             e.Property(tc => tc.StartTrackDateTime)
                 .IsRequired();
         });
@@ -179,12 +224,15 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
             e.HasIndex(oc => oc.Name);
             e.HasIndex(oc => oc.WorldName);
             e.HasKey(oc => oc.Name);
+
             e.Property(oc => oc.Name)
                 .HasMaxLength(100)
                 .IsRequired();
+
             e.Property(oc => oc.WorldName)
                 .HasMaxLength(20)
                 .IsRequired();
+
             e.Property(oc => oc.OnlineDateTime)
                 .IsRequired();
         });
