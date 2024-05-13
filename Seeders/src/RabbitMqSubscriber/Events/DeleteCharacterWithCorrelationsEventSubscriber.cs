@@ -46,30 +46,30 @@ public class DeleteCharacterWithCorrelationsEventSubscriber : IEventSubscriber
         Thread.Sleep(1000);
 
         var character = new Character();
-        var isCommitedProperly = await ExecuteInTransactionAsync(async () =>
+
+        var isCommitedProperly = await ExecuteInTransactionAsync(Action, payload);
+
+        _eventResultHandler.HandleTransactionResult(isCommitedProperly, nameof(DeleteCharacterWithCorrelationsEvent), payload, character.Name);
+        return;
+
+        async Task Action()
         {
-            character = await _dbContext.Characters
-                .Where(c => c.Name == eventObject.CharacterName)
+            character = await _dbContext.Characters.Where(c => c.Name == eventObject.CharacterName)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
 
-            await _dbContext.Characters
-                .Where(c => c.Name == eventObject.CharacterName)
-                .ExecuteUpdateAsync(update => update
-                    .SetProperty(c => c.DeleteApproachNumber, character.DeleteApproachNumber + 1), cancellationToken);
-
-            if (character.DeleteApproachNumber > 3)
+            if (character.DeleteApproachNumber >= 3)
             {
-                await _dbContext.Characters
-                    .Where(c => c.CharacterId == character.CharacterId)
+                await _dbContext.Characters.Where(c => c.CharacterId == character.CharacterId)
                     .ExecuteDeleteAsync(cancellationToken);
             }
-        });
 
-        _eventResultHandler.HandleTransactionResult(isCommitedProperly, nameof(DeleteCharacterWithCorrelationsEvent), payload, character.Name);
+            await _dbContext.Characters.Where(c => c.Name == eventObject.CharacterName)
+                .ExecuteUpdateAsync(update => update.SetProperty(c => c.DeleteApproachNumber, character.DeleteApproachNumber + 1), cancellationToken);
+        }
     }
 
-    private async Task<bool> ExecuteInTransactionAsync(Func<Task> action)
+    private async Task<bool> ExecuteInTransactionAsync(Func<Task> action, string payload)
     {
         for (int retryCount = 1; retryCount <= 3; retryCount++)
         {
@@ -84,8 +84,8 @@ public class DeleteCharacterWithCorrelationsEventSubscriber : IEventSubscriber
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError("Method {method} during {action} failed, attempt {retryCount}. Error message: {ErrorMessage}",
-                    nameof(ExecuteInTransactionAsync), action.Target?.GetType().ReflectedType?.Name, retryCount, ex.Message);
+                _logger.LogError("Method {method} during {action} failed, attempt {retryCount}. Payload {payload}. Error message: {ErrorMessage}",
+                    nameof(ExecuteInTransactionAsync), action.Target?.GetType().ReflectedType?.Name, retryCount, payload, ex.Message);
             }
         }
 

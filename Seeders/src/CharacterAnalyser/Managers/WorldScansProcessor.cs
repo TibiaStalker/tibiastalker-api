@@ -23,7 +23,7 @@ public class WorldScansProcessor
         await _logDecorator.Decorate(SeedCharacters, twoWorldScans);
         await _logDecorator.Decorate(UpdateCorrelationsIfExistAsync, twoWorldScans);
         await _logDecorator.Decorate(CreateCorrelationsIfNotExistAsync, twoWorldScans);
-        await _logDecorator.Decorate(RemoveImposibleCorrelationsAsync, twoWorldScans);
+        await _logDecorator.Decorate(RemoveImpossibleCorrelationsAsync, twoWorldScans);
     }
 
     private async Task SeedCharacters()
@@ -88,7 +88,7 @@ public class WorldScansProcessor
         await _dbContext.SaveChangesAsync();
     }
 
-    private async Task RemoveImposibleCorrelationsAsync()
+    private async Task RemoveImpossibleCorrelationsAsync()
     {
         var onlinePlayersAtSameTime = _dbContext.Characters.Where(c => c.FoundInScan).Select(c => c.CharacterId);
 

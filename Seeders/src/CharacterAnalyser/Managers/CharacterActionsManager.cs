@@ -26,7 +26,7 @@ public class CharacterActionsManager
         await _dbContext.CharacterActions.AddRangeAsync(characterActionsToAdd);
         await _dbContext.SaveChangesAsync();
 
-        // Take only 300 shuffled elements because database needs too much time to execute delete ImposibleCorrelations
+        // Take only 300 shuffled elements because database needs too much time to execute delete ImpossibleCorrelations
         await _dbContext.Characters
             .Where(ch => _firstScanNames.Take(300).Contains(ch.Name))
             .ExecuteUpdateAsync(update => update.SetProperty(c => c.FoundInScan, c => true));
@@ -40,12 +40,11 @@ public class CharacterActionsManager
 
     public IReadOnlyList<string> GetAndSetLogoutNames(List<WorldScan> twoWorldScans)
     {
-        // Shuffle "_firstScanNames" for delete random ImposibleCorrelations
+        // Shuffle "_firstScanNames" for delete random ImpossibleCorrelations
         var random = new Random();
-        _firstScanNames = GetNames(twoWorldScans[0]).OrderBy(c => random.Next()).ToArray();
+        _firstScanNames = GetNames(twoWorldScans[0]).OrderBy(_ => random.Next()).ToArray();
         var secondScanNames = GetNames(twoWorldScans[1]);
         return _logoutNames = _firstScanNames.Except(secondScanNames).ToArray();
-
     }
 
     private static List<CharacterAction> CreateCharactersActionsAsync(IEnumerable<string> names, WorldScan worldScan, bool isOnline)
