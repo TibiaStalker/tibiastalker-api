@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace TibiaStalker.Api.Migrations
+namespace TibiaStalker.Infrastructure.Persistence.Migrations
 {
     public partial class Init_postgres : Migration
     {

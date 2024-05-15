@@ -89,7 +89,8 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
         {
             e.HasIndex(c => c.Name);
             e.HasIndex(c => c.CharacterId);
-            e.HasIndex(c => c.FoundInScan);
+            e.HasIndex(c => c.FoundInScan1);
+            e.HasIndex(c => c.FoundInScan2);
             e.HasIndex(c => c.VerifiedDate);
             e.HasIndex(c => c.TradedDate);
 
@@ -100,7 +101,11 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
                 .HasMaxLength(100)
                 .IsRequired();
 
-            e.Property(c => c.FoundInScan)
+            e.Property(c => c.FoundInScan1)
+                .IsRequired()
+                .HasDefaultValue(false);
+
+            e.Property(c => c.FoundInScan2)
                 .IsRequired()
                 .HasDefaultValue(false);
 

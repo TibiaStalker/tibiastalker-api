@@ -1,1 +1,0 @@
-UPDATE characters SET found_in_scan = FALSE WHERE found_in_scan = TRUE

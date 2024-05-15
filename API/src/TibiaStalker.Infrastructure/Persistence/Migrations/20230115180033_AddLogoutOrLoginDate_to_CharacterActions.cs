@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace TibiaStalker.Api.Migrations
+namespace TibiaStalker.Infrastructure.Persistence.Migrations
 {
     public partial class AddLogoutOrLoginDate_to_CharacterActions : Migration
     {

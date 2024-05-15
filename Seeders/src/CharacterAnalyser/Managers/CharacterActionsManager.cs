@@ -9,6 +9,7 @@ public class CharacterActionsManager
     private IReadOnlyList<string> _loginNames;
     private IReadOnlyList<string> _logoutNames;
     private IReadOnlyList<string> _firstScanNames;
+    private IReadOnlyList<string> _secondScanNames;
 
     private readonly ITibiaStalkerDbContext _dbContext;
 
@@ -26,25 +27,29 @@ public class CharacterActionsManager
         await _dbContext.CharacterActions.AddRangeAsync(characterActionsToAdd);
         await _dbContext.SaveChangesAsync();
 
-        // Take only 300 shuffled elements because database needs too much time to execute delete ImpossibleCorrelations
         await _dbContext.Characters
-            .Where(ch => _firstScanNames.Take(300).Contains(ch.Name))
-            .ExecuteUpdateAsync(update => update.SetProperty(c => c.FoundInScan, c => true));
+            .Where(ch => _firstScanNames.Contains(ch.Name))
+            .ExecuteUpdateAsync(update => update.SetProperty(c => c.FoundInScan1, c => true));
+
+        await _dbContext.Characters
+            .Where(ch => _secondScanNames.Contains(ch.Name))
+            .ExecuteUpdateAsync(update => update.SetProperty(c => c.FoundInScan2, c => true));
     }
 
-    public IReadOnlyList<string> GetAndSetLoginNames(List<WorldScan> twoWorldScans)
+    public void SetFirstAndSecondScanNames(List<WorldScan> twoWorldScans)
     {
-        _loginNames = GetNames(twoWorldScans[1]).Except(GetNames(twoWorldScans[0])).ToArray();
-        return _loginNames;
+        _firstScanNames = GetNames(twoWorldScans[0]);
+        _secondScanNames = GetNames(twoWorldScans[1]);
     }
 
-    public IReadOnlyList<string> GetAndSetLogoutNames(List<WorldScan> twoWorldScans)
+    public IReadOnlyList<string> GetAndSetLoginNames()
     {
-        // Shuffle "_firstScanNames" for delete random ImpossibleCorrelations
-        var random = new Random();
-        _firstScanNames = GetNames(twoWorldScans[0]).OrderBy(_ => random.Next()).ToArray();
-        var secondScanNames = GetNames(twoWorldScans[1]);
-        return _logoutNames = _firstScanNames.Except(secondScanNames).ToArray();
+        return _loginNames = _secondScanNames.Except(_firstScanNames).ToArray();
+    }
+
+    public IReadOnlyList<string> GetAndSetLogoutNames()
+    {
+        return _logoutNames = _firstScanNames.Except(_secondScanNames).ToArray();
     }
 
     private static List<CharacterAction> CreateCharactersActionsAsync(IEnumerable<string> names, WorldScan worldScan, bool isOnline)

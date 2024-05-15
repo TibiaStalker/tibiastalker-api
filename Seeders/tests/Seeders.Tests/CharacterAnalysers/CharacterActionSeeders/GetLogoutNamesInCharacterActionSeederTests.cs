@@ -24,9 +24,10 @@ public class GetLogoutNamesInCharacterActionSeederTests
             new() { WorldScanId = 3302, WorldId = 1, ScanCreateDateTime = new DateTime(2022,11,30,20,28,36, DateTimeKind.Utc), CharactersOnline = "aphov|armystrong|asiier|braws|brytiaggo|fresita linda|friedbert|ganancia adra|guga falido|just mojito|kinaduh|kineador"},
         };
         var characterActionSeeder = new CharacterActionsManager(_dxContextMock.Object);
-        
+        characterActionSeeder.SetFirstAndSecondScanNames(worldScans);
+
         // Act
-        var logoutNames = characterActionSeeder.GetAndSetLogoutNames(worldScans);
+        var logoutNames = characterActionSeeder.GetAndSetLogoutNames();
 
         // Assert
         logoutNames.Count.Should().Be(3);
@@ -42,9 +43,10 @@ public class GetLogoutNamesInCharacterActionSeederTests
             new() { WorldScanId = 3302, WorldId = 1, ScanCreateDateTime = new DateTime(2022,11,30,20,28,36, DateTimeKind.Utc), CharactersOnline = "aphov|armystrong|asiier|braws|brytiaggo|fresita linda|friedbert|ganancia adra|guga falido|just mojito|kinaduh|kineador"},
         };
         var characterActionSeeder = new CharacterActionsManager(_dxContextMock.Object);
-        
+        characterActionSeeder.SetFirstAndSecondScanNames(worldScans);
+
         // Act
-        var logoutNames = characterActionSeeder.GetAndSetLogoutNames(worldScans);
+        var logoutNames = characterActionSeeder.GetAndSetLogoutNames();
 
         // Assert
         logoutNames.Count.Should().Be(0);

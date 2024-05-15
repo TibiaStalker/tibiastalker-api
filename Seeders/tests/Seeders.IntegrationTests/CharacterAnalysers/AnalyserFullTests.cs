@@ -52,7 +52,7 @@ public class AnalyserFullTests : IAsyncLifetime
         characters.Select(c => c.Name).Distinct().Count().Should().Be(characters.Count);
         characters.Count(c => c.WorldId == 31).Should().Be(6);
         characters.Count(c => c.WorldId == 32).Should().Be(11);
-        characters.Count(c => c.FoundInScan).Should().Be(4);
+        characters.Count(c => c.FoundInScan1).Should().Be(4);
 
         correlations.Count.Should().Be(27);// worldID(32) = 23-2(duplicate)-1(ccc|ddd foundInScan) | worldID(31) = 8-1(correlation exist in one scan)
         correlations.Select(c => (c.LogoutCharacterId, c.LoginCharacterId)).Distinct().Count().Should().Be(correlations.Count);

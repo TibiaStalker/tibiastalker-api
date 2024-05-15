@@ -3,7 +3,7 @@
 public class Character : IEntity
 {
     /// <summary>
-    /// Id of specific character
+    /// ID of specific character
     /// </summary>
     public int CharacterId { get; set; }
 
@@ -13,14 +13,19 @@ public class Character : IEntity
     public string Name { get; set; }
 
     /// <summary>
-    /// Id of specific world
+    /// ID of specific world
     /// </summary>
     public short WorldId { get; set; }
 
     /// <summary>
-    /// Boolean wether found name in scan or not
+    /// Boolean whether name was founded in first scan
     /// </summary>
-    public bool FoundInScan { get; set; }
+    public bool FoundInScan1 { get; set; }
+
+    /// <summary>
+    /// Boolean whether name was founded in second scan
+    /// </summary>
+    public bool FoundInScan2 { get; set; }
 
     /// <summary>
     /// Date of verified character when changed name

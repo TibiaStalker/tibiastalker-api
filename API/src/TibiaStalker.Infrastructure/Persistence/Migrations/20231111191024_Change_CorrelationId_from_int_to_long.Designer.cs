@@ -9,11 +9,11 @@ using TibiaStalker.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace TibiaStalker.Infrastructure.Migrations
+namespace TibiaStalker.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TibiaStalkerDbContext))]
-    [Migration("20240305200834_Add_DeleteApproachNumber_Column")]
-    partial class AddDeleteApproachNumberColumn
+    [Migration("20231111191024_Change_CorrelationId_from_int_to_long")]
+    partial class ChangeCorrelationIdfrominttolong
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,12 +35,6 @@ namespace TibiaStalker.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CharacterId"));
 
-                    b.Property<int>("DeleteApproachNumber")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("delete_approach_number");
-
                     b.Property<bool>("FoundInScan")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -49,8 +43,7 @@ namespace TibiaStalker.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("text")
                         .HasColumnName("name");
 
                     b.Property<DateOnly?>("TradedDate")
@@ -91,8 +84,7 @@ namespace TibiaStalker.Infrastructure.Migrations
 
                     b.Property<string>("CharacterName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("text")
                         .HasColumnName("character_name");
 
                     b.Property<bool>("IsOnline")
@@ -171,69 +163,6 @@ namespace TibiaStalker.Infrastructure.Migrations
                     b.ToTable("character_correlations", "public");
                 });
 
-            modelBuilder.Entity("TibiaStalker.Domain.Entities.OnlineCharacter", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
-                    b.Property<DateTime>("OnlineDateTime")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("online_date_time");
-
-                    b.Property<string>("WorldName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("world_name");
-
-                    b.HasKey("Name")
-                        .HasName("pk_online_characters");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("ix_online_characters_name");
-
-                    b.HasIndex("WorldName")
-                        .HasDatabaseName("ix_online_characters_world_name");
-
-                    b.ToTable("online_characters", "public");
-                });
-
-            modelBuilder.Entity("TibiaStalker.Domain.Entities.TrackedCharacter", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("ConnectionId")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("connection_id");
-
-                    b.Property<DateTime>("StartTrackDateTime")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("start_track_date_time");
-
-                    b.Property<string>("WorldName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("world_name");
-
-                    b.HasKey("Name", "ConnectionId")
-                        .HasName("pk_tracked_characters");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("ix_tracked_characters_name");
-
-                    b.HasIndex("WorldName")
-                        .HasDatabaseName("ix_tracked_characters_world_name");
-
-                    b.ToTable("tracked_characters", "public");
-                });
-
             modelBuilder.Entity("TibiaStalker.Domain.Entities.World", b =>
                 {
                     b.Property<short>("WorldId")
@@ -249,14 +178,12 @@ namespace TibiaStalker.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                        .HasColumnType("text")
                         .HasColumnName("name");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasColumnType("text")
                         .HasColumnName("url");
 
                     b.HasKey("WorldId")

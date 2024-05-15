@@ -2,28 +2,28 @@
 
 #nullable disable
 
-namespace TibiaStalker.Infrastructure.Migrations
+namespace TibiaStalker.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AddFoundInScanToCharacters : Migration
+    public partial class AddDeleteApproachNumberColumn : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "found_in_scan",
+            migrationBuilder.AddColumn<int>(
+                name: "delete_approach_number",
                 schema: "public",
                 table: "characters",
-                type: "boolean",
+                type: "integer",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: 0);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "found_in_scan",
+                name: "delete_approach_number",
                 schema: "public",
                 table: "characters");
         }

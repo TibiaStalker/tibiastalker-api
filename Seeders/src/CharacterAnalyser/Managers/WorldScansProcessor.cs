@@ -45,8 +45,10 @@ public class WorldScansProcessor
             .Where(c => logoutCharactersIds.Contains(c.LoginCharacterId) && loginCharactersIds.Contains(c.LogoutCharacterId))
             .Select(cc => cc.CorrelationId);
 
+        var characterCorrelationsIds = characterCorrelationsIdsPart1.Concat(characterCorrelationsIdsPart2);
+
         await _dbContext.CharacterCorrelations
-            .Where(cc => characterCorrelationsIdsPart1.Concat(characterCorrelationsIdsPart2).Contains(cc.CorrelationId))
+            .Where(cc => characterCorrelationsIds.Contains(cc.CorrelationId))
             .ExecuteUpdateAsync(update => update
                 .SetProperty(c => c.NumberOfMatches, c => c.NumberOfMatches + 1)
                 .SetProperty(c => c.LastMatchDate, lastMatchDate));
@@ -90,11 +92,9 @@ public class WorldScansProcessor
 
     private async Task RemoveImpossibleCorrelationsAsync()
     {
-        var onlinePlayersAtSameTime = _dbContext.Characters.Where(c => c.FoundInScan).Select(c => c.CharacterId);
-
-        await _dbContext.CharacterCorrelations
-            .Where(cc => onlinePlayersAtSameTime.Contains(cc.LoginCharacterId) && onlinePlayersAtSameTime.Contains(cc.LogoutCharacterId))
-            .ExecuteDeleteAsync();
+        await _dbContext.ExecuteRawSqlAsync(GenerateQueries.RemoveImpossibleCorrelationsPart1);
+        await _dbContext.ExecuteRawSqlAsync(GenerateQueries.RemoveImpossibleCorrelationsPart2);
+        // TODO: update tests for that method
     }
 
     private IQueryable<int> GetCharactersIdsBasedOnCharacterActions(bool isOnline)

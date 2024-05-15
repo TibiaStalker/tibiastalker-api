@@ -62,7 +62,7 @@ public class RemoveCharacterCorrelationsBenchmark
     private IQueryable<int> CharactersIdsInScan()
     {
         return _dbContext.Characters
-            .Where(c => c.FoundInScan)
+            .Where(c => c.FoundInScan1)
             .Select(c => c.CharacterId);
     }
 }
