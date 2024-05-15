@@ -9,7 +9,7 @@ using TibiaStalker.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace TibiaStalker.Infrastructure.Migrations
+namespace TibiaStalker.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TibiaStalkerDbContext))]
     [Migration("20230310231911_Add_FoundInScan_To_Characters")]

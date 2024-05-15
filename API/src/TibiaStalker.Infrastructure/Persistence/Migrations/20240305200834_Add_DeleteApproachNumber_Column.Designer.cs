@@ -9,23 +9,24 @@ using TibiaStalker.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace TibiaStalker.Api.Migrations
+namespace TibiaStalker.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TibiaStalkerDbContext))]
-    [Migration("20221101100038_Init_postgres")]
-    partial class Init_postgres
+    [Migration("20240305200834_Add_DeleteApproachNumber_Column")]
+    partial class AddDeleteApproachNumberColumn
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("public")
-                .HasAnnotation("ProductVersion", "6.0.10")
+                .HasAnnotation("ProductVersion", "7.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TibiaStalker.Api.Entities.Character", b =>
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.Character", b =>
                 {
                     b.Property<int>("CharacterId")
                         .ValueGeneratedOnAdd()
@@ -34,10 +35,31 @@ namespace TibiaStalker.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CharacterId"));
 
+                    b.Property<int>("DeleteApproachNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("delete_approach_number");
+
+                    b.Property<bool>("FoundInScan")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("found_in_scan");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("name");
+
+                    b.Property<DateOnly?>("TradedDate")
+                        .HasColumnType("date")
+                        .HasColumnName("traded_date");
+
+                    b.Property<DateOnly?>("VerifiedDate")
+                        .HasColumnType("date")
+                        .HasColumnName("verified_date");
 
                     b.Property<short>("WorldId")
                         .HasColumnType("smallint")
@@ -46,13 +68,19 @@ namespace TibiaStalker.Api.Migrations
                     b.HasKey("CharacterId")
                         .HasName("pk_characters");
 
+                    b.HasIndex("CharacterId")
+                        .HasDatabaseName("ix_characters_character_id");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_characters_name");
+
                     b.HasIndex("WorldId")
                         .HasDatabaseName("ix_characters_world_id");
 
                     b.ToTable("characters", "public");
                 });
 
-            modelBuilder.Entity("TibiaStalker.Api.Entities.CharacterAction", b =>
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.CharacterAction", b =>
                 {
                     b.Property<int>("CharacterActionId")
                         .ValueGeneratedOnAdd()
@@ -63,12 +91,17 @@ namespace TibiaStalker.Api.Migrations
 
                     b.Property<string>("CharacterName")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("character_name");
 
                     b.Property<bool>("IsOnline")
                         .HasColumnType("boolean")
                         .HasColumnName("is_online");
+
+                    b.Property<DateOnly>("LogoutOrLoginDate")
+                        .HasColumnType("date")
+                        .HasColumnName("logout_or_login_date");
 
                     b.Property<short>("WorldId")
                         .HasColumnType("smallint")
@@ -81,6 +114,9 @@ namespace TibiaStalker.Api.Migrations
                     b.HasKey("CharacterActionId")
                         .HasName("pk_character_actions");
 
+                    b.HasIndex("CharacterName")
+                        .HasDatabaseName("ix_character_actions_character_name");
+
                     b.HasIndex("WorldId")
                         .HasDatabaseName("ix_character_actions_world_id");
 
@@ -90,14 +126,26 @@ namespace TibiaStalker.Api.Migrations
                     b.ToTable("character_actions", "public");
                 });
 
-            modelBuilder.Entity("TibiaStalker.Api.Entities.CharacterCorrelation", b =>
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.CharacterCorrelation", b =>
                 {
-                    b.Property<int>("CorrelationId")
+                    b.Property<long>("CorrelationId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("bigint")
                         .HasColumnName("correlation_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CorrelationId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("CorrelationId"));
+
+                    b.Property<DateOnly>("CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("date")
+                        .HasDefaultValue(new DateOnly(2022, 12, 6))
+                        .HasColumnName("create_date");
+
+                    b.Property<DateOnly>("LastMatchDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("date")
+                        .HasDefaultValue(new DateOnly(2022, 12, 6))
+                        .HasColumnName("last_match_date");
 
                     b.Property<int>("LoginCharacterId")
                         .HasColumnType("integer")
@@ -123,7 +171,70 @@ namespace TibiaStalker.Api.Migrations
                     b.ToTable("character_correlations", "public");
                 });
 
-            modelBuilder.Entity("TibiaStalker.Api.Entities.World", b =>
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.OnlineCharacter", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime>("OnlineDateTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("online_date_time");
+
+                    b.Property<string>("WorldName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("world_name");
+
+                    b.HasKey("Name")
+                        .HasName("pk_online_characters");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_online_characters_name");
+
+                    b.HasIndex("WorldName")
+                        .HasDatabaseName("ix_online_characters_world_name");
+
+                    b.ToTable("online_characters", "public");
+                });
+
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.TrackedCharacter", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("ConnectionId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("connection_id");
+
+                    b.Property<DateTime>("StartTrackDateTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_track_date_time");
+
+                    b.Property<string>("WorldName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("world_name");
+
+                    b.HasKey("Name", "ConnectionId")
+                        .HasName("pk_tracked_characters");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_tracked_characters_name");
+
+                    b.HasIndex("WorldName")
+                        .HasDatabaseName("ix_tracked_characters_world_name");
+
+                    b.ToTable("tracked_characters", "public");
+                });
+
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.World", b =>
                 {
                     b.Property<short>("WorldId")
                         .ValueGeneratedOnAdd()
@@ -138,12 +249,14 @@ namespace TibiaStalker.Api.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("name");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("url");
 
                     b.HasKey("WorldId")
@@ -152,7 +265,7 @@ namespace TibiaStalker.Api.Migrations
                     b.ToTable("worlds", "public");
                 });
 
-            modelBuilder.Entity("TibiaStalker.Api.Entities.WorldScan", b =>
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.WorldScan", b =>
                 {
                     b.Property<int>("WorldScanId")
                         .ValueGeneratedOnAdd()
@@ -189,9 +302,9 @@ namespace TibiaStalker.Api.Migrations
                     b.ToTable("world_scans", "public");
                 });
 
-            modelBuilder.Entity("TibiaStalker.Api.Entities.Character", b =>
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.Character", b =>
                 {
-                    b.HasOne("TibiaStalker.Api.Entities.World", "World")
+                    b.HasOne("TibiaStalker.Domain.Entities.World", "World")
                         .WithMany("Characters")
                         .HasForeignKey("WorldId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -201,16 +314,16 @@ namespace TibiaStalker.Api.Migrations
                     b.Navigation("World");
                 });
 
-            modelBuilder.Entity("TibiaStalker.Api.Entities.CharacterAction", b =>
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.CharacterAction", b =>
                 {
-                    b.HasOne("TibiaStalker.Api.Entities.World", "World")
+                    b.HasOne("TibiaStalker.Domain.Entities.World", "World")
                         .WithMany("CharacterLogoutOrLogins")
                         .HasForeignKey("WorldId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("fk_character_actions_worlds_world_id");
 
-                    b.HasOne("TibiaStalker.Api.Entities.WorldScan", "WorldScan")
+                    b.HasOne("TibiaStalker.Domain.Entities.WorldScan", "WorldScan")
                         .WithMany()
                         .HasForeignKey("WorldScanId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -222,19 +335,19 @@ namespace TibiaStalker.Api.Migrations
                     b.Navigation("WorldScan");
                 });
 
-            modelBuilder.Entity("TibiaStalker.Api.Entities.CharacterCorrelation", b =>
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.CharacterCorrelation", b =>
                 {
-                    b.HasOne("TibiaStalker.Api.Entities.Character", "LoginCharacter")
-                        .WithMany("LoginWorldCorrelations")
+                    b.HasOne("TibiaStalker.Domain.Entities.Character", "LoginCharacter")
+                        .WithMany("LoginCharacterCorrelations")
                         .HasForeignKey("LoginCharacterId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_character_correlations_characters_login_character_id");
 
-                    b.HasOne("TibiaStalker.Api.Entities.Character", "LogoutCharacter")
-                        .WithMany("LogoutWorldCorrelations")
+                    b.HasOne("TibiaStalker.Domain.Entities.Character", "LogoutCharacter")
+                        .WithMany("LogoutCharacterCorrelations")
                         .HasForeignKey("LogoutCharacterId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_character_correlations_characters_character_id");
 
@@ -243,9 +356,9 @@ namespace TibiaStalker.Api.Migrations
                     b.Navigation("LogoutCharacter");
                 });
 
-            modelBuilder.Entity("TibiaStalker.Api.Entities.WorldScan", b =>
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.WorldScan", b =>
                 {
-                    b.HasOne("TibiaStalker.Api.Entities.World", "World")
+                    b.HasOne("TibiaStalker.Domain.Entities.World", "World")
                         .WithMany("WorldScans")
                         .HasForeignKey("WorldId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -255,14 +368,14 @@ namespace TibiaStalker.Api.Migrations
                     b.Navigation("World");
                 });
 
-            modelBuilder.Entity("TibiaStalker.Api.Entities.Character", b =>
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.Character", b =>
                 {
-                    b.Navigation("LoginWorldCorrelations");
+                    b.Navigation("LoginCharacterCorrelations");
 
-                    b.Navigation("LogoutWorldCorrelations");
+                    b.Navigation("LogoutCharacterCorrelations");
                 });
 
-            modelBuilder.Entity("TibiaStalker.Api.Entities.World", b =>
+            modelBuilder.Entity("TibiaStalker.Domain.Entities.World", b =>
                 {
                     b.Navigation("CharacterLogoutOrLogins");
 

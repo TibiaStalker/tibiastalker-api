@@ -65,18 +65,25 @@ public class MergeTwoCharactersEventSubscriber : IEventSubscriber
             return;
         }
 
-        var isCommitedProperly = await ExecuteInTransactionAsync(async () =>
+        var isCommitedProperly = await ExecuteInTransactionAsync(Action, payload);
+
+        _eventResultHandler.HandleTransactionResult(isCommitedProperly, nameof(MergeTwoCharactersEvent), payload, oldCharacter.Name);
+
+        await _dbContext.Characters
+            .Where(c => c.CharacterId == oldCharacter.CharacterId)
+            .ExecuteDeleteAsync(cancellationToken);
+        return;
+
+        async Task Action()
         {
             await ReplaceCharacterIdInCorrelationsAsync(oldCharacter, newCharacter);
             List<CharacterCorrelation> correlations = new();
             List<string> combinedCharacterCorrelations = new();
             List<long> correlationIdsToDelete = new();
 
-            var sameCharacterCorrelations = _dbContext.Database
-                .SqlQueryRaw<string>(GenerateQueries.GetSameCharacterCorrelations, newCharacter.CharacterId).AsEnumerable();
+            var sameCharacterCorrelations = _dbContext.Database.SqlQueryRaw<string>(GenerateQueries.GetSameCharacterCorrelations, newCharacter.CharacterId).AsEnumerable();
 
-            var sameCharacterCorrelationsCrossed = _dbContext.Database
-                .SqlQueryRaw<string>(GenerateQueries.GetSameCharacterCorrelationsCrossed, newCharacter.CharacterId).AsEnumerable();
+            var sameCharacterCorrelationsCrossed = _dbContext.Database.SqlQueryRaw<string>(GenerateQueries.GetSameCharacterCorrelationsCrossed, newCharacter.CharacterId).AsEnumerable();
 
             combinedCharacterCorrelations.AddRange(sameCharacterCorrelations);
             combinedCharacterCorrelations.AddRange(sameCharacterCorrelationsCrossed);
@@ -95,19 +102,12 @@ public class MergeTwoCharactersEventSubscriber : IEventSubscriber
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             // Delete already merged CharacterCorrelations
-            await _dbContext.CharacterCorrelations
-                .Where(c => correlationIdsToDelete.Contains(c.CorrelationId))
+            await _dbContext.CharacterCorrelations.Where(c => correlationIdsToDelete.Contains(c.CorrelationId))
                 .ExecuteDeleteAsync(cancellationToken);
-        });
-
-        _eventResultHandler.HandleTransactionResult(isCommitedProperly, nameof(MergeTwoCharactersEvent), payload, oldCharacter.Name);
-
-        await _dbContext.Characters
-            .Where(c => c.CharacterId == oldCharacter.CharacterId)
-            .ExecuteDeleteAsync(cancellationToken);
+        }
     }
 
-    private async Task<bool> ExecuteInTransactionAsync(Func<Task> action)
+    private async Task<bool> ExecuteInTransactionAsync(Func<Task> action, string payload)
     {
         for (int retryCount = 1; retryCount <= 3; retryCount++)
         {
@@ -122,8 +122,8 @@ public class MergeTwoCharactersEventSubscriber : IEventSubscriber
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError("Method {method} during {action} failed, attempt {retryCount}. Error message: {ErrorMessage}",
-                    nameof(ExecuteInTransactionAsync), action.Target?.GetType().ReflectedType?.Name, retryCount, ex.Message);
+                _logger.LogError("Method {method} during {action} failed, attempt {retryCount}. Payload {payload}. Error message: {ErrorMessage}",
+                    nameof(ExecuteInTransactionAsync), action.Target?.GetType().ReflectedType?.Name, retryCount, payload, ex.Message);
             }
         }
 

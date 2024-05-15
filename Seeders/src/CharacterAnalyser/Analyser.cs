@@ -52,19 +52,27 @@ public class Analyser : ActionRule, IAnalyser
 
     public async Task Seed(List<WorldScan> twoWorldScans)
     {
-        if (IsBroken(new NumberOfWorldScansSpecificAmountRule(twoWorldScans)))
+        if (IsBroken(new NumberOfWorldScansShouldBe2Rule(twoWorldScans)))
             return;
 
-        if (IsBroken(new TimeBetweenWorldScansCannotBeLongerThanMaxDurationRule(twoWorldScans)) ||
-            IsBroken(new CharacterNameListCannotBeEmptyRule(_characterActionsManager.GetAndSetLogoutNames(twoWorldScans))) ||
-            IsBroken(new CharacterNameListCannotBeEmptyRule(_characterActionsManager.GetAndSetLoginNames(twoWorldScans))))
+        if (IsBroken(new TimeBetweenWorldScansCannotBeLongerThanMaxDurationRule(twoWorldScans)))
         {
             await SoftDeleteWorldScanAsync(twoWorldScans[0].WorldScanId);
             return;
         }
 
+        _characterActionsManager.SetFirstAndSecondScanNames(twoWorldScans);
+
+        if (IsBroken(new CharacterNameListCannotBeEmptyRule(_characterActionsManager.GetAndSetLogoutNames())) ||
+            IsBroken(new CharacterNameListCannotBeEmptyRule(_characterActionsManager.GetAndSetLoginNames())))
+        {
+            await SoftDeleteWorldScanAsync(twoWorldScans[0].WorldScanId);
+            return;
+        }
+
+
         await _dbContext.ExecuteRawSqlAsync(GenerateQueries.ClearCharacterActions);
-        await _dbContext.ExecuteRawSqlAsync(GenerateQueries.UpdateCharactersSetFoundInScanFalse);
+        await _dbContext.ExecuteRawSqlAsync(GenerateQueries.ResetCharacterFoundInScans);
 
         try
         {

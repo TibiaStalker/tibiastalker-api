@@ -196,6 +196,24 @@ FROM (SELECT * FROM cte) AS cc1
     AND cc1.correlation_id <> cc2.correlation_id
 WHERE cc1.logout_character_id < cc1.login_character_id;";
 
+        public const string RemoveImpossibleCorrelationsPart1 = @"DELETE FROM character_correlations cc
+    USING ""characters"" c1, ""characters"" c2
+WHERE cc.logout_character_id = c1.character_id
+  AND cc.login_character_id = c2.character_id
+  AND c1.found_in_scan2 = TRUE AND c2.found_in_scan2 = TRUE AND c2.found_in_scan1 = FALSE
+";
+
+        public const string RemoveImpossibleCorrelationsPart2 = @"DELETE FROM character_correlations cc
+    USING ""characters"" c1, ""characters"" c2
+WHERE cc.login_character_id = c1.character_id
+  AND cc.logout_character_id = c2.character_id
+  AND c1.found_in_scan2 = TRUE AND c2.found_in_scan2 = TRUE AND c2.found_in_scan1 = FALSE";
+
+        public const string ResetCharacterFoundInScans = @"UPDATE characters
+SET found_in_scan1 = FALSE, found_in_scan2 = FALSE
+WHERE found_in_scan1 = TRUE OR found_in_scan2 = TRUE;
+";
+
         public const string UpdateCharacterCorrelationIfExist = @"WITH cp AS (
   SELECT 
     f.character_id AS logout,
@@ -224,8 +242,6 @@ WHERE
   (cc.logout_character_id = cp.logout AND cc.login_character_id = cp.login)
   OR 
   (cc.logout_character_id = cp.login AND cc.login_character_id = cp.logout);";
-
-        public const string UpdateCharactersSetFoundInScanFalse = @"UPDATE characters SET found_in_scan = FALSE WHERE found_in_scan = TRUE";
 
     }
 

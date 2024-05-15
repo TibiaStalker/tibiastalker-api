@@ -33,8 +33,10 @@ public class SeedOnCharacterActionSeederTests : IAsyncLifetime
             .AsNoTracking()
             .ToListAsync();
 
-        seeder.GetAndSetLoginNames(worldScans);
-        seeder.GetAndSetLogoutNames(worldScans);
+        seeder.SetFirstAndSecondScanNames(worldScans);
+
+        seeder.GetAndSetLoginNames();
+        seeder.GetAndSetLogoutNames();
         
         // Act
         await seeder.SeedCharacterActions(worldScans);
@@ -44,7 +46,7 @@ public class SeedOnCharacterActionSeederTests : IAsyncLifetime
         // Assert
         characterActions.Count().Should().Be(10);
         characters.Count().Should().Be(4);
-        characters.Count(c => c.FoundInScan).Should().Be(3);
+        characters.Count(c => c.FoundInScan1).Should().Be(3);
     }
     
     public Task InitializeAsync() => Task.CompletedTask;

@@ -29,7 +29,7 @@ public class AnalyserLogDecorator : IAnalyserLogDecorator
         catch (Exception exception)
         {
             _logger.LogError(
-                "WorldScan({worldScanId}) - World({WorldId}) - Execution {methodName} couse error. Exception {exception}",
+                "WorldScan({worldScanId}) - World({WorldId}) - Execution {methodName} cause error. Exception {exception}",
                 parameter[0].WorldScanId, parameter[0].WorldId, function.Method.Name, exception);
             throw;
         }
@@ -50,7 +50,7 @@ public class AnalyserLogDecorator : IAnalyserLogDecorator
         catch (Exception exception)
         {
             _logger.LogError(
-                "WorldScan({worldScanId}) - World({WorldId}) - Execution {methodName} couse error. Exception {exception}",
+                "WorldScan({worldScanId}) - World({WorldId}) - Execution {methodName} causes error. Exception {exception}",
                 parameter[0].WorldScanId, parameter[0].WorldId, function.Method.Name, exception);
             throw;
         }

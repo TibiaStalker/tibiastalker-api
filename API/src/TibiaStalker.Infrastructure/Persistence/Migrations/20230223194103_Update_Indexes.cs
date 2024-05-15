@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace TibiaStalker.Infrastructure.Migrations
+namespace TibiaStalker.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class UpdateIndexes : Migration

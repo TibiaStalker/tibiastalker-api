@@ -9,11 +9,11 @@ using TibiaStalker.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace TibiaStalker.Infrastructure.Migrations
+namespace TibiaStalker.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TibiaStalkerDbContext))]
-    [Migration("20231111191024_Change_CorrelationId_from_int_to_long")]
-    partial class ChangeCorrelationIdfrominttolong
+    [Migration("20230610214820_Add_VerifiedDate_and_TradedDate_Column_to_Character")]
+    partial class AddVerifiedDateandTradedDateColumntoCharacter
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -120,12 +120,12 @@ namespace TibiaStalker.Infrastructure.Migrations
 
             modelBuilder.Entity("TibiaStalker.Domain.Entities.CharacterCorrelation", b =>
                 {
-                    b.Property<long>("CorrelationId")
+                    b.Property<int>("CorrelationId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("integer")
                         .HasColumnName("correlation_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("CorrelationId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CorrelationId"));
 
                     b.Property<DateOnly>("CreateDate")
                         .ValueGeneratedOnAdd()

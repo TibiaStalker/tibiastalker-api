@@ -9,11 +9,11 @@ using TibiaStalker.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace TibiaStalker.Infrastructure.Migrations
+namespace TibiaStalker.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TibiaStalkerDbContext))]
-    [Migration("20231202164847_Add_Tables_for_Tracking_Characters")]
-    partial class AddTablesforTrackingCharacters
+    [Migration("20240513203258_Add_FoundInScan2")]
+    partial class AddFoundInScan2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,11 +35,23 @@ namespace TibiaStalker.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CharacterId"));
 
-                    b.Property<bool>("FoundInScan")
+                    b.Property<int>("DeleteApproachNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("delete_approach_number");
+
+                    b.Property<bool>("FoundInScan1")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("found_in_scan");
+                        .HasColumnName("found_in_scan1");
+
+                    b.Property<bool>("FoundInScan2")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("found_in_scan2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -48,11 +60,17 @@ namespace TibiaStalker.Infrastructure.Migrations
                         .HasColumnName("name");
 
                     b.Property<DateOnly?>("TradedDate")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("date")
+                        .HasDefaultValue(new DateOnly(2001, 1, 1))
                         .HasColumnName("traded_date");
 
                     b.Property<DateOnly?>("VerifiedDate")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("date")
+                        .HasDefaultValue(new DateOnly(2001, 1, 1))
                         .HasColumnName("verified_date");
 
                     b.Property<short>("WorldId")
@@ -65,8 +83,20 @@ namespace TibiaStalker.Infrastructure.Migrations
                     b.HasIndex("CharacterId")
                         .HasDatabaseName("ix_characters_character_id");
 
+                    b.HasIndex("FoundInScan1")
+                        .HasDatabaseName("ix_characters_found_in_scan1");
+
+                    b.HasIndex("FoundInScan2")
+                        .HasDatabaseName("ix_characters_found_in_scan2");
+
                     b.HasIndex("Name")
                         .HasDatabaseName("ix_characters_name");
+
+                    b.HasIndex("TradedDate")
+                        .HasDatabaseName("ix_characters_traded_date");
+
+                    b.HasIndex("VerifiedDate")
+                        .HasDatabaseName("ix_characters_verified_date");
 
                     b.HasIndex("WorldId")
                         .HasDatabaseName("ix_characters_world_id");
@@ -110,6 +140,9 @@ namespace TibiaStalker.Infrastructure.Migrations
 
                     b.HasIndex("CharacterName")
                         .HasDatabaseName("ix_character_actions_character_name");
+
+                    b.HasIndex("IsOnline")
+                        .HasDatabaseName("ix_character_actions_is_online");
 
                     b.HasIndex("WorldId")
                         .HasDatabaseName("ix_character_actions_world_id");
@@ -161,6 +194,9 @@ namespace TibiaStalker.Infrastructure.Migrations
 
                     b.HasIndex("LogoutCharacterId")
                         .HasDatabaseName("ix_character_correlations_logout_character_id");
+
+                    b.HasIndex("NumberOfMatches")
+                        .HasDatabaseName("ix_character_correlations_number_of_matches");
 
                     b.ToTable("character_correlations", "public");
                 });
@@ -289,6 +325,9 @@ namespace TibiaStalker.Infrastructure.Migrations
 
                     b.HasKey("WorldScanId")
                         .HasName("pk_world_scans");
+
+                    b.HasIndex("ScanCreateDateTime")
+                        .HasDatabaseName("ix_world_scans_scan_create_date_time");
 
                     b.HasIndex("WorldId")
                         .HasDatabaseName("ix_world_scans_world_id");

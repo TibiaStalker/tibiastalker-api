@@ -24,9 +24,10 @@ public class GetLoginNamesInCharacterActionSeederTests
             new() { WorldScanId = 3302, WorldId = 1, ScanCreateDateTime = new DateTime(2022,11,30,20,28,36, DateTimeKind.Utc), CharactersOnline = "aphov|armystrong|asiier|braws|brytiaggo|fresita linda|friedbert|ganancia adra|guga falido|just mojito|kinaduh|kineador"},
         };
         var characterActionSeeder = new CharacterActionsManager(_dbContextMock.Object);
+        characterActionSeeder.SetFirstAndSecondScanNames(worldScans);
         
         // Act
-        var loginNames = characterActionSeeder.GetAndSetLoginNames(worldScans);
+        var loginNames = characterActionSeeder.GetAndSetLoginNames();
 
         // Assert
         loginNames.Count.Should().Be(2);
@@ -42,9 +43,10 @@ public class GetLoginNamesInCharacterActionSeederTests
             new() { WorldScanId = 3302, WorldId = 1, ScanCreateDateTime = new DateTime(2022,11,30,20,28,36, DateTimeKind.Utc), CharactersOnline = "aphov|armystrong|asiier|braws|ganancia adra|guga falido|just mojito|kinaduh|kineador"},
         };
         var characterActionSeeder = new CharacterActionsManager(_dbContextMock.Object);
-        
+        characterActionSeeder.SetFirstAndSecondScanNames(worldScans);
+
         // Act
-        var loginNames = characterActionSeeder.GetAndSetLoginNames(worldScans);
+        var loginNames = characterActionSeeder.GetAndSetLoginNames();
 
         // Assert
         loginNames.Count.Should().Be(0);
