@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Microsoft.EntityFrameworkCore;
+using Shared.Database.Queries.Sql;
 using TibiaStalker.Infrastructure.Persistence;
 
 namespace Seeders.Benchmark;
@@ -10,60 +11,15 @@ namespace Seeders.Benchmark;
 [RankColumn]
 public class RemoveCharacterCorrelationsBenchmark
 {
-    private const string _removeWithCte = @"WITH online_characters AS 
-                                        (SELECT character_id FROM characters c WHERE found_in_scan = true)
-
-                                        DELETE FROM character_correlations
-                                            WHERE logout_character_id IN
-                                        (SELECT character_id
-                                            FROM online_characters)
-
-                                        AND login_character_id IN
-                                        (SELECT character_id
-                                            FROM online_characters)";
-
-    private const string _removeWithoutCte = @"WITH online_characters AS 
-                                        (SELECT character_id FROM characters c WHERE found_in_scan = true)
-
-                                        DELETE FROM character_correlations
-                                            WHERE logout_character_id IN
-                                        (SELECT character_id
-                                            FROM characters WHERE found_in_scan = true)
-
-                                        AND login_character_id IN
-                                        (SELECT character_id
-                                            FROM characters WHERE found_in_scan = true)";
-
     private const string _connectionString = "Server=localhost;Port=5432;Database=local_database;User Id=sa;Password=pass;";
 
     private readonly TibiaStalkerDbContext _dbContext = new (new DbContextOptionsBuilder<TibiaStalkerDbContext>()
             .UseNpgsql(_connectionString).UseSnakeCaseNamingConvention().Options);
     
     [Benchmark(Baseline = true)]
-    public async Task RemoveCharacterCorrelationsEfCore()
+    public async Task RemoveCharacterCorrelationsSqlTogether()
     {
-        await _dbContext.CharacterCorrelations
-            .Where(c => CharactersIdsInScan().Contains(c.LoginCharacterId) && CharactersIdsInScan().Contains(c.LogoutCharacterId))
-            .ExecuteDeleteAsync();
-    }
-    
-    [Benchmark]
-    public async Task RemoveCharacterCorrelationsSqlWithEtc()
-    {
-        await _dbContext.Database.ExecuteSqlRawAsync(_removeWithCte);
-    }
-
-    [Benchmark]
-    public async Task RemoveCharacterCorrelationsSqlWithoutEtc()
-    {
-        await _dbContext.Database.ExecuteSqlRawAsync(_removeWithoutCte);
-    }
-
-    private IQueryable<int> CharactersIdsInScan()
-    {
-        return _dbContext.Characters
-            .Where(c => c.FoundInScan1)
-            .Select(c => c.CharacterId);
-    }
+        await _dbContext.ExecuteRawSqlAsync(GenerateQueries.RemoveImpossibleCorrelations);
+   }
 }
     

@@ -114,7 +114,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Run_WhenCharacterWasTraded_ShouldSendEventDeleteChcaracterCorrelationsEvent()
+    public async Task Run_WhenCharacterWasTraded_ShouldSendEventDeleteCharacterCorrelationsEvent()
     {
         // Arrange
         using var scope = _factory.Services.CreateScope();
