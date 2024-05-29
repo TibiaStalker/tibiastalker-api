@@ -18,7 +18,9 @@ public class AnalyserService : IAnalyserService
     {
         while (true)
         {
-            var worldIds = await _analyser.GetDistinctWorldIdsFromRemainingScans();
+            var stopwatchAll = Stopwatch.StartNew();
+
+            var worldIds = _analyser.GetDistinctWorldIdsFromRemainingScans();
             if (worldIds.Count == 0)
             {
                 return;
@@ -30,13 +32,19 @@ public class AnalyserService : IAnalyserService
                 {
                     var stopwatch = Stopwatch.StartNew();
 
-                    var worldScans = await _analyser.GetWorldScansToAnalyseAsync(worldId);
+                    var worldScans = _analyser.GetWorldScansToAnalyse(worldId);
+                    _logger.LogInformation("GetWorldScansToAnalyseAsync - execution time: {time} ms.",
+                        stopwatch.ElapsedMilliseconds);
                     await _analyser.Seed(worldScans);
 
                     stopwatch.Stop();
-                    _logger.LogInformation("{methodName} execution time - WorldScan({worldScanId}) - World({worldId}): {time} ms.",
+                    _logger.LogInformation(
+                        "{methodName} execution time - WorldScan({worldScanId}) - World({worldId}): {time} ms.",
                         nameof(AnalyserService), worldScans[0].WorldScanId, worldId, stopwatch.ElapsedMilliseconds);
                 }
+
+                stopwatchAll.Stop();
+                _logger.LogInformation("All worlds - execution time: {time} ms.", stopwatchAll.ElapsedMilliseconds);
             }
             catch (Exception e)
             {

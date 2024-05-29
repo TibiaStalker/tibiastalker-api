@@ -1,8 +1,10 @@
-﻿using CharacterAnalyser.ActionRules;
+﻿using System.Diagnostics;
+using CharacterAnalyser.ActionRules;
 using CharacterAnalyser.ActionRules.Rules;
 using CharacterAnalyser.Decorators;
 using CharacterAnalyser.Managers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Shared.Database.Queries.Sql;
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
@@ -11,53 +13,62 @@ namespace CharacterAnalyser;
 
 public class Analyser : ActionRule, IAnalyser
 {
-    private readonly ITibiaStalkerDbContext _dbContext;
+    private readonly ITibiaStalkerDbContext _dbContext1;
+    private readonly ITibiaStalkerDbContext _dbContext2;
     private readonly IAnalyserLogDecorator _logDecorator;
+    private readonly ILogger<Analyser> _logger;
     private readonly CharacterActionsManager _characterActionsManager;
     private readonly WorldScansProcessor _processor;
 
-    public Analyser(ITibiaStalkerDbContext dbContext, IAnalyserLogDecorator logDecorator)
+    public Analyser(ITibiaStalkerDbContext dbContext1,
+        ITibiaStalkerDbContext dbContext2,
+        IAnalyserLogDecorator logDecorator,
+        ILogger<Analyser> logger)
     {
-        _dbContext = dbContext;
+        _dbContext1 = dbContext1;
+        _dbContext2 = dbContext2;
         _logDecorator = logDecorator;
-        _characterActionsManager = new CharacterActionsManager(dbContext);
-        _processor = new WorldScansProcessor(dbContext, logDecorator);
-
+        _logger = logger;
+        _characterActionsManager = new CharacterActionsManager(dbContext1, dbContext2);
+        _processor = new WorldScansProcessor(dbContext1, dbContext2, logDecorator);
     }
 
-    public async Task<List<short>> GetDistinctWorldIdsFromRemainingScans()
+    public List<short> GetDistinctWorldIdsFromRemainingScans()
     {
-        var result = await _dbContext.WorldScans
+        var result = _dbContext1.WorldScans
             .Where(scan => !scan.IsDeleted)
+            .Select(scan => new { scan.WorldId })
             .GroupBy(scan => scan.WorldId)
-            .Where(group => group.Count() >= 2)
+            .Where(group => group.Count() > 1)
             .Select(group => group.Key)
             .OrderBy(id => id)
-            .ToListAsync();
+            .ToList();
 
         return result;
     }
 
-    public async Task<List<WorldScan>> GetWorldScansToAnalyseAsync(short worldId)
+    public List<WorldScan> GetWorldScansToAnalyse(short worldId)
     {
-        var result = await _dbContext.WorldScans
+        var result = _dbContext1.WorldScans
             .Where(scan => scan.WorldId == worldId && !scan.IsDeleted)
             .OrderBy(scan => scan.ScanCreateDateTime)
             .Take(2)
             .AsNoTracking()
-            .ToListAsync();
+            .ToList();
 
         return result;
     }
 
     public async Task Seed(List<WorldScan> twoWorldScans)
     {
+        var stopwatch = Stopwatch.StartNew();
+
         if (IsBroken(new NumberOfWorldScansShouldBe2Rule(twoWorldScans)))
             return;
 
         if (IsBroken(new TimeBetweenWorldScansCannotBeLongerThanMaxDurationRule(twoWorldScans)))
         {
-            await SoftDeleteWorldScanAsync(twoWorldScans[0].WorldScanId);
+            SoftDeleteWorldScan(twoWorldScans[0].WorldScanId);
             return;
         }
 
@@ -66,13 +77,14 @@ public class Analyser : ActionRule, IAnalyser
         if (IsBroken(new CharacterNameListCannotBeEmptyRule(_characterActionsManager.GetAndSetLogoutNames())) ||
             IsBroken(new CharacterNameListCannotBeEmptyRule(_characterActionsManager.GetAndSetLoginNames())))
         {
-            await SoftDeleteWorldScanAsync(twoWorldScans[0].WorldScanId);
+            SoftDeleteWorldScan(twoWorldScans[0].WorldScanId);
             return;
         }
 
+        await Task.WhenAll(_dbContext1.ExecuteRawSqlAsync(GenerateQueries.ClearCharacterActions),
+            _dbContext2.ExecuteRawSqlAsync(GenerateQueries.ResetCharacterFoundInScans));
 
-        await _dbContext.ExecuteRawSqlAsync(GenerateQueries.ClearCharacterActions);
-        await _dbContext.ExecuteRawSqlAsync(GenerateQueries.ResetCharacterFoundInScans);
+        _logger.LogInformation("Prepare everything to analyse, execution time : {time} ms.", stopwatch.ElapsedMilliseconds);
 
         try
         {
@@ -81,15 +93,16 @@ public class Analyser : ActionRule, IAnalyser
         }
         finally
         {
-            await SoftDeleteWorldScanAsync(twoWorldScans[0].WorldScanId);
-            _dbContext.ChangeTracker.Clear();
+            SoftDeleteWorldScan(twoWorldScans[0].WorldScanId);
+            _dbContext1.ChangeTracker.Clear();
+            _dbContext2.ChangeTracker.Clear();
         }
     }
 
-    private async Task SoftDeleteWorldScanAsync(int scanId)
+    private void SoftDeleteWorldScan(int scanId)
     {
-        await _dbContext.WorldScans
+        _dbContext1.WorldScans
             .Where(ws => ws.WorldScanId == scanId)
-            .ExecuteUpdateAsync(update => update.SetProperty(ws => ws.IsDeleted, true));
+            .ExecuteUpdate(update => update.SetProperty(ws => ws.IsDeleted, true));
     }
 }

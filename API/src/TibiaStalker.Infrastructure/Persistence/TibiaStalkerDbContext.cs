@@ -62,7 +62,12 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
 
         modelBuilder.Entity<WorldScan>(e =>
         {
+            e.HasKey(ws => ws.WorldScanId);
+            e.HasIndex(ws => ws.WorldId);
             e.HasIndex(ws => ws.ScanCreateDateTime);
+            e.HasIndex(ws => ws.IsDeleted);
+            e.HasIndex(ws => new { ws.WorldId, ws.IsDeleted })
+                .HasDatabaseName("ix_world_scan_id_world_id_is_deleted");
 
             e.Property(ws => ws.WorldScanId)
                 .IsRequired();
@@ -87,12 +92,17 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
 
         modelBuilder.Entity<Character>(e =>
         {
+            e.HasKey(c => c.CharacterId);
             e.HasIndex(c => c.Name);
-            e.HasIndex(c => c.CharacterId);
+            e.HasIndex(c => c.WorldId);
             e.HasIndex(c => c.FoundInScan1);
             e.HasIndex(c => c.FoundInScan2);
             e.HasIndex(c => c.VerifiedDate);
             e.HasIndex(c => c.TradedDate);
+            e.HasIndex(c => new { c.FoundInScan1, c.FoundInScan2 })
+                .HasDatabaseName("ix_characters_scan1_scan2");
+            e.HasIndex(c => new { c.FoundInScan2, c.FoundInScan1 })
+                .HasDatabaseName("ix_characters_scan2_scan1");
 
             e.Property(c => c.CharacterId)
                 .IsRequired();
@@ -138,9 +148,14 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
 
         modelBuilder.Entity<CharacterAction>(e =>
         {
+            e.HasKey(ca => ca.CharacterActionId);
             e.HasIndex(ca => ca.CharacterName);
             e.HasIndex(ca => ca.IsOnline);
             e.HasIndex(ca => ca.WorldScanId);
+            e.HasIndex(ca => ca.WorldId);
+            e.HasIndex(ca => ca.LogoutOrLoginDate);
+            e.HasIndex(ca => new { ca.IsOnline, ca.CharacterName })
+                .HasDatabaseName("ix_character_actions_is_online_character_name");
 
             e.Property(ca => ca.CharacterActionId)
                 .IsRequired();
@@ -168,10 +183,14 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
 
         modelBuilder.Entity<CharacterCorrelation>(e =>
         {
+            e.HasKey(cc => cc.CorrelationId);
             e.HasIndex(cc => cc.LogoutCharacterId);
             e.HasIndex(cc => cc.LoginCharacterId);
             e.HasIndex(cc => cc.NumberOfMatches);
-            e.HasKey(cc => cc.CorrelationId);
+            e.HasIndex(cc => new { cc.LoginCharacterId, cc.LogoutCharacterId })
+                .HasDatabaseName("ix_correlations_login_character_id_logout_character_id");
+            e.HasIndex(cc => new { cc.LogoutCharacterId, cc.LoginCharacterId })
+                .HasDatabaseName("ix_correlations_logout_character_id_login_character_id");
 
             e.Property(cc => cc.CorrelationId)
                 .IsRequired();
