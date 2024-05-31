@@ -68,6 +68,8 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
             e.HasIndex(ws => ws.IsDeleted);
             e.HasIndex(ws => new { ws.WorldId, ws.IsDeleted })
                 .HasDatabaseName("ix_world_scan_id_world_id_is_deleted");
+            e.HasIndex(ws => new { ws.WorldId, ws.IsDeleted, ws.ScanCreateDateTime })
+                .HasDatabaseName("ix_world_scan_world_id_is_deleted_scan_date_time");
 
             e.Property(ws => ws.WorldScanId)
                 .IsRequired();
@@ -191,6 +193,8 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
                 .HasDatabaseName("ix_correlations_login_character_id_logout_character_id");
             e.HasIndex(cc => new { cc.LogoutCharacterId, cc.LoginCharacterId })
                 .HasDatabaseName("ix_correlations_logout_character_id_login_character_id");
+            e.HasIndex(cc => new { cc.NumberOfMatches, cc.LastMatchDate })
+                .HasDatabaseName("ix_correlations_number_matches_last_match_date");
 
             e.Property(cc => cc.CorrelationId)
                 .IsRequired();

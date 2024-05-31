@@ -26,9 +26,9 @@ public class AnalyserService : IAnalyserService
                 return;
             }
 
-            try
+            foreach (var worldId in worldIds)
             {
-                foreach (var worldId in worldIds)
+                try
                 {
                     var stopwatch = Stopwatch.StartNew();
 
@@ -42,14 +42,14 @@ public class AnalyserService : IAnalyserService
                         "{methodName} execution time - WorldScan({worldScanId}) - World({worldId}): {time} ms.",
                         nameof(AnalyserService), worldScans[0].WorldScanId, worldId, stopwatch.ElapsedMilliseconds);
                 }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Execution of {methodName} failed", nameof(AnalyserService));
+                }
+            }
 
-                stopwatchAll.Stop();
-                _logger.LogInformation("All worlds - execution time: {time} ms.", stopwatchAll.ElapsedMilliseconds);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Execution of {methodName} failed", nameof(AnalyserService));
-            }
+            stopwatchAll.Stop();
+            _logger.LogInformation("All worlds - execution time: {time} ms.", stopwatchAll.ElapsedMilliseconds);
         }
     }
 }
