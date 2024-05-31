@@ -1,16 +1,16 @@
 ﻿using System.Text;
+using ChangeNameDetectorSubscriber.Handlers;
+using ChangeNameDetectorSubscriber.Subscribers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client.Events;
-using RabbitMqSubscriber.Handlers;
-using RabbitMqSubscriber.Subscribers;
 using Shared.RabbitMQ.Conventions;
 using Shared.RabbitMQ.Events;
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
 
-namespace RabbitMqSubscriber.Events;
+namespace ChangeNameDetectorSubscriber.Events;
 
 public class DeleteCharacterWithCorrelationsEventSubscriber : IEventSubscriber
 {

@@ -1,6 +1,6 @@
 ﻿using TibiaStalker.Domain.Entities;
 
-namespace RabbitMqSubscriber.Dtos;
+namespace WorldScanAnalyserSubscriber.Dtos;
 
 public class CombinedCharacterCorrelation
 {

@@ -3,16 +3,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client.Events;
-using RabbitMqSubscriber.Dtos;
 using RabbitMqSubscriber.Handlers;
-using RabbitMqSubscriber.Subscribers;
 using Shared.Database.Queries.Sql;
 using Shared.RabbitMQ.Conventions;
 using Shared.RabbitMQ.Events;
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
+using WorldScanAnalyserSubscriber.Dtos;
+using WorldScanAnalyserSubscriber.Subscribers;
 
-namespace RabbitMqSubscriber.Events;
+namespace WorldScanAnalyserSubscriber.Events;
 
 public class MergeTwoCharactersEventSubscriber : IEventSubscriber
 {

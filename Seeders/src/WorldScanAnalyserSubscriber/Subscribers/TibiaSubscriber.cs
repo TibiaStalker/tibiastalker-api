@@ -4,7 +4,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Shared.RabbitMQ.Configuration;
 
-namespace RabbitMqSubscriber.Subscribers;
+namespace WorldScanAnalyserSubscriber.Subscribers;
 
 public class TibiaSubscriber
 {

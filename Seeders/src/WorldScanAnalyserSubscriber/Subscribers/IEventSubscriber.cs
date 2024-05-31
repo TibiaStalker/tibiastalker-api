@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client.Events;
 
-namespace RabbitMqSubscriber.Subscribers;
+namespace WorldScanAnalyserSubscriber.Subscribers;
 
 public interface IEventSubscriber
 {

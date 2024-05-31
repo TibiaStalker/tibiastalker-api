@@ -1,4 +1,7 @@
 ﻿using ChangeNameDetector.Validators;
+using ChangeNameDetectorSubscriber.Events;
+using ChangeNameDetectorSubscriber.Handlers;
+using ChangeNameDetectorSubscriber.Subscribers;
 using CharacterAnalyser;
 using CharacterAnalyser.Decorators;
 using CharacterAnalyser.Managers;
@@ -11,9 +14,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using RabbitMqSubscriber.Events;
-using RabbitMqSubscriber.Handlers;
-using RabbitMqSubscriber.Subscribers;
 using Shared.RabbitMQ.Extensions;
 using Shared.RabbitMQ.Initializers;
 using Testcontainers.PostgreSql;

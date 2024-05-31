@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using Autofac;
-using RabbitMqSubscriber.Subscribers;
+using ChangeNameDetectorSubscriber.Subscribers;
 
-namespace RabbitMqSubscriber.Configurations;
+namespace ChangeNameDetectorSubscriber.Configurations;
 
 public static class EventSubscribersRegistrar
 {

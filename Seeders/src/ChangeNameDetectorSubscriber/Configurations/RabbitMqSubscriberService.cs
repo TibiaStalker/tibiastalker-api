@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RabbitMqSubscriber.Handlers;
-using RabbitMqSubscriber.Subscribers;
+﻿using ChangeNameDetectorSubscriber.Handlers;
+using ChangeNameDetectorSubscriber.Subscribers;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace RabbitMqSubscriber.Configurations;
+namespace ChangeNameDetectorSubscriber.Configurations;
 
 public static class RabbitMqSubscriberService
 {

@@ -1,7 +1,7 @@
 ﻿using System.Transactions;
 using Microsoft.Extensions.Logging;
 
-namespace RabbitMqSubscriber.Handlers;
+namespace ChangeNameDetectorSubscriber.Handlers;
 
 public class EventResultHandler : IEventResultHandler
 {

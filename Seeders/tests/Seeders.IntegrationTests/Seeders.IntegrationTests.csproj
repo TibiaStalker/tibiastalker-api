@@ -32,9 +32,9 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\API\src\TibiaStalker.Api\TibiaStalker.Api.csproj" />
       <ProjectReference Include="..\..\src\ChangeNameDetector\ChangeNameDetector.csproj" />
-      <ProjectReference Include="..\..\src\CharacterAnalyser\CharacterAnalyser.csproj" />
+      <ProjectReference Include="..\..\src\WorldScanAnalyser\WorldScanAnalyser.csproj" />
       <ProjectReference Include="..\..\src\DbTableCleaner\DbCleaner.csproj" />
-      <ProjectReference Include="..\..\src\RabbitMqSubscriber\RabbitMqSubscriber.csproj" />
+      <ProjectReference Include="..\..\src\ChangeNameDetectorSubscriber\ChangeNameDetectorSubscriber.csproj" />
       <ProjectReference Include="..\..\src\WorldScanSeeder\WorldScanSeeder.csproj" />
       <ProjectReference Include="..\..\src\WorldSeeder\WorldSeeder.csproj" />
     </ItemGroup>

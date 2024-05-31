@@ -1,14 +1,14 @@
 ﻿using System.Reflection;
+using ChangeNameDetectorSubscriber.Configurations;
+using ChangeNameDetectorSubscriber.Subscribers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using RabbitMqSubscriber.Configurations;
-using RabbitMqSubscriber.Subscribers;
 using Serilog;
 using Shared.RabbitMQ.Extensions;
 using Shared.RabbitMQ.Initializers;
 using TibiaStalker.Infrastructure.Builders;
 
-namespace RabbitMqSubscriber;
+namespace ChangeNameDetectorSubscriber;
 
 public class Program
 {

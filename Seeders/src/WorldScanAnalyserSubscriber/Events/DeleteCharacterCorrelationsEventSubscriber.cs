@@ -4,13 +4,13 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client.Events;
 using RabbitMqSubscriber.Handlers;
-using RabbitMqSubscriber.Subscribers;
 using Shared.RabbitMQ.Conventions;
 using Shared.RabbitMQ.Events;
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
+using WorldScanAnalyserSubscriber.Subscribers;
 
-namespace RabbitMqSubscriber.Events;
+namespace WorldScanAnalyserSubscriber.Events;
 
 public class DeleteCharacterCorrelationsEventSubscriber : IEventSubscriber
 {

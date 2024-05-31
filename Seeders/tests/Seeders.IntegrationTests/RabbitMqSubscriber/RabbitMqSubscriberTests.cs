@@ -1,11 +1,11 @@
 ﻿using System.Text;
+using ChangeNameDetectorSubscriber.Subscribers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using RabbitMqSubscriber.Subscribers;
 using Shared.RabbitMQ.Configuration;
 using Shared.RabbitMq.Conventions;
 using Shared.RabbitMQ.Conventions;
