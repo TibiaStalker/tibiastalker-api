@@ -1,9 +1,9 @@
-﻿using CharacterAnalyser;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
+using WorldScanAnalyser;
 
 namespace Seeders.IntegrationTests.CharacterAnalysers;
 

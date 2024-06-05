@@ -14,18 +14,14 @@ namespace Shared.RabbitMQ.Extensions;
 
 public static class RabbitMqExtension
 {
-    public static void AddRabbitMqPublisher(this IServiceCollection services, IConfiguration configuration)
+    public static void AddRabbitMqPublisher(this IServiceCollection services, IConfiguration configuration, string connectionName)
     {
-        var connectionName = "tibia-stalker-publisher";
-
         services.AddRabbitMqCommonSettings(configuration, connectionName)
             .AddSingleton<IEventPublisher, RabbitMqPublisher>();
     }
 
-    public static void AddRabbitMqSubscriber(this IServiceCollection services, IConfiguration configuration)
+    public static void AddRabbitMqSubscriber(this IServiceCollection services, IConfiguration configuration, string connectionName)
     {
-        var connectionName = "tibia-stalker-subscriber";
-
         services.AddRabbitMqCommonSettings(configuration, connectionName);
     }
 
@@ -75,6 +71,7 @@ public static class RabbitMqExtension
     {
         service.AddSingleton(s =>
             new EventBusSubscriberBuilder(s.GetRequiredService<IRabbitMqConventionProvider>())
+                .SubscribeEvent<WorldScansAnalyserEvent>().AsSelf()
                 .SubscribeEvent<MergeTwoCharactersEvent>().AsSelf()
                 .SubscribeEvent<DeleteCharacterCorrelationsEvent>().AsSelf()
                 .SubscribeEvent<DeleteCharacterWithCorrelationsEvent>().AsSelf());

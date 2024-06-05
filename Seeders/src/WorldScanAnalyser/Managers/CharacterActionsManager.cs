@@ -2,7 +2,7 @@
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
 
-namespace CharacterAnalyser.Managers;
+namespace WorldScanAnalyser.Managers;
 
 public class CharacterActionsManager
 {

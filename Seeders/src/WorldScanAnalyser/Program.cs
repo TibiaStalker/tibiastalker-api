@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
-using CharacterAnalyser.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Shared.RabbitMQ.Extensions;
+using Shared.RabbitMQ.Initializers;
 using TibiaStalker.Infrastructure.Builders;
+using WorldScanAnalyser.Configuration;
 
-namespace CharacterAnalyser;
+namespace WorldScanAnalyser;
 
 public class Program
 {
@@ -16,10 +18,16 @@ public class Program
 
             var host = CustomHostBuilder.Create(
                 projectName,
-                (_, services) => { services.AddCharacterAnalyser(); });
+                (context, services) =>
+                {
+                    services.AddCharacterAnalyser();
+                    services.AddRabbitMqPublisher(context.Configuration, projectName);
+                });
 
             Log.Information("Starting application");
 
+            var initializer = ActivatorUtilities.CreateInstance<InitializationRabbitMqTaskRunner>(host.Services);
+            await initializer.StartAsync();
             var service = ActivatorUtilities.CreateInstance<AnalyserService>(host.Services);
             await service.Run();
 

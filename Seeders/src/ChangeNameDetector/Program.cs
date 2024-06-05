@@ -22,7 +22,7 @@ public class Program
                 (context, services) =>
                 {
                     services.AddNameDetector();
-                    services.AddRabbitMqPublisher(context.Configuration);
+                    services.AddRabbitMqPublisher(context.Configuration, projectName);
                 });
 
             Log.Information("Starting application");

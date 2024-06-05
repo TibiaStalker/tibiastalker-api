@@ -25,9 +25,9 @@ public class ScanSeeder : IScanSeeder
         _availableWorlds = await _dbContext.Worlds.Where(w => w.IsAvailable).ToListAsync();
     }
 
-    public async Task Seed(World availableWorld)
+    public async Task Seed(World worldScans)
     {
-        var worldScan = await CreateWorldScanAsync(availableWorld);
+        var worldScan = await CreateWorldScanAsync(worldScans);
 
         await _dbContext.WorldScans.AddAsync(worldScan);
         await _dbContext.SaveChangesAsync();

@@ -1,10 +1,10 @@
-﻿using CharacterAnalyser.Decorators;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Shared.Database.Queries.Sql;
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
+using WorldScanAnalyser.Decorators;
 
-namespace CharacterAnalyser.Managers;
+namespace WorldScanAnalyser.Managers;
 
 public class WorldScansProcessor
 {

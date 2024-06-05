@@ -1,7 +1,7 @@
-﻿using CharacterAnalyser.Decorators;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using WorldScanAnalyser.Decorators;
 
-namespace CharacterAnalyser.Configuration;
+namespace WorldScanAnalyser.Configuration;
 
 public static class CharacterAnalyserService
 {

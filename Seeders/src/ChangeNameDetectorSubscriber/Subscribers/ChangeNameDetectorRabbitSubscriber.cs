@@ -4,17 +4,17 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Shared.RabbitMQ.Configuration;
 
-namespace WorldScanAnalyserSubscriber.Subscribers;
+namespace ChangeNameDetectorSubscriber.Subscribers;
 
-public class TibiaSubscriber
+public class ChangeNameDetectorRabbitSubscriber
 {
     private readonly IEnumerable<IEventSubscriber> _subscribers;
-    private readonly ILogger<TibiaSubscriber> _logger;
+    private readonly ILogger<ChangeNameDetectorRabbitSubscriber> _logger;
     private readonly RabbitMqConnection _connection;
     private readonly RabbitMqSection _options;
     private const string RetryHeaderName = "x-redelivered-count";
 
-    public TibiaSubscriber(IEnumerable<IEventSubscriber> subscribers, ILogger<TibiaSubscriber> logger, RabbitMqConnection connection, IOptions<RabbitMqSection> options)
+    public ChangeNameDetectorRabbitSubscriber(IEnumerable<IEventSubscriber> subscribers, ILogger<ChangeNameDetectorRabbitSubscriber> logger, RabbitMqConnection connection, IOptions<RabbitMqSection> options)
     {
         _subscribers = subscribers;
         _logger = logger;

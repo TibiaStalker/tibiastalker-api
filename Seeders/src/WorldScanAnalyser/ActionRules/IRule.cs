@@ -1,4 +1,4 @@
-﻿namespace CharacterAnalyser.ActionRules;
+﻿namespace WorldScanAnalyser.ActionRules;
 
 public interface IRule
 {

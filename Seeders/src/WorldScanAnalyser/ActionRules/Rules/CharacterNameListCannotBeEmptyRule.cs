@@ -1,4 +1,4 @@
-﻿namespace CharacterAnalyser.ActionRules.Rules;
+﻿namespace WorldScanAnalyser.ActionRules.Rules;
 
 public class CharacterNameListCannotBeEmptyRule : IRule
 {

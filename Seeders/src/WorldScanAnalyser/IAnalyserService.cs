@@ -1,4 +1,4 @@
-﻿namespace CharacterAnalyser;
+﻿namespace WorldScanAnalyser;
 
 public interface IAnalyserService
 {

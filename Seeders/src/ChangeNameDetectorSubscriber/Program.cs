@@ -22,8 +22,8 @@ public class Program
                 projectName,
                 (context, services) =>
                 {
-                    services.AddRabbitMqSubscriberServices();
-                    services.AddRabbitMqSubscriber(context.Configuration);
+                    services.AddChangeNameDetectorSubscriberService();
+                    services.AddRabbitMqSubscriber(context.Configuration, projectName);
                 },
                 builder => builder.RegisterEventSubscribers());
 
@@ -31,7 +31,7 @@ public class Program
 
             var initializer = ActivatorUtilities.CreateInstance<InitializationRabbitMqTaskRunner>(host.Services);
             await initializer.StartAsync();
-            var service = ActivatorUtilities.CreateInstance<TibiaSubscriber>(host.Services);
+            var service = ActivatorUtilities.CreateInstance<ChangeNameDetectorRabbitSubscriber>(host.Services);
             service.Subscribe();
             await host.WaitForShutdownAsync();
 

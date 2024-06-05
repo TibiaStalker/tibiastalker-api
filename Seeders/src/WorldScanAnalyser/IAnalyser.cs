@@ -1,10 +1,10 @@
-﻿using TibiaStalker.Application.Interfaces;
-using TibiaStalker.Domain.Entities;
+﻿using TibiaStalker.Domain.Entities;
 
-namespace CharacterAnalyser;
+namespace WorldScanAnalyser;
 
-public interface IAnalyser : ISeeder<List<WorldScan>>
+public interface IAnalyser
 {
     List<short> GetDistinctWorldIdsFromRemainingScans();
     List<WorldScan> GetWorldScansToAnalyse(short worldId);
+    Task SoftDeleteWorldScanAsync(int scanId);
 }

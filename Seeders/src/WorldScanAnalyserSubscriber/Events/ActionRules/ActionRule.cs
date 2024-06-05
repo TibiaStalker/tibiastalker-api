@@ -1,4 +1,4 @@
-﻿namespace WorldScanAnalyser.ActionRules;
+﻿namespace WorldScanAnalyserSubscriber.Events.ActionRules;
 
 public abstract class ActionRule
 {

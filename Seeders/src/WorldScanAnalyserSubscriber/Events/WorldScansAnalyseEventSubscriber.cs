@@ -3,66 +3,75 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client.Events;
-using RabbitMqSubscriber.Handlers;
 using Shared.RabbitMQ.Conventions;
 using Shared.RabbitMQ.Events;
-using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
+using WorldScanAnalyserSubscriber.Handlers;
 using WorldScanAnalyserSubscriber.Subscribers;
 
 namespace WorldScanAnalyserSubscriber.Events;
 
-public class DeleteCharacterCorrelationsEventSubscriber : IEventSubscriber
+public class WorldScansAnalyseEventSubscriber : IEventSubscriber
 {
-    private readonly ILogger<DeleteCharacterCorrelationsEventSubscriber> _logger;
+    private readonly ILogger<WorldScansAnalyseEventSubscriber> _logger;
     private readonly IEventResultHandler _eventResultHandler;
     private readonly IRabbitMqConventionProvider _conventionProvider;
     private readonly ITibiaStalkerDbContext _dbContext;
+    private readonly IAnalyser _analyser;
 
-    public DeleteCharacterCorrelationsEventSubscriber(
-        ILogger<DeleteCharacterCorrelationsEventSubscriber> logger,
+    public WorldScansAnalyseEventSubscriber(
+        ILogger<WorldScansAnalyseEventSubscriber> logger,
         IEventResultHandler eventResultHandler,
         IRabbitMqConventionProvider conventionProvider,
-        ITibiaStalkerDbContext dbContext)
+        ITibiaStalkerDbContext dbContext,
+        IAnalyser analyser)
     {
         _logger = logger;
         _eventResultHandler = eventResultHandler;
         _conventionProvider = conventionProvider;
         _dbContext = dbContext;
+        _analyser = analyser;
     }
 
     public string GetQueueName()
     {
-        var queueBinding = _conventionProvider.GetForType<DeleteCharacterCorrelationsEvent>();
+        var queueBinding = _conventionProvider.GetForType<WorldScansAnalyserEvent>();
         return queueBinding.Queue;
     }
 
     public async Task OnReceived(BasicDeliverEventArgs ea, CancellationToken cancellationToken = default)
     {
         var payload = Encoding.UTF8.GetString(ea.Body.Span);
-        var eventObject = JsonConvert.DeserializeObject<DeleteCharacterCorrelationsEvent>(payload);
+        var eventObject = JsonConvert.DeserializeObject<WorldScansAnalyserEvent>(payload);
         _logger.LogInformation("Event {Event} subscribed. Payload: {Payload}", eventObject.GetType().Name, payload);
 
-        Thread.Sleep(1000);
+        var worldScan1 = await _dbContext.WorldScans
+            .Where(c => c.WorldScanId == eventObject.WorldScanId1)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(cancellationToken);
 
-        var character = new Character();
+        var worldScan2 = await _dbContext.WorldScans
+            .Where(c => c.WorldScanId == eventObject.WorldScanId2)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (worldScan1 is null || worldScan2 is null)
+        {
+            _logger.LogInformation(
+                "During event {Event} - cannot find one of the world scans ({WorldScanId1}/{WorldScanId2}) in database. Payload: {Payload}",
+                eventObject.GetType().Name, eventObject.WorldScanId1, eventObject.WorldScanId2, payload);
+            return;
+        }
 
         var isCommitedProperly = await ExecuteInTransactionAsync(Action, payload);
 
-        _eventResultHandler.HandleTransactionResult(isCommitedProperly, nameof(DeleteCharacterCorrelationsEvent), payload, character.Name);
+        _eventResultHandler.HandleTransactionResult(isCommitedProperly, nameof(WorldScansAnalyserEvent), payload, worldScan1.WorldScanId, worldScan2.WorldScanId);
+
         return;
 
         async Task Action()
         {
-            character = await _dbContext.Characters.Where(c => c.Name == eventObject.CharacterName)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(cancellationToken);
-
-            await _dbContext.CharacterCorrelations.Where(c => c.LoginCharacterId == character.CharacterId || c.LogoutCharacterId == character.CharacterId)
-                .ExecuteDeleteAsync(cancellationToken);
-
-            await _dbContext.Characters.Where(c => c.CharacterId == character.CharacterId)
-                .ExecuteUpdateAsync(update => update.SetProperty(c => c.TradedDate, DateOnly.FromDateTime(DateTime.Now)), cancellationToken);
+            await _analyser.Seed(new[] { worldScan1, worldScan2 });
         }
     }
 

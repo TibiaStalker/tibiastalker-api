@@ -2,9 +2,6 @@
 using ChangeNameDetectorSubscriber.Events;
 using ChangeNameDetectorSubscriber.Handlers;
 using ChangeNameDetectorSubscriber.Subscribers;
-using CharacterAnalyser;
-using CharacterAnalyser.Decorators;
-using CharacterAnalyser.Managers;
 using DbCleaner;
 using DbCleaner.Decorators;
 using Microsoft.AspNetCore.Hosting;
@@ -22,6 +19,9 @@ using TibiaStalker.Api;
 using TibiaStalker.Application.Configuration.Settings;
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
+using WorldScanAnalyser;
+using WorldScanAnalyser.Decorators;
+using WorldScanAnalyser.Managers;
 using WorldScanSeeder.Decorators;
 using WorldSeeder.Decorators;
 
@@ -120,8 +120,8 @@ public class TibiaSeederFactory : WebApplicationFactory<Startup>, IAsyncLifetime
             services.AddSingleton<IEventSubscriber, MergeTwoCharactersEventSubscriber>();
             services.AddSingleton<IEventResultHandler, EventResultHandler>();
             services.AddSingleton<InitializationRabbitMqTaskRunner>();
-            services.AddRabbitMqPublisher(Configuration);
-            services.AddRabbitMqSubscriber(Configuration);
+            services.AddRabbitMqPublisher(Configuration, "test-publisher");
+            services.AddRabbitMqSubscriber(Configuration, "test-subscriber");
         });
     }
 

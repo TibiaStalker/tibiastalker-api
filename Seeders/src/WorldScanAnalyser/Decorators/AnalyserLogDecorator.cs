@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using TibiaStalker.Domain.Entities;
 
-namespace CharacterAnalyser.Decorators;
+namespace WorldScanAnalyser.Decorators;
 
 public class AnalyserLogDecorator : IAnalyserLogDecorator
 {
@@ -23,14 +23,14 @@ public class AnalyserLogDecorator : IAnalyserLogDecorator
             stopwatch.Stop();
 
             _logger.LogInformation(
-                "WorldScan({worldScanId}) - World({worldId}). Method '{methodName}', execution time : {time} ms.",
-                parameter[0].WorldScanId, parameter[0].WorldId, function.Method.Name, stopwatch.ElapsedMilliseconds);
+                "WorldScans({worldScanId1}/{worldScanId2}) - World({worldId}). Method '{methodName}', execution time : {time} ms.",
+                parameter[0].WorldScanId, parameter[1].WorldScanId, parameter[0].WorldId, function.Method.Name, stopwatch.ElapsedMilliseconds);
         }
         catch (Exception exception)
         {
             _logger.LogError(
-                "WorldScan({worldScanId}) - World({WorldId}) - Execution {methodName} cause error. Exception {exception}",
-                parameter[0].WorldScanId, parameter[0].WorldId, function.Method.Name, exception);
+                "WorldScans({worldScanId1}/{worldScanId2}) - World({WorldId}) - Execution {methodName} cause error. Exception {exception}",
+                parameter[0].WorldScanId, parameter[1].WorldScanId, parameter[0].WorldId, function.Method.Name, exception);
             throw;
         }
     }
@@ -44,14 +44,14 @@ public class AnalyserLogDecorator : IAnalyserLogDecorator
             stopwatch.Stop();
 
             _logger.LogInformation(
-                "WorldScan({worldScanId}) - World({worldId}). Method '{methodName}', execution time : {time} ms.",
-                parameter[0].WorldScanId, parameter[0].WorldId, function.Method.Name, stopwatch.ElapsedMilliseconds);
+                "WorldScans({worldScanId1}/{worldScanId2}) - World({worldId}). Method '{methodName}', execution time : {time} ms.",
+                parameter[0].WorldScanId, parameter[1].WorldScanId, parameter[0].WorldId, function.Method.Name, stopwatch.ElapsedMilliseconds);
         }
         catch (Exception exception)
         {
             _logger.LogError(
-                "WorldScan({worldScanId}) - World({WorldId}) - Execution {methodName} causes error. Exception {exception}",
-                parameter[0].WorldScanId, parameter[0].WorldId, function.Method.Name, exception);
+                "WorldScans({worldScanId1}/{worldScanId2}) - World({WorldId}) - Execution {methodName} causes error. Exception {exception}",
+                parameter[0].WorldScanId, parameter[1].WorldScanId, parameter[0].WorldId, function.Method.Name, exception);
             throw;
         }
     }

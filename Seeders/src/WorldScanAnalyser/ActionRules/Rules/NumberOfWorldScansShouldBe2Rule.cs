@@ -1,6 +1,6 @@
 ﻿using TibiaStalker.Domain.Entities;
 
-namespace CharacterAnalyser.ActionRules.Rules;
+namespace WorldScanAnalyser.ActionRules.Rules;
 
 public class NumberOfWorldScansShouldBe2Rule : IRule
 {

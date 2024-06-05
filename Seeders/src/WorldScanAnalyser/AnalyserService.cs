@@ -1,25 +1,27 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using Shared.RabbitMQ.EventBus;
+using Shared.RabbitMQ.Events;
 
-namespace CharacterAnalyser;
+namespace WorldScanAnalyser;
 
 public class AnalyserService : IAnalyserService
 {
     private readonly ILogger<AnalyserService> _logger;
     private readonly IAnalyser _analyser;
+    private readonly IEventPublisher _publisher;
 
-    public AnalyserService(ILogger<AnalyserService> logger, IAnalyser analyser)
+    public AnalyserService(ILogger<AnalyserService> logger, IAnalyser analyser, IEventPublisher publisher)
     {
         _logger = logger;
         _analyser = analyser;
+        _publisher = publisher;
     }
 
     public async Task Run()
     {
         while (true)
         {
-            var stopwatchAll = Stopwatch.StartNew();
-
             var worldIds = _analyser.GetDistinctWorldIdsFromRemainingScans();
             if (worldIds.Count == 0)
             {
@@ -35,21 +37,17 @@ public class AnalyserService : IAnalyserService
                     var worldScans = _analyser.GetWorldScansToAnalyse(worldId);
                     _logger.LogInformation("GetWorldScansToAnalyseAsync - execution time: {time} ms.",
                         stopwatch.ElapsedMilliseconds);
-                    await _analyser.Seed(worldScans);
 
-                    stopwatch.Stop();
-                    _logger.LogInformation(
-                        "{methodName} execution time - WorldScan({worldScanId}) - World({worldId}): {time} ms.",
-                        nameof(AnalyserService), worldScans[0].WorldScanId, worldId, stopwatch.ElapsedMilliseconds);
+                    await _publisher.PublishAsync($"'{worldScans[0].WorldScanId}/{worldScans[1].WorldScanId}' ({DateTime.Now})",
+                        new WorldScansAnalyserEvent(worldScans[0].WorldScanId, worldScans[1].WorldScanId));
+
+                    await _analyser.SoftDeleteWorldScanAsync(worldScans[0].WorldScanId);
                 }
                 catch (Exception e)
                 {
                     _logger.LogError(e, "Execution of {methodName} failed", nameof(AnalyserService));
                 }
             }
-
-            stopwatchAll.Stop();
-            _logger.LogInformation("All worlds - execution time: {time} ms.", stopwatchAll.ElapsedMilliseconds);
         }
     }
 }

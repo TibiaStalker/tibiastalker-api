@@ -1,14 +1,13 @@
 ﻿using ChangeNameDetectorSubscriber.Handlers;
-using ChangeNameDetectorSubscriber.Subscribers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ChangeNameDetectorSubscriber.Configurations;
 
-public static class RabbitMqSubscriberService
+public static class ChangeNameDetectorSubscriberService
 {
-    public static IServiceCollection AddRabbitMqSubscriberServices(this IServiceCollection services)
+    public static IServiceCollection AddChangeNameDetectorSubscriberService(this IServiceCollection services)
     {
-        services.AddSingleton<TibiaSubscriber>();
+        services.AddSingleton<Subscribers.ChangeNameDetectorRabbitSubscriber>();
         services.AddSingleton<IEventResultHandler, EventResultHandler>();
 
         return services;

@@ -1,8 +1,8 @@
-using CharacterAnalyser.Managers;
 using FluentAssertions;
 using Moq;
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
+using WorldScanAnalyser.Managers;
 
 namespace Seeders.Tests.CharacterAnalysers.CharacterActionSeeders;
 
