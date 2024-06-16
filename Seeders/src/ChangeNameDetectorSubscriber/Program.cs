@@ -1,13 +1,14 @@
 ﻿using System.Reflection;
-using ChangeNameDetector.Configuration;
-using ChangeNameDetector.Services;
+using ChangeNameDetectorSubscriber.Configurations;
+using ChangeNameDetectorSubscriber.Subscribers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Shared.RabbitMQ.Extensions;
 using Shared.RabbitMQ.Initializers;
 using TibiaStalker.Infrastructure.Builders;
 
-namespace ChangeNameDetector;
+namespace ChangeNameDetectorSubscriber;
 
 public class Program
 {
@@ -21,16 +22,18 @@ public class Program
                 projectName,
                 (context, services) =>
                 {
-                    services.AddNameDetector();
-                    services.AddRabbitMqPublisher(context.Configuration, projectName);
-                });
+                    services.AddChangeNameDetectorSubscriberService();
+                    services.AddRabbitMqSubscriber(context.Configuration, projectName);
+                },
+                builder => builder.RegisterEventSubscribers());
 
             Log.Information("Starting application");
 
             var initializer = ActivatorUtilities.CreateInstance<InitializationRabbitMqTaskRunner>(host.Services);
             await initializer.StartAsync();
-            var service = ActivatorUtilities.CreateInstance<ChangeNameDetectorService>(host.Services);
-            await service.Run();
+            var service = ActivatorUtilities.CreateInstance<ChangeNameDetectorRabbitSubscriber>(host.Services);
+            service.Subscribe();
+            await host.WaitForShutdownAsync();
 
             Log.Information("Ending application properly");
         }

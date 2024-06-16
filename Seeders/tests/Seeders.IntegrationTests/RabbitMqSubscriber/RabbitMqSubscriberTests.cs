@@ -1,11 +1,11 @@
 ﻿using System.Text;
+using ChangeNameDetectorSubscriber.Subscribers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using RabbitMqSubscriber.Subscribers;
 using Shared.RabbitMQ.Configuration;
 using Shared.RabbitMq.Conventions;
 using Shared.RabbitMQ.Conventions;
@@ -34,7 +34,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
     {
         // Arrange
         using var scope = _factory.Services.CreateScope();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<TibiaSubscriber>>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeNameDetectorSubscriber.Subscribers.ChangeNameDetectorRabbitSubscriber>>();
         var dbContext = scope.ServiceProvider.GetRequiredService<TibiaStalkerDbContext>();
         var options = scope.ServiceProvider.GetRequiredService<IOptions<RabbitMqSection>>();
 
@@ -46,7 +46,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
 
         var subscribers = scope.ServiceProvider.GetServices<IEventSubscriber>();
         var message = new DeleteCharacterWithCorrelationsEvent("asiier");
-        var tibiaSubscriber = new TibiaSubscriber(subscribers, logger, subscriberConnection, options);
+        var tibiaSubscriber = new ChangeNameDetectorSubscriber.Subscribers.ChangeNameDetectorRabbitSubscriber(subscribers, logger, subscriberConnection, options);
 
         PublishRabbitMessagesToQueue(options, publisherConnection, message);
 
@@ -74,7 +74,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         // TODO: get out initDateOnly to public static class
         var initDateOnly = new DateOnly(2001, 01, 01);
         using var scope = _factory.Services.CreateScope();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<TibiaSubscriber>>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeNameDetectorSubscriber.Subscribers.ChangeNameDetectorRabbitSubscriber>>();
 
         var options = scope.ServiceProvider.GetRequiredService<IOptions<RabbitMqSection>>();
 
@@ -88,7 +88,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
 
         var subscribers = scope.ServiceProvider.GetServices<IEventSubscriber>();
         var message = new DeleteCharacterCorrelationsEvent("asiier");
-        var tibiaSubscriber = new TibiaSubscriber(subscribers, logger, subscriberConnection, options);
+        var tibiaSubscriber = new ChangeNameDetectorSubscriber.Subscribers.ChangeNameDetectorRabbitSubscriber(subscribers, logger, subscriberConnection, options);
 
         PublishRabbitMessagesToQueue(options, publisherConnection, message);
 
@@ -116,7 +116,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
     {
         // Arrange
         using var scope = _factory.Services.CreateScope();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<TibiaSubscriber>>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeNameDetectorSubscriber.Subscribers.ChangeNameDetectorRabbitSubscriber>>();
 
         var options = scope.ServiceProvider.GetRequiredService<IOptions<RabbitMqSection>>();
 
@@ -130,7 +130,7 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
 
         var subscribers = scope.ServiceProvider.GetServices<IEventSubscriber>();
         var message = new MergeTwoCharactersEvent("aphov", "asiier");
-        var tibiaSubscriber = new TibiaSubscriber(subscribers, logger, subscriberConnection, options);
+        var tibiaSubscriber = new ChangeNameDetectorSubscriber.Subscribers.ChangeNameDetectorRabbitSubscriber(subscribers, logger, subscriberConnection, options);
 
         PublishRabbitMessagesToQueue(options, publisherConnection, message);
 

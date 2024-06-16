@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\API\src\TibiaStalker.Infrastructure\TibiaStalker.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\src\CharacterAnalyser\CharacterAnalyser.csproj" />
+    <ProjectReference Include="..\..\src\WorldScanAnalyser\WorldScanAnalyser.csproj" />
   </ItemGroup>
 
 </Project>

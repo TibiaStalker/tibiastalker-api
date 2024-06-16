@@ -40,7 +40,7 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
         while (true)
         {
             var stopwatch = Stopwatch.StartNew();
-            var stopwatch2 = Stopwatch.StartNew();
+            var stopwatch1 = Stopwatch.StartNew();
 
             var characterNameFromDb = await GetFirstCharacterByVerifiedDateAsync();
 
@@ -49,43 +49,37 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
                 break;
             }
 
-            stopwatch2.Stop();
             _logger.LogInformation("Get character '{characterName}' from DB. Execution time : {time} ms",
-                characterNameFromDb, stopwatch2.ElapsedMilliseconds);
+                characterNameFromDb, stopwatch.ElapsedMilliseconds);
 
-            var stopwatch3 = Stopwatch.StartNew();
+            stopwatch.Restart();
             var fetchedCharacter = await _tibiaDataClient.FetchCharacter(characterNameFromDb);
             if (fetchedCharacter is null)
             {
                 continue;
             }
 
-            stopwatch3.Stop();
             _logger.LogInformation("Fetch character '{characterName}' from API. Execution time : {time} ms",
-                characterNameFromDb, stopwatch3.ElapsedMilliseconds);
+                characterNameFromDb, stopwatch.ElapsedMilliseconds);
 
             // If Character was not Traded and Character Name is still in database just Update Verified Date.
             if (!_validator.IsCharacterChangedName(fetchedCharacter, characterNameFromDb) && !_validator.IsCharacterTraded(fetchedCharacter))
             {
-                stopwatch.Stop();
-                _logger.LogInformation("Character '{characterName}' was not traded, was not changed name. Checked in execution time : {time} ms",
-                    characterNameFromDb, stopwatch.ElapsedMilliseconds);
+                _logger.LogInformation("Character '{characterName}' was not traded, was not changed name.", characterNameFromDb);
             }
 
 
             // If TibiaData cannot find character just delete with all correlations.
             else if (!_validator.IsCharacterExist(fetchedCharacter))
             {
-                await _publisher.PublishAsync($"'{characterNameFromDb}' ({DateTime.Now})",
-                    new DeleteCharacterWithCorrelationsEvent(characterNameFromDb));
+                await _publisher.PublishAsync($"'{characterNameFromDb}' ({DateTime.Now})", new DeleteCharacterWithCorrelationsEvent(characterNameFromDb));
             }
 
 
             // If Character was Traded just delete all correlations.
             else if (_validator.IsCharacterTraded(fetchedCharacter))
             {
-                await _publisher.PublishAsync($"'{characterNameFromDb}' ({DateTime.Now})",
-                    new DeleteCharacterCorrelationsEvent(characterNameFromDb));
+                await _publisher.PublishAsync($"'{characterNameFromDb}' ({DateTime.Now})", new DeleteCharacterCorrelationsEvent(characterNameFromDb));
             }
 
 
@@ -111,16 +105,15 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
 
             await UpdateCharacterVerifiedDate(characterNameFromDb);
             _dbContext.ChangeTracker.Clear();
+            _logger.LogInformation("Character '{characterName}' checked. Execution time : {time} ms", characterNameFromDb, stopwatch1.ElapsedMilliseconds);
         }
     }
 
     private async Task<string> GetFirstCharacterByVerifiedDateAsync()
     {
         // Sign "-" is for back time
-        // var visibilityOfTradePeriodDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
         var visibilityOfTradePeriodDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-_changeNameDetectorOptions.VisibilityOfTradePeriod));
         var scanPeriodDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-_changeNameDetectorOptions.ScanPeriod));
-        // var scanPeriodDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-20));
 
         return await _dbContext.Characters
             .Where(c => c.TradedDate < visibilityOfTradePeriodDate && c.VerifiedDate < scanPeriodDate)
