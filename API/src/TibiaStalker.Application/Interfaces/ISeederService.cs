@@ -7,5 +7,5 @@ public interface ISeederService
 
 public interface ISeeder<T>
 {
-    Task Seed(T entity);
+    Task Seed(T worldScans);
 }

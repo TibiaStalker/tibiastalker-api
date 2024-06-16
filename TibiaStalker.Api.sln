@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TibiaStalker.Domain", "API\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TibiaStalker.Infrastructure", "API\src\TibiaStalker.Infrastructure\TibiaStalker.Infrastructure.csproj", "{B1A02783-D5EB-4F68-A15A-CA9D53819A05}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CharacterAnalyser", "Seeders\src\CharacterAnalyser\CharacterAnalyser.csproj", "{C6C05A9C-3668-4026-BD72-93741CBB4069}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorldScanAnalyser", "Seeders\src\WorldScanAnalyser\WorldScanAnalyser.csproj", "{C6C05A9C-3668-4026-BD72-93741CBB4069}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbCleaner", "Seeders\src\DbTableCleaner\DbCleaner.csproj", "{97DF333E-420F-4CEC-A711-A3D78640966D}"
 EndProject
@@ -51,7 +51,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangeNameDetector", "Seede
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.RabbitMq", "Shared\src\Shared.RabbitMq\Shared.RabbitMq.csproj", "{578BBFCF-8991-4E57-A079-1962F1615B93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMqSubscriber", "Seeders\src\RabbitMqSubscriber\RabbitMqSubscriber.csproj", "{693B9288-8E15-453E-AB26-7042AB9FCB70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangeNameDetectorSubscriber", "Seeders\src\ChangeNameDetectorSubscriber\ChangeNameDetectorSubscriber.csproj", "{693B9288-8E15-453E-AB26-7042AB9FCB70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldScanAnalyserSubscriber", "Seeders\src\WorldScanAnalyserSubscriber\WorldScanAnalyserSubscriber.csproj", "{A27E7C16-D7A0-405D-9F7C-4B5D099C5C1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -127,6 +129,10 @@ Global
 		{693B9288-8E15-453E-AB26-7042AB9FCB70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{693B9288-8E15-453E-AB26-7042AB9FCB70}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{693B9288-8E15-453E-AB26-7042AB9FCB70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A27E7C16-D7A0-405D-9F7C-4B5D099C5C1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A27E7C16-D7A0-405D-9F7C-4B5D099C5C1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A27E7C16-D7A0-405D-9F7C-4B5D099C5C1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A27E7C16-D7A0-405D-9F7C-4B5D099C5C1F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +160,7 @@ Global
 		{581B4FAA-5BF1-4FF3-BF04-B0FDD8BDDDC6} = {6E39EF2A-2364-4A21-A879-A7511DAEB053}
 		{578BBFCF-8991-4E57-A079-1962F1615B93} = {C56BB902-4B72-4581-A37C-6C357EF59D2B}
 		{693B9288-8E15-453E-AB26-7042AB9FCB70} = {6E39EF2A-2364-4A21-A879-A7511DAEB053}
+		{A27E7C16-D7A0-405D-9F7C-4B5D099C5C1F} = {6E39EF2A-2364-4A21-A879-A7511DAEB053}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FC00B179-AF59-4167-8549-F28CE809505E}
