@@ -63,6 +63,9 @@ public class Analyser : ActionRule, IAnalyser
         await _logDecorator.Decorate(SeedCharacters, worldScans);
         await _logDecorator.Decorate(UpdateOrCreateCorrelationsAsync, worldScans);
         await _logDecorator.Decorate(RemoveImpossibleCorrelationsAsync, worldScans);
+
+        await _dbContext.WorldScans.Where(ws => ws.WorldScanId == worldScans[0].WorldScanId).ExecuteDeleteAsync();
+        _dbContext.ChangeTracker.Clear();
     }
 
     private void SetProperties(WorldScan[] worldScans)

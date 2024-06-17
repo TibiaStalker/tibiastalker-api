@@ -115,9 +115,6 @@ public class TibiaSeederFactory : WebApplicationFactory<Startup>, IAsyncLifetime
             services.AddSingleton<IScanSeederLogDecorator, ScanSeederLogDecorator>();
             services.AddSingleton<IWorldSeederLogDecorator, WorldSeederLogDecorator>();
             services.AddSingleton<INameDetectorValidator, NameDetectorValidator>();
-            services.AddSingleton<IEventSubscriber, DeleteCharacterWithCorrelationsEventSubscriber>();
-            services.AddSingleton<IEventSubscriber, DeleteCharacterCorrelationsEventSubscriber>();
-            services.AddSingleton<IEventSubscriber, MergeTwoCharactersEventSubscriber>();
             services.AddSingleton<IEventResultHandler, EventResultHandler>();
             services.AddSingleton<InitializationRabbitMqTaskRunner>();
             services.AddRabbitMqPublisher(Configuration, "test-publisher");

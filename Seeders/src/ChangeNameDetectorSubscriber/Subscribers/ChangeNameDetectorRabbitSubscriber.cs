@@ -14,7 +14,10 @@ public class ChangeNameDetectorRabbitSubscriber
     private readonly RabbitMqSection _options;
     private const string RetryHeaderName = "x-redelivered-count";
 
-    public ChangeNameDetectorRabbitSubscriber(IEnumerable<IEventSubscriber> subscribers, ILogger<ChangeNameDetectorRabbitSubscriber> logger, RabbitMqConnection connection, IOptions<RabbitMqSection> options)
+    public ChangeNameDetectorRabbitSubscriber(IEnumerable<IEventSubscriber> subscribers,
+        ILogger<ChangeNameDetectorRabbitSubscriber> logger,
+        RabbitMqConnection connection,
+        IOptions<RabbitMqSection> options)
     {
         _subscribers = subscribers;
         _logger = logger;

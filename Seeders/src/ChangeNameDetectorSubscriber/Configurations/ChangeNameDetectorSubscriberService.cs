@@ -1,4 +1,5 @@
-﻿using ChangeNameDetectorSubscriber.Handlers;
+﻿using ChangeNameDetector.Validators;
+using ChangeNameDetectorSubscriber.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ChangeNameDetectorSubscriber.Configurations;
@@ -9,6 +10,7 @@ public static class ChangeNameDetectorSubscriberService
     {
         services.AddSingleton<Subscribers.ChangeNameDetectorRabbitSubscriber>();
         services.AddSingleton<IEventResultHandler, EventResultHandler>();
+        services.AddScoped<INameDetectorValidator, NameDetectorValidator>();
 
         return services;
     }

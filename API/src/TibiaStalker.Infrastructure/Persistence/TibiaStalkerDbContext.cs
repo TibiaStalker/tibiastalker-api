@@ -24,6 +24,8 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+        //  UNDONE: remove unnecessary indexes
+
         #region Worlds
 
         modelBuilder.Entity<World>(e =>

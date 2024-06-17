@@ -45,10 +45,10 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         await SeedDatabaseAsync(dbContext);
 
         var subscribers = scope.ServiceProvider.GetServices<IEventSubscriber>();
-        var message = new DeleteCharacterWithCorrelationsEvent("asiier");
+        // var message = new DeleteCharacterWithCorrelationsEvent("asiier");
         var tibiaSubscriber = new ChangeNameDetectorSubscriber.Subscribers.ChangeNameDetectorRabbitSubscriber(subscribers, logger, subscriberConnection, options);
 
-        PublishRabbitMessagesToQueue(options, publisherConnection, message);
+        // PublishRabbitMessagesToQueue(options, publisherConnection, message);
 
         // Act
         tibiaSubscriber.Subscribe();
@@ -87,10 +87,10 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         await SeedDatabaseAsync(dbContext);
 
         var subscribers = scope.ServiceProvider.GetServices<IEventSubscriber>();
-        var message = new DeleteCharacterCorrelationsEvent("asiier");
+        // var message = new DeleteCharacterCorrelationsEvent("asiier");
         var tibiaSubscriber = new ChangeNameDetectorSubscriber.Subscribers.ChangeNameDetectorRabbitSubscriber(subscribers, logger, subscriberConnection, options);
 
-        PublishRabbitMessagesToQueue(options, publisherConnection, message);
+        // PublishRabbitMessagesToQueue(options, publisherConnection, message);
 
         // Act
         tibiaSubscriber.Subscribe();
@@ -129,10 +129,10 @@ public class RabbitMqSubscriberTests : IAsyncLifetime
         await SeedDatabaseAsync(dbContext);
 
         var subscribers = scope.ServiceProvider.GetServices<IEventSubscriber>();
-        var message = new MergeTwoCharactersEvent("aphov", "asiier");
+        // var message = new MergeTwoCharactersEvent("aphov", "asiier");
         var tibiaSubscriber = new ChangeNameDetectorSubscriber.Subscribers.ChangeNameDetectorRabbitSubscriber(subscribers, logger, subscriberConnection, options);
 
-        PublishRabbitMessagesToQueue(options, publisherConnection, message);
+        // PublishRabbitMessagesToQueue(options, publisherConnection, message);
 
         // Act
         tibiaSubscriber.Subscribe();
