@@ -46,6 +46,7 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
 
             character.VerifiedDate = DateOnly.FromDateTime(DateTime.Now);
             await _dbContext.SaveChangesAsync();
+            _dbContext.ChangeTracker.Clear();
 
             await _publisher.PublishAsync($"'{character}' ({DateTime.Now})", new ChangeNameDetectorEvent(character.Name));
             _logger.LogInformation("Character '{characterName}' checked. Execution time : {time} ms", character.Name, stopwatch.ElapsedMilliseconds);
