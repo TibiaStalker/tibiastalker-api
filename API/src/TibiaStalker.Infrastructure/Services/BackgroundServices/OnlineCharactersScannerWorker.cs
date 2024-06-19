@@ -37,45 +37,42 @@ public class OnlineCharactersScannerWorker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
         {
-            if (await _dbContext.Database.CanConnectAsync(stoppingToken))
+            if (!await _dbContext.Database.CanConnectAsync(stoppingToken)) continue;
+
+            var uniqueWorldNames = _dbContext.TrackedCharacters.Select(tc => tc.WorldName).Distinct().ToList();
+            if (uniqueWorldNames.Count == 0) continue;
+
+            var onlineCharacters = new List<OnlineCharacter>();
+
+            foreach (var worldName in uniqueWorldNames)
             {
-                var uniqueWorldNames = _dbContext.TrackedCharacters.Select(tc => tc.WorldName).Distinct();
-                if (uniqueWorldNames.Any())
-                {
-
-                    var onlineCharacters = new List<OnlineCharacter>();
-
-                    foreach (var worldName in uniqueWorldNames)
-                    {
-                        var charactersNames = await _tibiaDataClient.FetchCharactersOnline(worldName);
-                        onlineCharacters.AddRange(charactersNames.Select(name =>
-                            new OnlineCharacter(name.ToLower(), worldName)));
-                    }
-
-                    var currentRetry = 0;
-
-                    await _retryPolicy.ExecuteAsync(async () =>
-                    {
-                        await using var transaction = await _dbContext.Database.BeginTransactionAsync(stoppingToken);
-
-                        try
-                        {
-                            await _dbContext.OnlineCharacters.ExecuteDeleteAsync(cancellationToken: stoppingToken);
-                            await _dbContext.OnlineCharacters.AddRangeAsync(onlineCharacters, stoppingToken);
-                            await _dbContext.SaveChangesAsync(stoppingToken);
-                            await transaction.CommitAsync(stoppingToken);
-                        }
-                        catch (Exception ex)
-                        {
-                            currentRetry++;
-                            await transaction.RollbackAsync(stoppingToken);
-                            _logger.LogError(
-                                "Method {method} during {action} failed, attempt {retryCount}. Error message: {ErrorMessage}",
-                                nameof(ExecuteAsync), nameof(OnlineCharactersScannerWorker), currentRetry, ex.Message);
-                        }
-                    });
-                }
+                var charactersNames = await _tibiaDataClient.FetchCharactersOnline(worldName);
+                onlineCharacters.AddRange(charactersNames.Select(name =>
+                    new OnlineCharacter(name.ToLower(), worldName)));
             }
+
+            var currentRetry = 0;
+
+            await _retryPolicy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await _dbContext.Database.BeginTransactionAsync(stoppingToken);
+
+                try
+                {
+                    await _dbContext.OnlineCharacters.ExecuteDeleteAsync(cancellationToken: stoppingToken);
+                    await _dbContext.OnlineCharacters.AddRangeAsync(onlineCharacters, stoppingToken);
+                    await _dbContext.SaveChangesAsync(stoppingToken);
+                    await transaction.CommitAsync(stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    currentRetry++;
+                    await transaction.RollbackAsync(stoppingToken);
+                    _logger.LogError(
+                        "Method {method} during {action} failed, attempt {retryCount}. Error message: {ErrorMessage}",
+                        nameof(ExecuteAsync), nameof(OnlineCharactersScannerWorker), currentRetry, ex.Message);
+                }
+            });
         }
     }
 }

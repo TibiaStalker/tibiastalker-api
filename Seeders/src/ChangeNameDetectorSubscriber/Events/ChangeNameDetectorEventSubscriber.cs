@@ -82,7 +82,7 @@ public class ChangeNameDetectorEventSubscriber : IEventSubscriber
             // If Character was not Traded and Character Name is still in database just Update Verified Date.
             else if (!_validator.IsCharacterChangedName(fetchedCharacter, oldCharacter.Name) && !_validator.IsCharacterTraded(fetchedCharacter))
             {
-                _logger.LogInformation("Character '{characterName}' was not traded, was not changed name.", oldCharacter.Name);
+                await RestartDeleteApproachNumber(oldCharacter, cancellationToken);
             }
 
             // If TibiaData cannot find character just delete with all correlations.
@@ -115,6 +115,13 @@ public class ChangeNameDetectorEventSubscriber : IEventSubscriber
         }
     }
 
+    private async Task RestartDeleteApproachNumber(Character character, CancellationToken cancellationToken)
+    {
+        await _dbContext.Characters.Where(c => c.Name == character.Name)
+            .ExecuteUpdateAsync(update => update.SetProperty(c => c.DeleteApproachNumber, 0), cancellationToken);
+        _logger.LogInformation("Character '{characterName}' was not traded, was not changed name.", character.Name);
+    }
+
     private async Task<Character> GetCharacterByName(string characterName, CancellationToken cancellationToken)
     {
         return await _dbContext.Characters
@@ -144,7 +151,10 @@ public class ChangeNameDetectorEventSubscriber : IEventSubscriber
             .ExecuteDeleteAsync(cancellationToken);
 
         await _dbContext.Characters.Where(c => c.CharacterId == character.CharacterId)
-            .ExecuteUpdateAsync(update => update.SetProperty(c => c.TradedDate, DateOnly.FromDateTime(DateTime.Now)), cancellationToken);
+            .ExecuteUpdateAsync(update => update
+                .SetProperty(c => c.TradedDate, DateOnly.FromDateTime(DateTime.Now))
+                .SetProperty(c => c.DeleteApproachNumber, 0),
+                cancellationToken);
 
         _logger.LogInformation("Character Correlations of character '{characterName}' deleted.", character.Name);
     }

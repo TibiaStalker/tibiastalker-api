@@ -32,8 +32,6 @@ public class Cleaner : ICleaner
     {
         var thresholdDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
 
-        _dbContext.Database.SetCommandTimeout(600);
-
         await _dbContext.CharacterCorrelations
             .Where(c => c.NumberOfMatches < 3 && c.LastMatchDate < thresholdDate)
             .ExecuteDeleteAsync();

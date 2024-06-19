@@ -85,7 +85,6 @@ public class WorldScansAnalyseEventSubscriber : IEventSubscriber
             {
                 await action.Invoke();
                 await transaction.CommitAsync();
-                // _dbContext.ChangeTracker.Clear();
 
                 return true;
             }

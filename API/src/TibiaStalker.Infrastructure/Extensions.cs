@@ -17,7 +17,7 @@ namespace TibiaStalker.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ITibiaStalkerDbContext, TibiaStalkerDbContext>(opt => opt
+            services.AddDbContext<TibiaStalkerDbContext>(opt => opt
                 .UseNpgsql(
                     configuration.GetConnectionString(nameof(ConnectionStringsSection.PostgreSql)),
                     options =>
