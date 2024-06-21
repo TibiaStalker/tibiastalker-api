@@ -28,17 +28,15 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
         _changeNameDetectorOptions = options.Value.ChangeNameDetector;
     }
 
-    public async Task Run()
+    public async Task<bool> Run()
     {
-        while (true)
-        {
             var stopwatch = Stopwatch.StartNew();
 
             var character = await GetFirstCharacterByVerifiedDateAsync();
 
             if (character is null)
             {
-                break;
+                return false;
             }
 
             _logger.LogInformation("Get character '{characterName}' from DB. Execution time : {time} ms",
@@ -46,11 +44,11 @@ public class ChangeNameDetectorService : IChangeNameDetectorService
 
             character.VerifiedDate = DateOnly.FromDateTime(DateTime.Now);
             await _dbContext.SaveChangesAsync();
-            _dbContext.ChangeTracker.Clear();
 
             await _publisher.PublishAsync($"'{character}' ({DateTime.Now})", new ChangeNameDetectorEvent(character.Name));
             _logger.LogInformation("Character '{characterName}' checked. Execution time : {time} ms", character.Name, stopwatch.ElapsedMilliseconds);
-        }
+
+            return true;
     }
 
     private async Task<Character> GetFirstCharacterByVerifiedDateAsync()

@@ -47,16 +47,10 @@ public class Analyser : ActionRule, IAnalyser
 
         SetProperties(worldScans);
 
-        if (_logoutNames.Count == 0)
+        if (_logoutNames.Count == 0 || _loginNames.Count == 0)
         {
-            _logger.LogInformation("{metod} empty. WorldScans({worldScanId1}/{worldScanId2}) - World({worldId}). Execution time: {time} ms",
-                nameof(_logoutNames), worldScans[0].WorldScanId, worldScans[1].WorldScanId, worldScans[0].WorldId, stopwatch.ElapsedMilliseconds);
-            return;
-        }
-        if (_loginNames.Count == 0)
-        {
-            _logger.LogInformation("{metod} empty. WorldScans({worldScanId1}/{worldScanId2}) - World({worldId}). Execution time: {time} ms",
-                nameof(_loginNames), worldScans[0].WorldScanId, worldScans[1].WorldScanId, worldScans[0].WorldId, stopwatch.ElapsedMilliseconds);
+            _logger.LogInformation("Logout or Login names empty. WorldScans({worldScanId1}/{worldScanId2}) - World({worldId}). Execution time: {time} ms",
+                worldScans[0].WorldScanId, worldScans[1].WorldScanId, worldScans[0].WorldId, stopwatch.ElapsedMilliseconds);
             return;
         }
 

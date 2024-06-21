@@ -112,6 +112,7 @@ public class ChangeNameDetectorEventSubscriber : IEventSubscriber
                     await MergeTwoCharacters(oldCharacter, newCharacter, cancellationToken);
                 }
             }
+            _dbContext.ChangeTracker.Clear();
         }
     }
 
