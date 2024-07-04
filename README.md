@@ -1,15 +1,15 @@
-# _Tibia Stalker_
+# _Tibia Stalker - API_
 
 <table>
     <tr>
         <td>
-            Tibia Stalker is a ASP.NET Web Api that helps players to detect other characters of their enemy.
+            Tibia Stalker - API is a ASP.NET Web Api that helps players to detect other characters of their enemy.
         </td>
     </tr>
 </table>
 
 ### Web Api
-You can check out https://tibia.bieda.it/
+You can check out https://api.tibiastalker.pl/
 
 ---
 ## Table of Contents
