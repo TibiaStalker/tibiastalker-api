@@ -162,9 +162,7 @@ SELECT DISTINCT ON (cc1.logout_character_id, cc1.login_character_id)
 FROM (SELECT * FROM cte) AS cc1
          INNER JOIN (SELECT * FROM cte) AS cc2 ON cc1.logout_character_id = cc2.logout_character_id
     AND cc1.login_character_id = cc2.login_character_id
-    AND cc1.correlation_id <> cc2.correlation_id
-WHERE cc1.logout_character_id < cc1.login_character_id;
-";
+    AND cc1.correlation_id <> cc2.correlation_id;";
 
         /// <summary>
         /// Required parameters: 

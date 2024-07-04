@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.RateLimiting;
 using Serilog.AspNetCore;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -28,8 +29,10 @@ public static class StartupConfigurations
             diagnosticContext.Set("Referer", httpContext.Request.Headers.Referer);
             diagnosticContext.Set("Origin", httpContext.Request.Headers.Origin);
             diagnosticContext.Set("RequestQuery", httpContext.Request.Query);
-            diagnosticContext.Set("Cookies", httpContext.Request.Cookies);
+            diagnosticContext.Set("RequestCookies", httpContext.Request.Cookies);
             diagnosticContext.Set("SessionId", httpContext.Session.Id);
+            diagnosticContext.Set("Headers", httpContext.Request.Headers);
+            diagnosticContext.Set("DisplayUrl", httpContext.Request.GetDisplayUrl());
         };
     }
 

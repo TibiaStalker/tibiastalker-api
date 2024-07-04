@@ -29,8 +29,16 @@ public class Program
 
             var initializer = ActivatorUtilities.CreateInstance<InitializationRabbitMqTaskRunner>(host.Services);
             await initializer.StartAsync();
-            var service = ActivatorUtilities.CreateInstance<ChangeNameDetectorService>(host.Services);
-            await service.Run();
+
+            var haveData = true;
+            while (haveData)
+            {
+                using var serviceScope = host.Services.CreateScope();
+                var provider = serviceScope.ServiceProvider;
+                var changeNameDetectorService = provider.GetRequiredService<IChangeNameDetectorService>();
+
+                haveData = await changeNameDetectorService.Run();
+            }
 
             Log.Information("Ending application properly");
         }

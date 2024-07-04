@@ -38,7 +38,7 @@ public class Analyser : ActionRule, IAnalyser
 
         if (IsBroken(new TimeBetweenWorldScansCannotBeLongerThanMaxDurationRule(worldScans)))
         {
-            _logger.LogInformation("{metod}. WorldScans({worldScanId1}/{worldScanId2}) - World({worldId}). Execution time: {time} ms",
+            _logger.LogInformation("{method}. WorldScans({worldScanId1}/{worldScanId2}) - World({worldId}). Execution time: {time} ms",
                 nameof(TimeBetweenWorldScansCannotBeLongerThanMaxDurationRule),
                 worldScans[0].WorldScanId, worldScans[1].WorldScanId, worldScans[0].WorldId, stopwatch.ElapsedMilliseconds);
 
@@ -47,22 +47,19 @@ public class Analyser : ActionRule, IAnalyser
 
         SetProperties(worldScans);
 
-        if (_logoutNames.Count == 0)
+        if (_logoutNames.Count == 0 || _loginNames.Count == 0)
         {
-            _logger.LogInformation("{metod} empty. WorldScans({worldScanId1}/{worldScanId2}) - World({worldId}). Execution time: {time} ms",
-                nameof(_logoutNames), worldScans[0].WorldScanId, worldScans[1].WorldScanId, worldScans[0].WorldId, stopwatch.ElapsedMilliseconds);
-            return;
-        }
-        if (_loginNames.Count == 0)
-        {
-            _logger.LogInformation("{metod} empty. WorldScans({worldScanId1}/{worldScanId2}) - World({worldId}). Execution time: {time} ms",
-                nameof(_loginNames), worldScans[0].WorldScanId, worldScans[1].WorldScanId, worldScans[0].WorldId, stopwatch.ElapsedMilliseconds);
+            _logger.LogInformation("Logout or Login names empty. WorldScans({worldScanId1}/{worldScanId2}) - World({worldId}). Execution time: {time} ms",
+                worldScans[0].WorldScanId, worldScans[1].WorldScanId, worldScans[0].WorldId, stopwatch.ElapsedMilliseconds);
             return;
         }
 
         await _logDecorator.Decorate(SeedCharacters, worldScans);
         await _logDecorator.Decorate(UpdateOrCreateCorrelationsAsync, worldScans);
         await _logDecorator.Decorate(RemoveImpossibleCorrelationsAsync, worldScans);
+
+        await _dbContext.WorldScans.Where(ws => ws.WorldScanId == worldScans[0].WorldScanId).ExecuteDeleteAsync();
+        _dbContext.ChangeTracker.Clear();
     }
 
     private void SetProperties(WorldScan[] worldScans)

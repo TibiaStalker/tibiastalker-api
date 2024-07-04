@@ -42,10 +42,20 @@ public class GetCharacterWithCorrelationsQueryHandler : IRequestHandler<GetChara
         using var connection = _connectionProvider.GetConnection(EDataBaseType.PostgreSql);
         var parameters = new
         {
-            CharacterName = character.Name.ToLower()
+            CharacterName = request.Name.ToLower()
         };
 
         var correlations = (await connection.QueryAsync<CorrelationResult>(GenerateQueries.GetOtherPossibleCharacters, parameters)).ToArray();
+
+        if (correlations.Length == 0)
+        {
+            parameters = new
+            {
+                CharacterName = character.Name.ToLower()
+            };
+            correlations = (await connection.QueryAsync<CorrelationResult>(GenerateQueries.GetOtherPossibleCharacters, parameters)).ToArray();
+        }
+
         var result = new CharacterWithCorrelationsResult
         {
             FormerNames = character.FormerNames ?? Array.Empty<string>(),

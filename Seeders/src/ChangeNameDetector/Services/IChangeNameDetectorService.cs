@@ -2,5 +2,5 @@
 
 public interface IChangeNameDetectorService
 {
-    Task Run();
+    Task<bool> Run();
 }

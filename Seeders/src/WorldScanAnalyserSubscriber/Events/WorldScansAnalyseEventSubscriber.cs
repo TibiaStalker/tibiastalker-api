@@ -85,6 +85,7 @@ public class WorldScansAnalyseEventSubscriber : IEventSubscriber
             {
                 await action.Invoke();
                 await transaction.CommitAsync();
+
                 return true;
             }
             catch (Exception ex)

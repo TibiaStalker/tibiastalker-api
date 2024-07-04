@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace TibiaStalker.Infrastructure.Configuration;
+﻿namespace TibiaStalker.Infrastructure.Configuration;
 
 public interface IInitializer
 {

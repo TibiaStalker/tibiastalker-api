@@ -72,9 +72,7 @@ public static class RabbitMqExtension
         service.AddSingleton(s =>
             new EventBusSubscriberBuilder(s.GetRequiredService<IRabbitMqConventionProvider>())
                 .SubscribeEvent<WorldScansAnalyserEvent>().AsSelf()
-                .SubscribeEvent<MergeTwoCharactersEvent>().AsSelf()
-                .SubscribeEvent<DeleteCharacterCorrelationsEvent>().AsSelf()
-                .SubscribeEvent<DeleteCharacterWithCorrelationsEvent>().AsSelf());
+                .SubscribeEvent<ChangeNameDetectorEvent>().AsSelf());
 
         return service;
     }
