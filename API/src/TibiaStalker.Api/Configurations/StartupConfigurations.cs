@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.RateLimiting;
 using Serilog.AspNetCore;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using TibiaStalker.Application.Configuration.Settings;
 using TibiaStalker.Infrastructure.Configuration;
 using TibiaStalker.Infrastructure.Policies;
-using TibiaStalker.Infrastructure.Services.BackgroundServices;
 
 namespace TibiaStalker.Api.Configurations;
 
@@ -51,23 +49,5 @@ public static class StartupConfigurations
                 options.RoutePrefix = string.Empty;
             }
         };
-    }
-
-    public static void ConfigureOptions(IServiceCollection services)
-    {
-        services.AddOptions<ConnectionStringsSection>()
-            .BindConfiguration(ConnectionStringsSection.SectionName)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
-        services.AddOptions<DapperConfigurationSection>()
-            .BindConfiguration(DapperConfigurationSection.SectionName)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
-        services.AddOptions<BackgroundServiceTimerSection>()
-            .BindConfiguration(BackgroundServiceTimerSection.SectionName)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
     }
 }

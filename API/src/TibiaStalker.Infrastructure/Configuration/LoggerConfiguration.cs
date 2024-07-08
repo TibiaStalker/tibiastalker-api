@@ -5,7 +5,7 @@ namespace TibiaStalker.Infrastructure.Configuration;
 
 public static class LoggerConfiguration
 {
-    public static void ConfigureLogger(IConfiguration configuration, string projectName)
+    public static void ConfigureLogger(this IConfiguration configuration, string projectName)
     {
         var loggerConfiguration = new Serilog.LoggerConfiguration()
             .Enrich.FromLogContext()

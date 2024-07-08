@@ -9,7 +9,6 @@ using RabbitMQ.Client;
 using Shared.RabbitMQ.Configuration;
 using Shared.RabbitMq.Conventions;
 using Shared.RabbitMQ.Conventions;
-using Shared.RabbitMQ.Events;
 using Shared.RabbitMQ.Initializers;
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
