@@ -25,16 +25,8 @@ public static class RabbitMqExtension
         services.AddRabbitMqCommonSettings(configuration, connectionName);
     }
 
-    private static IServiceCollection AddRabbitMqCommonSettings(this IServiceCollection services, IConfiguration configuration, string connectionName)
+    public static IConnection GetRabbitMqConnection(this RabbitMqSection? options, string connectionName)
     {
-        var rabbitSection = configuration.GetSection(RabbitMqSection.SectionName);
-        services.AddOptions<RabbitMqSection>()
-            .Bind(rabbitSection)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
-        var options = rabbitSection.Get<RabbitMqSection>();
-
         var factory = new ConnectionFactory
         {
             Uri = new Uri(options!.HostUrl),
@@ -45,9 +37,22 @@ public static class RabbitMqExtension
             DispatchConsumersAsync = true
         };
 
+        return factory.CreateConnection(connectionName);
+    }
+
+    private static IServiceCollection AddRabbitMqCommonSettings(this IServiceCollection services, IConfiguration configuration, string connectionName)
+    {
+        var rabbitSection = configuration.GetSection(RabbitMqSection.SectionName);
+        services.AddOptions<RabbitMqSection>()
+            .Bind(rabbitSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        var options = rabbitSection.Get<RabbitMqSection>();
+
         try
         {
-            IConnection rabbitMqConnection = factory.CreateConnection(connectionName);
+            IConnection rabbitMqConnection = options.GetRabbitMqConnection(connectionName);
 
             services
                 .AddEvents()

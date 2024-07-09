@@ -40,7 +40,6 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\Shared\src\Shared.RabbitMq\Shared.RabbitMq.csproj" />
 		<ProjectReference Include="..\TibiaStalker.Infrastructure\TibiaStalker.Infrastructure.csproj" />
 	</ItemGroup>
 
@@ -54,9 +53,6 @@
 	  </Content>
 
 	</ItemGroup>
-
-
-
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://appsemble.app/api.json" /></VisualStudio></ProjectExtensions>
 

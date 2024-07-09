@@ -28,8 +28,8 @@ public static class CustomHostBuilder
             .ConfigureServices((context, services) =>
             {
                 services
-                    .AddSerilog(context.Configuration, projectName)
-                    .AddTibiaDbContext(context.Configuration);
+                    .AddExternalSerilog(context.Configuration, projectName)
+                    .AddInfrastructure(context.Configuration);
                 configureServices?.Invoke(context, services);
             })
             .UseSerilog()

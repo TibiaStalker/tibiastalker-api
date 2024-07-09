@@ -11,7 +11,6 @@ using TibiaStalker.Api.Filters;
 using TibiaStalker.Api.Swagger;
 using TibiaStalker.Infrastructure;
 using TibiaStalker.Infrastructure.Configuration;
-using TibiaStalker.Infrastructure.HealthChecks;
 using TibiaStalker.Infrastructure.Middlewares;
 
 namespace TibiaStalker.Api;
@@ -23,8 +22,6 @@ public class Startup
     public Startup(IConfiguration configuration)
     {
         _configuration = configuration;
-        TibiaStalker.Infrastructure.Configuration.LoggerConfiguration.ConfigureLogger(_configuration,
-            Assembly.GetExecutingAssembly().GetName().Name);
     }
 
     public void ConfigureContainer(ContainerBuilder builder)
@@ -34,6 +31,9 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        var projectName = Assembly.GetExecutingAssembly().GetName().Name;
+        _configuration.ConfigureLogger(projectName);
+
         services.AddInfrastructure(_configuration);
 
         services.AddControllers(opt => { opt.Filters.Add<ErrorHandlingFilterAttribute>(); })
@@ -43,8 +43,7 @@ public class Startup
         services.AddRouting(options => { options.LowercaseUrls = true; });
         services.AddMediatR(typeof(Startup));
         services.AddSignalR();
-        services.AddHealthChecks()
-            .AddCheck<DatabaseHealthCheck>("Database");
+        services.AddTibiaHealthChecks(_configuration);
 
         services.AddDistributedMemoryCache();
         services.AddSession(options =>
@@ -90,8 +89,6 @@ public class Startup
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath);
         });
-
-        StartupConfigurations.ConfigureOptions(services);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -113,10 +110,6 @@ public class Startup
         app.UseRateLimiter();
         app.UseSerilogRequestLogging(StartupConfigurations.SerilogRequestLoggingConfiguration);
         app.UseCors("TibiaStalkerApi");
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
-        app.UseSignalrHubs();
+        app.UseTibiaEndpoints();
     }
 }
