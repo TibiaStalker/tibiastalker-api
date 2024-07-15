@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using TibiaStalker.Application.Services;
 
@@ -17,9 +18,11 @@ public class CharactersTrackHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        _logger.LogInformation(
-            "Client connected. ConnectionId: {ConnectionId}. UserId: {ContextUserId}",
-            Context.ConnectionId, Context.UserIdentifier);
+        var feature = Context.Features.Get<IHttpConnectionFeature>();
+        var remoteAddress = feature.RemoteIpAddress;
+
+        _logger.LogInformation("Client connected. ConnectionId: {ConnectionId}. UserId: {UserId}", Context.ConnectionId, remoteAddress);
+
         await base.OnConnectedAsync();
     }
 
@@ -27,9 +30,12 @@ public class CharactersTrackHub : Hub
     {
         await _trackCharacterService.RemoveTracksByConnectionId(Context.ConnectionId);
 
-        _logger.LogInformation(
-            "Client disconnected. ConnectionId: {ConnectionId}. UserId: {ContextUserId}, Exception: {Exception}",
-            Context.ConnectionId, Context.UserIdentifier, exception?.ToString());
+        var feature = Context.Features.Get<IHttpConnectionFeature>();
+        var remoteAddress = feature.RemoteIpAddress;
+
+        _logger.LogInformation("Client disconnected. ConnectionId: {ConnectionId}. UserId: {UserId}, Exception: {Exception}",
+            Context.ConnectionId, remoteAddress, exception?.ToString());
+
         await base.OnDisconnectedAsync(exception);
     }
 
