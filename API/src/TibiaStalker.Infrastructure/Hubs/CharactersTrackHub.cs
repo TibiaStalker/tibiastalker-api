@@ -18,10 +18,9 @@ public class CharactersTrackHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        var feature = Context.Features.Get<IHttpConnectionFeature>();
-        var remoteAddress = feature.RemoteIpAddress;
+        var realUserIp = GetRealUserIp();
 
-        _logger.LogInformation("Client connected. ConnectionId: {ConnectionId}. UserId: {UserId}", Context.ConnectionId, remoteAddress);
+        _logger.LogInformation("Client connected. ConnectionId: {ConnectionId}. UserId: {UserId}", Context.ConnectionId, realUserIp);
 
         await base.OnConnectedAsync();
     }
@@ -30,11 +29,10 @@ public class CharactersTrackHub : Hub
     {
         await _trackCharacterService.RemoveTracksByConnectionId(Context.ConnectionId);
 
-        var feature = Context.Features.Get<IHttpConnectionFeature>();
-        var remoteAddress = feature.RemoteIpAddress;
+        var realUserIp = GetRealUserIp();
 
         _logger.LogInformation("Client disconnected. ConnectionId: {ConnectionId}. UserId: {UserId}, Exception: {Exception}",
-            Context.ConnectionId, remoteAddress, exception?.ToString());
+            Context.ConnectionId, realUserIp, exception?.ToString());
 
         await base.OnDisconnectedAsync(exception);
     }
@@ -61,5 +59,15 @@ public class CharactersTrackHub : Hub
 
         await _trackCharacterService.RemoveTrack(groupName, Context.ConnectionId);
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+    }
+
+    private string GetRealUserIp()
+    {
+        var feature = Context.Features.Get<IHttpConnectionFeature>();
+        var remoteAddress = feature.RemoteIpAddress?.ToString();
+        var remoteAddressFromHeader = Context.GetHttpContext()?.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+
+        var realIp = remoteAddressFromHeader ?? remoteAddress;
+        return realIp;
     }
 }

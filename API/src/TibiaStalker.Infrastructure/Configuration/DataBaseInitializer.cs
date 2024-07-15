@@ -29,7 +29,7 @@ public class DataBaseInitializer : IInitializer
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while migrating the database");
-            Log.CloseAndFlush();
+            await Log.CloseAndFlushAsync();
             throw;
         }
     }
