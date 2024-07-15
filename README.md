@@ -3,7 +3,7 @@
 <table>
     <tr>
         <td>
-            Tibia Stalker - API is a ASP.NET Web Api that helps players to detect other characters of their enemy.
+            Tibia Stalker - API is an ASP.NET Web Api that helps players to detect other characters of their enemy.
         </td>
     </tr>
 </table>
@@ -28,12 +28,12 @@ You can check out https://api.tibiastalker.pl/
 ---
 ## General Information
 #### Dear Tibia Players ! 
-- Have you ever been killed or cheated by some noob character and you want revenge on his main character ? 
+- Have you ever been killed or cheated by some noob character, and you want revenge on his main character ? 
 
-- Now it's possible! Application gives opportunity to find all characters of that player. Just type your suspect character name and it gives you list of most possible other characters.
+- Now it's possible! Application gives opportunity to find all characters of that player. Just type your suspect character name, and it gives you list of most possible other characters.
 
 #### Important!
-- You have to remember that application does not have 100% sure of other character match, it is only sugestion based on propability.
+- You have to remember that application does not have 100% sure of other character match, it is only suggestion based on probability.
 The more player plays, the more likely result will be close to true.
 
 
@@ -77,23 +77,55 @@ The more player plays, the more likely result will be close to true.
 
 To track specific character use WebSockets to connect with:
 ```console 
-{baseUrl}/characters-track-hub
+{baseUrl}/connection-hub
 ```
 Ones you connected send message:
-```console
-{"protocol":"json","version":1}
+```json
+{
+   "protocol":"json",
+   "version":1
+}
 ```
 Now join to group to track enemy sending:
-```console
-{"arguments":["your_enemy_character_name"],"target":"JoinGroup","type":1}
+```json
+{
+   "arguments":[
+      "your_enemy_character_name"
+   ],
+   "target":"JoinGroup",
+   "type":1
+}
+```
+To receive messages set "**_target:CharacterTracker_**":<br>
+_Received message example:_
+```json
+{
+  "type":1,
+  "target":"Character Tracker",
+  "arguments": [
+    {
+      "name":"bobeek",
+      "isOnline":true,
+      "hubEventId":"8bf7b7b9-77d6-41e7-8002-b30f8309718e",
+      "occurredOn":"2024-07-15T12:59:42.7452908Z"
+    }
+  ]
+}
 ```
 To stop tracking one character just send message 
-```console
-{"arguments":["your_enemy_character_name"],"target":"LeaveGroup","type":1}
+```json
+{
+   "arguments":[
+      "your_enemy_character_name"
+   ],
+   "target":"LeaveGroup",
+   "type":1
+}
 ```
 or disconnect connection to stop tracking all enemies.
 
-Try with <u>Postman</u>. Example [_here_](https://www.rafaagahbichelab.dev/articles/signalr-dotnet-postman) 
+Try with <u>Postman</u>. Example [_here_](https://www.rafaagahbichelab.dev/articles/signalr-dotnet-postman) <br>
+_**Warning: Do not forget about special sign on the end!**_
 
 
 ---
@@ -119,10 +151,10 @@ Try with <u>Postman</u>. Example [_here_](https://www.rafaagahbichelab.dev/artic
 1. SDK version 7.0.x or higher ( instruction for Windows/Linux/macOS [_here_](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) )
 2. ASP.NET Core Runtime version 7.0.x or higher ( instruction for Windows/Linux/macOS [_here_](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) )
 3. Clone repository `git clone https://github.com/TibiaStalker/tibiastalker-api.git`
-4. Seq enviroment on Windows [_here_](https://docs.datalust.co/docs/getting-started) or docker container [_here_](https://docs.datalust.co/docs/getting-started-with-docker)
+4. Seq environment on Windows [_here_](https://docs.datalust.co/docs/getting-started) or docker container [_here_](https://docs.datalust.co/docs/getting-started-with-docker)
 5. Your own Postgres Database
-6. RabbitMq enviroment or docker container
-7. Create database in Postgres and configure `appsettings.json` or if you have Development enviroment copy `appsettings.Development-template.json` change file name to `appsettings.Development.json` and input your secrets
+6. RabbitMq environment or docker container
+7. Create database in Postgres and configure `appsettings.json` or if you have Development environment copy `appsettings.Development-template.json` change file name to `appsettings.Development.json` and input your secrets
 8. Configure `launchSettings.json`
 
 ---
@@ -133,16 +165,17 @@ Try with <u>Postman</u>. Example [_here_](https://www.rafaagahbichelab.dev/artic
 3. Next you should firstly run `TibiaStalker.Api` to add all migrations - go into `./app`, open CMD and type `dotnet TibiaStalker.Api.dll`
 4. Last step is to configure `cron` on your machine with periods as below:
 
-- `CharacterAnalyser` - (`dotnet CharacterAnalyser.dll`) - ones per day
+- `WorldScanAnalyser` - (`dotnet WorldScanAnalyser.dll`) - ones per day
 - `WorldScanSeeder` - (`dotnet WorldScanSeeder.dll`) - minimum ones per 5 min
 - `DbCleaner` - (`dotnet DbCleaner.dll`) - ones per day/week
 - `WorldSeeder` - (`dotnet WorldSeeder.dll`) - best practise ones per day
-- `ChangeNameDetector` - (`dotnet ChangeNameDetector.dll`) - best practise ones per month
+- `ChangeNameDetector` - (`dotnet ChangeNameDetector.dll`) - ones per day
 
-Also 2 projects should run all the time:
+Also, 2 projects should run all the time:
 
-- `TibiaStalker.Api.dll` - (`dotnet TibiaStalker.Api.dll`)
-- `RabbitMqSubscriber.dll` - (`dotnet RabbitMqSubscriber.dll`)
+- `TibiaStalker.Api` - (`dotnet TibiaStalker.Api.dll`)
+- `WorldScanAnalyserSubscriber` - (`dotnet WorldScanAnalyserSubscriber.dll`) - possible run multiple instances
+- `ChangeNameDetectorSubscriber` - (`dotnet ChangeNameDetectorSubscriber.dll`) - possible run multiple instances
 
 
 ### Development
@@ -164,21 +197,22 @@ To fix a bug, enhance an existing module or add something new, follow these step
 
 1. Firstly pull image
 2. Create database in Postgres 
-3. Than create and configure file `.env` with environment variables as [_here_](https://github.com/kamiljanek/Tibia-EnemyOtherCharactersFinder/blob/develop/.env-template)
-4. Than open CMD and run container `docker run --env-file .env -p <port1>:80 --network <seq_container_network> --name tibia-stalker-api -d  --memory 200m --restart always ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet TibiaStalker.Api.dll`
-5. And `docker run --env-file .env -p <port2>:80 --network <seq_container_network> --name tibia-rabbit-mq-subscriber -d --restart always ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet RabbitMqSubscriber.dll`
-6. Last step is to configure `cron` on your machine with periods as below:
-- `docker run --env-file .env -p <port3>:80 --network <seq_container_network> --name tibia-character-analyser --rm -d  --memory 200m ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet CharacterAnalyser.dll`) - ones per day
-- `docker run --env-file .env -p <port4>:80 --network <seq_container_network> --name tibia-world-scan-seeder --rm -d ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet WorldScanSeeder.dll`) - minimum ones per 5 min
-- `docker run --env-file .env -p <port5>:80 --network <seq_container_network> --name tibia-db-cleaner --rm -d ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet DbCleaner.dll`) - ones per day/week
-- `docker run --env-file .env -p <port6>:80 --network <seq_container_network> --name tibia-world-seeder --rm -d ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet WorldSeeder.dll`) - best practise ones per day
-- `docker run --env-file .env -p <port7>:80 --network <seq_container_network> --name tibia-change-name-detector --rm -d  --memory 200m ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet ChangeNameDetector.dll`) - best practise ones per month
+3. Then create and configure file `.env` with environment variables as [_here_](https://github.com/kamiljanek/Tibia-EnemyOtherCharactersFinder/blob/develop/.env-template)
+4. Then open CMD and run container `docker run --env-file .env -p <port1>:80 --network <seq_container_network> --name ts_api -d --memory 200m --restart always ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet TibiaStalker.Api.dll`
+5. And `docker run --env-file .env --network <seq_container_network> --name ts_change-name-detector-subscriber -d --memory 300m --restart always ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet ChangeNameDetectorSubscriber.dll`
+6. And `docker run --env-file .env --network <seq_container_network> --name ts_world-scan-analyser-subscriber -d --memory 500m --restart always ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet WorldScanAnalyserSubscriber.dll`
+7. Last step is to configure `cron` on your machine with periods as below:
+- `docker run --env-file .env --network <seq_container_network> --name ts_world-scan-analyser --rm -d --memory 200m ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet WorldScanAnalyser.dll`) - ones per day
+- `docker run --env-file .env --network <seq_container_network> --name ts_world-scan-seeder --rm -d --memory 200m ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet WorldScanSeeder.dll`) - minimum ones per 5 min
+- `docker run --env-file .env --network <seq_container_network> --name ts_db-cleaner --rm -d --memory 500m ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet DbCleaner.dll`) - ones per day/week
+- `docker run --env-file .env --network <seq_container_network> --name ts_world-seeder --rm -d --memory 200m ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet WorldSeeder.dll`) - best practise ones per day
+- `docker run --env-file .env --network <seq_container_network> --name ts_change-name-detector --rm -d --memory 300m ghcr.io/tibiastalker/tibia-stalker-api:latest dotnet ChangeNameDetector.dll`) - ones per day
 
 ### Create Docker Image:
 
-- Go into Actions section on Github
-- Than `Deploy`
-- Than `Run workflow`
+- Go into Actions section on GitHub
+- Then `Deploy`
+- Then `Run workflow`
 - Choose branch and input version of the Docker image
 
 ---
@@ -191,7 +225,7 @@ Project is: _still in progress_ .
 ## Room for Improvement
 
 ### To do:
-- Add autorization and autentication
+- Add authorization and authentication
 - Kubernetes
 - Frontend
 

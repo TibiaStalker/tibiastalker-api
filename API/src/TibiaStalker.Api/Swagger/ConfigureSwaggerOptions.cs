@@ -26,8 +26,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
             Title = "Tibia Stalker API",
             Version = description.ApiVersion.ToString(),
             Description = "API for retrieving other characters of our enemy",
-            Contact = new OpenApiContact { Name = "Kamil Janek", Url = new Uri("https://github.com/kamiljanek") },
-            License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://github.com/TibiaStalker/tibiastalker-api/blob/develop/LICENSE.md") }
+            License = new OpenApiLicense { Name = "TIBIASTALKER.PL - MAIN PAGE", Url = new Uri("https://www.tibiastalker.pl") },
         };
 
         if (description.IsDeprecated)

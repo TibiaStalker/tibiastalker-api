@@ -19,6 +19,6 @@ public sealed class CharactersTrackHubWrapper : ICharactersTrackHubWrapper
     /// <param name="data">Data for publish</param>
     public async Task PublishToGroupAsync(string groupName, object data)
     {
-        await _hubContext.Clients.Group(groupName).SendAsync("Character Tracker", data);
+        await _hubContext.Clients.Group(groupName).SendAsync("CharacterTracker", data);
     }
 }
