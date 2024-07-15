@@ -80,14 +80,14 @@ To track specific character use WebSockets to connect with:
 {baseUrl}/connection-hub
 ```
 Ones you connected send message:
-```console
+```json
 {
    "protocol":"json",
    "version":1
 }
 ```
 Now join to group to track enemy sending:
-```console
+```json
 {
    "arguments":[
       "your_enemy_character_name"
@@ -98,7 +98,7 @@ Now join to group to track enemy sending:
 ```
 To receive messages set "**_target:CharacterTracker_**":<br>
 _Received message example:_
-```console
+```json
 {
   "type":1,
   "target":"Character Tracker",
@@ -113,7 +113,7 @@ _Received message example:_
 }
 ```
 To stop tracking one character just send message 
-```console
+```json
 {
    "arguments":[
       "your_enemy_character_name"
