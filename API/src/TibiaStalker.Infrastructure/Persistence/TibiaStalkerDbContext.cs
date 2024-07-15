@@ -251,9 +251,8 @@ public class TibiaStalkerDbContext : DbContext, ITibiaStalkerDbContext
 
         modelBuilder.Entity<OnlineCharacter>(e =>
         {
-            e.HasIndex(oc => oc.Name);
             e.HasIndex(oc => oc.WorldName);
-            e.HasKey(oc => oc.Name);
+            e.HasKey(oc => new {oc.Name, oc.OnlineDateTime});
 
             e.Property(oc => oc.Name)
                 .HasMaxLength(100)
