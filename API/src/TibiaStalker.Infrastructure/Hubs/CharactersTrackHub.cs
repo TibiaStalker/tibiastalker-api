@@ -20,7 +20,7 @@ public class CharactersTrackHub : Hub
     {
         var realUserIp = GetRealUserIp();
 
-        _logger.LogInformation("Client connected. ConnectionId: {ConnectionId}. UserId: {UserId}", Context.ConnectionId, realUserIp);
+        _logger.LogInformation("Client connected - UserId: {UserId}. ConnectionId: {ConnectionId}. ", realUserIp, Context.ConnectionId);
 
         await base.OnConnectedAsync();
     }
@@ -31,8 +31,8 @@ public class CharactersTrackHub : Hub
 
         var realUserIp = GetRealUserIp();
 
-        _logger.LogInformation("Client disconnected. ConnectionId: {ConnectionId}. UserId: {UserId}, Exception: {Exception}",
-            Context.ConnectionId, realUserIp, exception?.ToString());
+        _logger.LogInformation("Client disconnected - UserId: {UserId}. ConnectionId: {ConnectionId}. Exception: {Exception}",
+            realUserIp, Context.ConnectionId, exception?.ToString());
 
         await base.OnDisconnectedAsync(exception);
     }
@@ -47,6 +47,11 @@ public class CharactersTrackHub : Hub
 
         await _trackCharacterService.CreateTrack(groupName, Context.ConnectionId);
         await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+
+        var realUserIp = GetRealUserIp();
+
+        _logger.LogInformation("UserId: {UserId} - joined group: {groupName}. ConnectionId: {ConnectionId}.",
+            realUserIp, groupName, Context.ConnectionId);
     }
 
     /// <summary>
@@ -59,6 +64,11 @@ public class CharactersTrackHub : Hub
 
         await _trackCharacterService.RemoveTrack(groupName, Context.ConnectionId);
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+
+        var realUserIp = GetRealUserIp();
+
+        _logger.LogInformation("UserId: {UserId} - leaved group: {groupName}. ConnectionId: {ConnectionId}.",
+            realUserIp, groupName, Context.ConnectionId);
     }
 
     private string GetRealUserIp()
