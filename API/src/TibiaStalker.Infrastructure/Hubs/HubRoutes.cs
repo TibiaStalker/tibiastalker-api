@@ -2,5 +2,5 @@
 
 public static class HubRoutes
 {
-    public const string CharactersTrackHub = "/characters-track-hub";
+    public const string CharactersTrackHub = "/connection-hub";
 }
