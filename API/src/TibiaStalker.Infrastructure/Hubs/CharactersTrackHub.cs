@@ -9,6 +9,7 @@ public class CharactersTrackHub : Hub
 {
     private readonly ILogger<CharactersTrackHub> _logger;
     private readonly ITrackCharacterService _trackCharacterService;
+    private const string ErrorSuffix = "Fail";
 
     public CharactersTrackHub(ILogger<CharactersTrackHub> logger, ITrackCharacterService trackCharacterService)
     {
@@ -43,15 +44,23 @@ public class CharactersTrackHub : Hub
     /// <param name="groupName">Name of group to track specific character</param>
     public async Task JoinGroup(string groupName)
     {
-        groupName = groupName.ToLower();
-
-        await _trackCharacterService.CreateTrack(groupName, Context.ConnectionId);
-        await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-
         var realUserIp = GetRealUserIp();
+        try
+        {
+            groupName = groupName.ToLower();
 
-        _logger.LogInformation("UserId: {UserId} - joined group: {groupName}. ConnectionId: {ConnectionId}.",
-            realUserIp, groupName, Context.ConnectionId);
+            await _trackCharacterService.CreateTrack(groupName, Context.ConnectionId);
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+
+            _logger.LogInformation("UserId: {UserId} - joined group: {groupName}. ConnectionId: {ConnectionId}.",
+                realUserIp, groupName, Context.ConnectionId);
+        }
+        catch (Exception exception)
+        {
+            await Clients.Caller.SendAsync(nameof(JoinGroup)+ErrorSuffix, exception.Message);
+            _logger.LogError("UserId: {UserId} - joined group fail: {groupName}. ConnectionId: {ConnectionId}. Exception: {exception}",
+                realUserIp, groupName, Context.ConnectionId, exception);
+        }
     }
 
     /// <summary>
@@ -60,15 +69,23 @@ public class CharactersTrackHub : Hub
     /// <param name="groupName">Name of group to track specific character</param>
     public async Task LeaveGroup(string groupName)
     {
-        groupName = groupName.ToLower();
-
-        await _trackCharacterService.RemoveTrack(groupName, Context.ConnectionId);
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-
         var realUserIp = GetRealUserIp();
+        try
+        {
+            groupName = groupName.ToLower();
 
-        _logger.LogInformation("UserId: {UserId} - leaved group: {groupName}. ConnectionId: {ConnectionId}.",
-            realUserIp, groupName, Context.ConnectionId);
+            await _trackCharacterService.RemoveTrack(groupName, Context.ConnectionId);
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+
+            _logger.LogInformation("UserId: {UserId} - leaved group: {groupName}. ConnectionId: {ConnectionId}.",
+                realUserIp, groupName, Context.ConnectionId);
+        }
+        catch (Exception exception)
+        {
+            await Clients.Caller.SendAsync(nameof(LeaveGroup)+ErrorSuffix, exception.Message);
+            _logger.LogError("UserId: {UserId} - leaved group fail: {groupName}. ConnectionId: {ConnectionId}. Exception: {exception}",
+                realUserIp, groupName, Context.ConnectionId, exception);
+        }
     }
 
     private string GetRealUserIp()

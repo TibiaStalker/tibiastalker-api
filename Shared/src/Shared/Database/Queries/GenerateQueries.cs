@@ -100,15 +100,11 @@ OFFSET ((@Page - 1) * @PageSize) ROWS
 
         /// <summary>
         /// Required parameters: 
-        ///    @Page
-        ///    @PageSize
         ///    @SearchText
         /// </summary>
         public const string GetFilteredCharactersCount = @"SELECT COUNT(*) AS TotalCount
 FROM characters c
-WHERE c.name LIKE '%' || @SearchText || '%'
-OFFSET ((@Page - 1) * @PageSize) ROWS
-    LIMIT @PageSize;";
+WHERE c.name LIKE '%' || @SearchText || '%';";
 
         /// <summary>
         /// Required parameters: 

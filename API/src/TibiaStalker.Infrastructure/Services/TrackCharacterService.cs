@@ -31,6 +31,12 @@ public class TrackCharacterService : ITrackCharacterService
             throw new NotFoundException(nameof(Character), characterName);
         }
 
+        var existingEntity = _dbContext.TrackedCharacters.FirstOrDefault(t => t.Name == characterName && t.ConnectionId == connectionId);
+        if (existingEntity is not null)
+        {
+            throw new EntityAlreadyExistsException(characterName);
+        }
+
         var entity = new TrackedCharacter(characterName, fetchedCharacter.World, connectionId);
         _dbContext.TrackedCharacters.Add(entity);
         await _dbContext.SaveChangesAsync();
