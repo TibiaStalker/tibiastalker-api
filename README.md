@@ -122,8 +122,17 @@ To stop tracking one character just send message
    "type":1
 }
 ```
-or disconnect connection to stop tracking all enemies.
-
+or disconnect connection to stop tracking all enemies.<br><br>
+To catch exceptions set "**_target:JoinGroupFail_**":
+```json
+{
+  "type":1,
+  "target":"JoinGroupFail",
+  "arguments":[
+    "Character (bobeek test) not found."
+  ]
+}
+```
 Try with <u>Postman</u>. Example [_here_](https://www.rafaagahbichelab.dev/articles/signalr-dotnet-postman) <br>
 _**Warning: Do not forget about special sign on the end!**_
 
