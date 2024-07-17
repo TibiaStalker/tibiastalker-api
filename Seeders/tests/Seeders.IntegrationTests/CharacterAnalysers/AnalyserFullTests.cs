@@ -35,7 +35,7 @@ public class AnalyserFullTests : IAsyncLifetime
 
         // Assert
         var scans = dbContext.WorldScans.AsNoTracking().ToList();
-        var actions = dbContext.CharacterActions.AsNoTracking().ToList();
+        // var actions = dbContext.CharacterActions.AsNoTracking().ToList();
         var characters = dbContext.Characters.AsNoTracking().ToList();
         var correlations = dbContext.CharacterCorrelations.AsNoTracking().ToList();
 
@@ -43,16 +43,15 @@ public class AnalyserFullTests : IAsyncLifetime
         scans.Count(s => !s.IsDeleted).Should().Be(2);
         scans.Count(s => s.IsDeleted).Should().Be(10);
         
-        actions.Count.Should().Be(4); //count after analyse all scans
-        actions.Count(a => !a.IsOnline).Should().Be(3);
-        actions.Count(a => a.IsOnline).Should().Be(1);
-        actions.All(s => s.WorldId == 32).Should().Be(true);
+        // actions.Count.Should().Be(4); //count after analyse all scans
+        // actions.Count(a => !a.IsOnline).Should().Be(3);
+        // actions.Count(a => a.IsOnline).Should().Be(1);
+        // actions.All(s => s.WorldId == 32).Should().Be(true);
 
         characters.Count.Should().Be(17);
         characters.Select(c => c.Name).Distinct().Count().Should().Be(characters.Count);
         characters.Count(c => c.WorldId == 31).Should().Be(6);
         characters.Count(c => c.WorldId == 32).Should().Be(11);
-        characters.Count(c => c.FoundInScan1).Should().Be(4);
 
         correlations.Count.Should().Be(27);// worldID(32) = 23-2(duplicate)-1(ccc|ddd foundInScan) | worldID(31) = 8-1(correlation exist in one scan)
         correlations.Select(c => (c.LogoutCharacterId, c.LoginCharacterId)).Distinct().Count().Should().Be(correlations.Count);

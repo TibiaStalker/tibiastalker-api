@@ -16,16 +16,9 @@ public class Cleaner : ICleaner
 
     public async Task ClearUnnecessaryWorldScans()
     {
-        await _dbContext.ExecuteRawSqlAsync(GenerateQueries.ClearDeletedWorldScans, timeOut: 1 * Minute);
-
         await _dbContext.WorldScans
             .Where(ws => !ws.World.IsAvailable)
             .ExecuteDeleteAsync();
-    }
-
-    public async Task TruncateCharacterActions()
-    {
-        await _dbContext.ExecuteRawSqlAsync("TRUNCATE TABLE character_actions RESTART IDENTITY;", timeOut: 1 * Minute);
     }
 
     public async Task DeleteIrrelevantCharacterCorrelations()
@@ -35,11 +28,6 @@ public class Cleaner : ICleaner
         await _dbContext.CharacterCorrelations
             .Where(c => c.NumberOfMatches < 3 && c.LastMatchDate < thresholdDate)
             .ExecuteDeleteAsync();
-    }
-
-    public async Task VacuumCharacterActions()
-    {
-        await _dbContext.ExecuteRawSqlAsync("VACUUM FULL character_actions", timeOut: 1 * Minute);
     }
 
     public async Task VacuumWorldScans()

@@ -35,7 +35,7 @@ public class ScanSeederLogDecorator : IScanSeederLogDecorator
             catch (Exception exception)
             {
                 currentRetry++;
-                _logger.LogError("WorldId({WorldId}) - Execution {methodName} couse error. Retry {retry}. Exception {exception}",
+                _logger.LogError("WorldId({WorldId}) - Execution {methodName} cause error. Retry {retry}. Exception {exception}",
                     parameter.WorldId, function.Method.Name, currentRetry, exception);
             }
         });

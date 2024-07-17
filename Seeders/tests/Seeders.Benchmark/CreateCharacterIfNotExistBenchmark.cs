@@ -21,13 +21,5 @@ public class CreateCharacterIfNotExistBenchmark
     {
         await _dbContext.Database.ExecuteSqlRawAsync(GenerateQueries.CreateCharactersIfNotExists);
     }
-
-    private IQueryable<string> CharactersNames()
-    {
-        return _dbContext.CharacterActions
-            .Select(ca => ca.CharacterName)
-            .Distinct();
-    }
-
 }
     

@@ -1,7 +1,5 @@
 ﻿using ChangeNameDetector.Validators;
-using ChangeNameDetectorSubscriber.Events;
 using ChangeNameDetectorSubscriber.Handlers;
-using ChangeNameDetectorSubscriber.Subscribers;
 using DbCleaner;
 using DbCleaner.Decorators;
 using Microsoft.AspNetCore.Hosting;
@@ -21,7 +19,6 @@ using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
 using WorldScanAnalyser;
 using WorldScanAnalyser.Decorators;
-using WorldScanAnalyser.Managers;
 using WorldScanSeeder.Decorators;
 using WorldSeeder.Decorators;
 
@@ -106,7 +103,6 @@ public class TibiaSeederFactory : WebApplicationFactory<Startup>, IAsyncLifetime
 
             services.AddSingleton(Options.Create(new ConnectionStringsSection { PostgreSql = _dbContainer.GetConnectionString() }));
             services.AddDbContext<TibiaStalkerDbContext>(options => options.UseNpgsql(_dbContainer.GetConnectionString()).UseSnakeCaseNamingConvention());
-            services.AddSingleton<CharacterActionsManager>();
             services.AddSingleton<IAnalyserService, AnalyserService>();
             services.AddSingleton<IAnalyser, Analyser>();
             services.AddSingleton<ICleaner, Cleaner>();

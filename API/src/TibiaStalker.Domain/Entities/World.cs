@@ -25,5 +25,4 @@ public class World : IEntity
     // Associations
     public List<WorldScan> WorldScans { get; set; }
     public List<Character> Characters { get; set; }
-    public List<CharacterAction> CharacterLogoutOrLogins { get; set; }
 }

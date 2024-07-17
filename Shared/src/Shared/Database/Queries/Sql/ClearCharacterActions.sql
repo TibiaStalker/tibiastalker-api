@@ -1,1 +1,0 @@
-DELETE FROM character_actions;
