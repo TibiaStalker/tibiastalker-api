@@ -18,16 +18,6 @@ public class Character : IEntity
     public short WorldId { get; set; }
 
     /// <summary>
-    /// Boolean whether name was founded in first scan
-    /// </summary>
-    public bool FoundInScan1 { get; set; }
-
-    /// <summary>
-    /// Boolean whether name was founded in second scan
-    /// </summary>
-    public bool FoundInScan2 { get; set; }
-
-    /// <summary>
     /// Date of verified character when changed name
     /// </summary>
     public DateOnly? VerifiedDate { get; set; }

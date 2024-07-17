@@ -3,7 +3,7 @@
 public class WorldScan : IEntity
 {
     /// <summary>
-    /// Id of World Scan
+    /// ID of World Scan
     /// </summary>
     public int WorldScanId { get; set; }
 
@@ -13,7 +13,7 @@ public class WorldScan : IEntity
     public string CharactersOnline { get; set; }
 
     /// <summary>
-    /// Id of specific world
+    /// ID of specific world
     /// </summary>
     public short WorldId { get; set; }
 

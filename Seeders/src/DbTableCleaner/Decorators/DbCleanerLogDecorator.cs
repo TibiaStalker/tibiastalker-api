@@ -34,7 +34,7 @@ public class DbCleanerLogDecorator : IDbCleanerLogDecorator
             catch (Exception exception)
             {
                 currentRetry++;
-                _logger.LogError("Execution {methodName} couse error. Retry {retry}. Exception {exception}", function.Method.Name, currentRetry, exception);
+                _logger.LogError("Execution {methodName} cause error. Retry {retry}. Exception {exception}", function.Method.Name, currentRetry, exception);
             }
         });
     }

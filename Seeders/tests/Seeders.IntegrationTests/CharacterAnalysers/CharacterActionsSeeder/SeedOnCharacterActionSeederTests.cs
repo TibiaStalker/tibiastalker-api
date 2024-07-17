@@ -2,7 +2,6 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TibiaStalker.Infrastructure.Persistence;
-using WorldScanAnalyser.Managers;
 
 namespace Seeders.IntegrationTests.CharacterAnalysers.CharacterActionsSeeder;
 
@@ -23,7 +22,7 @@ public class SeedOnCharacterActionSeederTests : IAsyncLifetime
     {
         // Arrange
         using var scope = _factory.Services.CreateScope();
-        var seeder = scope.ServiceProvider.GetRequiredService<CharacterActionsManager>();
+        // var seeder = scope.ServiceProvider.GetRequiredService<CharacterActionsManager>();
         var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
 
         var worldScans = await dbContext.WorldScans
@@ -33,20 +32,19 @@ public class SeedOnCharacterActionSeederTests : IAsyncLifetime
             .AsNoTracking()
             .ToListAsync();
 
-        seeder.SetFirstAndSecondScanNames(worldScans);
+        // seeder.SetFirstAndSecondScanNames(worldScans);
 
-        seeder.GetAndSetLoginNames();
-        seeder.GetAndSetLogoutNames();
+        // seeder.GetAndSetLoginNames();
+        // seeder.GetAndSetLogoutNames();
         
         // Act
-        await seeder.SeedCharacterActions(worldScans);
-        var characterActions = dbContext.CharacterActions;
+        // await seeder.SeedCharacterActions(worldScans);
+        // var characterActions = dbContext.CharacterActions;
         var characters = dbContext.Characters;
 
         // Assert
-        characterActions.Count().Should().Be(10);
+        // characterActions.Count().Should().Be(10);
         characters.Count().Should().Be(4);
-        characters.Count(c => c.FoundInScan1).Should().Be(3);
     }
     
     public Task InitializeAsync() => Task.CompletedTask;

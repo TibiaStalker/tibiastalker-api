@@ -14,7 +14,6 @@ public interface ITibiaStalkerDbContext
     DbSet<World> Worlds { get; set; }
     DbSet<WorldScan> WorldScans { get; set; }
     DbSet<Character> Characters { get; set; }
-    DbSet<CharacterAction> CharacterActions { get; set; }
     DbSet<CharacterCorrelation> CharacterCorrelations { get; set; }
     DbSet<TrackedCharacter> TrackedCharacters { get; set; }
     DbSet<OnlineCharacter> OnlineCharacters { get; set; }
