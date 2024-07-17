@@ -30,10 +30,8 @@ public class CharacterActionSeederBenchmark
         var twoWorldScans = GetFirstTwoWorldScansAsync(2);
         var loginNames = GetLoginNames(twoWorldScans);
         var logoutNames = GetLogoutNames(twoWorldScans);
-        var logoutCharacters = CreateCharactersActionsAsync(logoutNames, twoWorldScans[0], false);
-        var loginCharacters = CreateCharactersActionsAsync(loginNames, twoWorldScans[1], true);
 
-        dbContext.CharacterActions.AddRange(logoutCharacters.Concat(loginCharacters));
+        // dbContext.CharacterActions.AddRange(logoutCharacters.Concat(loginCharacters));
 
         await dbContext.SaveChangesAsync();
 
@@ -57,20 +55,6 @@ public class CharacterActionSeederBenchmark
         var names = worldScan.CharactersOnline.Split("|").ToList();
         names.RemoveAll(string.IsNullOrWhiteSpace);
         return names.ConvertAll(d => d.ToLower());
-    }
-
-    private static List<CharacterAction> CreateCharactersActionsAsync(List<string> names, WorldScan worldScan, bool isOnline)
-    {
-        var logoutOrLoginDate = DateOnly.FromDateTime(worldScan.ScanCreateDateTime);
-        
-        return names.Select(name => new CharacterAction
-        {
-            CharacterName = name,
-            WorldScanId = worldScan.WorldScanId,
-            WorldId = worldScan.WorldId,
-            IsOnline = isOnline,
-            LogoutOrLoginDate = logoutOrLoginDate
-        }).ToList();
     }
 }
     

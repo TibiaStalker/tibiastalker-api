@@ -31,9 +31,7 @@ public class ClearSoftDeletedWorldScansOnCleanerTests : IAsyncLifetime
         
         // Act
         await cleaner.ClearUnnecessaryWorldScans();
-        await cleaner.TruncateCharacterActions();
         await cleaner.DeleteIrrelevantCharacterCorrelations();
-        await cleaner.VacuumCharacterActions();
         await cleaner.VacuumWorldScans();
         await cleaner.VacuumCharacters();
         await cleaner.VacuumWorlds();

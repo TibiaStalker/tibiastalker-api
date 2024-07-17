@@ -12,69 +12,11 @@ namespace Shared.Database.Queries.Sql
 {
     public static class GenerateQueries
     {
-        public const string ClearCharacterActions = @"DELETE FROM character_actions;";
-
-        public const string ClearDeletedWorldScans = @"DELETE FROM world_scans
-	WHERE is_deleted;";
-
-        public const string CreateCharacterCorrelationIfNotExist = @"WITH cp AS (
-    SELECT f.character_id AS logout, t.character_id AS login, f.logout_or_login_date AS creating_date
-    FROM (
-        SELECT ch.character_name, c.character_id, ch.logout_or_login_date
-        FROM character_actions ch
-        INNER JOIN characters c ON ch.character_name = c.name
-        WHERE ch.is_online = false
-    ) AS f
-    CROSS JOIN (
-        SELECT character_name, c.character_id
-        FROM character_actions ch
-        INNER JOIN characters c ON ch.character_name = c.name
-        WHERE is_online = true
-    ) AS t
-)
-INSERT INTO character_correlations (logout_character_id, login_character_id, number_of_matches, create_date, last_match_date)
-SELECT logout, login, 1, creating_date, creating_date
-FROM cp
-LEFT JOIN character_correlations cc
-ON (cc.logout_character_id = logout AND cc.login_character_id = login)
-    OR (cc.logout_character_id = login AND cc.login_character_id = logout)
-WHERE cc.logout_character_id IS NULL;";
-
         public const string CreateCharactersIfNotExists = @"INSERT INTO characters (name, world_id)
 SELECT DISTINCT ca.character_name, ca.world_id
 FROM character_actions ca
 LEFT JOIN characters c ON ca.character_name = c.name
 WHERE c.name IS NULL;";
-
-        public const string DeleteCharacterCorrelationIfCorrelationExistInFirstScan = @"WITH online_characters AS (SELECT character_id FROM ""characters"" c INNER JOIN character_actions ca ON c.""name"" = ca.character_name WHERE is_online = true)
-DELETE FROM character_correlations
-WHERE logout_character_id IN
-      (SELECT character_id
-       FROM online_characters)
-    AND login_character_id IN
-        (SELECT character_id
-         FROM online_characters)";
-
-        public const string DeleteCharacterCorrelationIfCorrelationExistInScan = @"WITH online_characters AS
-         (SELECT character_id FROM characters c WHERE found_in_scan = true)
-
-DELETE FROM character_correlations
-WHERE logout_character_id IN
-      (SELECT character_id
-       FROM online_characters)
-
-  AND login_character_id IN
-      (SELECT character_id
-       FROM online_characters)";
-
-        public const string DeleteCharacterCorrelationIfCorrelationExistInSecondScan = @"WITH offline_characters AS (SELECT character_id FROM ""characters"" c INNER JOIN character_actions ca ON c.""name"" = ca.character_name WHERE is_online = false)
-DELETE FROM character_correlations
-WHERE logout_character_id IN
-      (SELECT character_id
-       FROM offline_characters)
-    AND login_character_id IN
-        (SELECT character_id
-         FROM offline_characters)";
 
         /// <summary>
         /// Required parameters: 
@@ -204,40 +146,6 @@ DELETE FROM character_correlations cc
     USING characters_in_scan2 cs2, characters_in_scan2_not_in_scan1 cs1
 WHERE (cc.login_character_id = cs2.character_id AND cc.logout_character_id = cs1.character_id)
    OR (cc.logout_character_id = cs2.character_id AND cc.login_character_id = cs1.character_id);";
-
-        public const string ResetCharacterFoundInScans = @"UPDATE characters
-SET found_in_scan1 = FALSE, found_in_scan2 = FALSE
-WHERE found_in_scan1 = TRUE OR found_in_scan2 = TRUE;
-";
-
-        public const string UpdateCharacterCorrelationIfExist = @"WITH cp AS (
-  SELECT 
-    f.character_id AS logout,
-    t.character_id AS login,
-    f.logout_or_login_date AS creating_date
-  FROM 
-    (
-      SELECT ch.character_name, c.character_id, ch.logout_or_login_date
-      FROM character_actions ch
-      INNER JOIN characters c ON ch.character_name = c.name
-      WHERE ch.is_online = false
-    ) AS f
-    CROSS JOIN 
-    (
-      SELECT character_name, c.character_id
-      FROM character_actions ch
-      INNER JOIN characters c ON ch.character_name = c.name
-      WHERE is_online = true
-    ) AS t
-)
-
-UPDATE character_correlations cc
-SET number_of_matches = number_of_matches + 1, last_match_date = creating_date
-FROM cp
-WHERE 
-  (cc.logout_character_id = cp.logout AND cc.login_character_id = cp.login)
-  OR 
-  (cc.logout_character_id = cp.login AND cc.login_character_id = cp.logout);";
 
     }
 
