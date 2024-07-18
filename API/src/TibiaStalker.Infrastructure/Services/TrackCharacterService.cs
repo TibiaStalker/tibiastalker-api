@@ -20,7 +20,7 @@ public class TrackCharacterService : ITrackCharacterService
 
     public async Task CreateTrack(string characterName, string connectionId)
     {
-        var fetchedCharacter = await _tibiaDataClient.FetchCharacter(characterName.Trim());
+        var fetchedCharacter = await _tibiaDataClient.FetchCharacterWithRetry(characterName.Trim());
 
         if (fetchedCharacter is null)
         {

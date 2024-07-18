@@ -25,7 +25,7 @@ public static class RabbitMqExtension
         services.AddRabbitMqCommonSettings(configuration, connectionName);
     }
 
-    public static IConnection GetRabbitMqConnection(this RabbitMqSection? options, string connectionName)
+    public static ConnectionFactory GetRabbitMqConnectionFactory(this RabbitMqSection? options)
     {
         var factory = new ConnectionFactory
         {
@@ -37,7 +37,7 @@ public static class RabbitMqExtension
             DispatchConsumersAsync = true
         };
 
-        return factory.CreateConnection(connectionName);
+        return factory;
     }
 
     private static IServiceCollection AddRabbitMqCommonSettings(this IServiceCollection services, IConfiguration configuration, string connectionName)
@@ -52,7 +52,7 @@ public static class RabbitMqExtension
 
         try
         {
-            IConnection rabbitMqConnection = options.GetRabbitMqConnection(connectionName);
+            IConnection rabbitMqConnection = options.GetRabbitMqConnectionFactory().CreateConnection(connectionName);
 
             services
                 .AddEvents()

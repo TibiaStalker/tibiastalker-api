@@ -2,7 +2,7 @@
 
 namespace WorldSeeder;
 
-public class WorldService : IWorldService
+public class WorldService
 {
     private readonly IWorldSeederService _worldSeederService;
     private readonly IWorldSeederLogDecorator _logDecorator;
@@ -18,6 +18,6 @@ public class WorldService : IWorldService
         await _logDecorator.Decorate(_worldSeederService.SetProperties);
         await _logDecorator.Decorate(_worldSeederService.Seed);
         await _logDecorator.Decorate(_worldSeederService.TurnOffIfWorldIsUnavailable);
-        await _logDecorator.Decorate(_worldSeederService.TurnOnIfWorldIsAvailable); // TODO: add unit test for that
+        await _logDecorator.Decorate(_worldSeederService.TurnOnIfWorldIsAvailable);
     }
 }

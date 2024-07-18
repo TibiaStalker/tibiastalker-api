@@ -5,6 +5,6 @@ namespace WorldScanAnalyser;
 public interface IAnalyser
 {
     List<short> GetDistinctWorldIdsFromRemainingScans();
-    List<WorldScan> GetWorldScansToAnalyse(short worldId);
+    List<WorldScan> GetTwoWorldScansToAnalyse(short worldId);
     Task SoftDeleteWorldScanAsync(int scanId);
 }

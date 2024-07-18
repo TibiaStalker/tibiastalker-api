@@ -4,7 +4,7 @@ using Serilog;
 using Shared.RabbitMQ.Extensions;
 using Shared.RabbitMQ.Initializers;
 using TibiaStalker.Infrastructure.Builders;
-using WorldScanAnalyser.Configuration;
+using WorldScanAnalyser.Services;
 
 namespace WorldScanAnalyser;
 

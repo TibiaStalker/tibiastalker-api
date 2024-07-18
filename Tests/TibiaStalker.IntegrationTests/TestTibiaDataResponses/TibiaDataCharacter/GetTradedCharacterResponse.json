@@ -1,0 +1,57 @@
+﻿{
+  "characters":{
+    "character":{
+      "name":"name-d",
+      "traded": true,
+      "sex":"male",
+      "title":"None",
+      "unlocked_titles":100,
+      "vocation":"Elder Druid",
+      "level":101,
+      "achievement_points":102,
+      "world":"World1",
+      "residence":"Venore",
+      "married_to":"Test",
+      "guild":{
+        "name":"test_guild",
+        "rank":"test_rank"
+      },
+      "last_login":"2024-07-22T17:18:09Z",
+      "account_status":"Premium Account",
+      "comment":"test_comment"
+    },
+    "achievements":[
+      {
+        "name":"test_achievement",
+        "grade":1,
+        "secret":false
+      }
+    ],
+    "account_information":{
+      "created":"2001-01-01T21:21:21Z",
+      "loyalty_title":"test_title"
+    },
+    "other_characters":[
+      {
+        "name":"name aa",
+        "world":"World1",
+        "status":"offline",
+        "deleted":false,
+        "main":true,
+        "traded":false
+      },
+      {
+        "name":"name aaa",
+        "world":"World1",
+        "status":"offline",
+        "deleted":false,
+        "main":false,
+        "traded":false
+      }
+    ]
+  },
+  "information":{
+    "api_version":3,
+    "timestamp":"2024-07-22T21:10:06Z"
+  }
+}

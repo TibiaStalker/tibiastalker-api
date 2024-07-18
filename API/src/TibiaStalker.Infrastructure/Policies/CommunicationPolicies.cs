@@ -5,7 +5,7 @@ namespace TibiaStalker.Infrastructure.Policies;
 
 public static class CommunicationPolicies
 {
-    public static IAsyncPolicy<HttpResponseMessage> GetTibiaDataRetryPolicy()
+    public static IAsyncPolicy<HttpResponseMessage> GetHttpClientRetryPolicy()
     {
         return HttpPolicyExtensions
             .HandleTransientHttpError()

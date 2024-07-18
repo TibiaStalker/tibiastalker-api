@@ -105,8 +105,8 @@ namespace TibiaStalker.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("logout_character_id");
 
-                    b.Property<short>("NumberOfMatches")
-                        .HasColumnType("smallint")
+                    b.Property<int>("NumberOfMatches")
+                        .HasColumnType("integer")
                         .HasColumnName("number_of_matches");
 
                     b.HasKey("CorrelationId")

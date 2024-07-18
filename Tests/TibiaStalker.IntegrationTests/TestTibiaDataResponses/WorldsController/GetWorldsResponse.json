@@ -1,0 +1,86 @@
+﻿{
+  "worlds":{
+    "players_online":9609,
+    "record_players":64028,
+    "record_date":"2007-11-28T18:26:00Z",
+    "regular_worlds":[
+      {
+        "name":"World-a",
+        "status":"online",
+        "players_online":31,
+        "location":"South America",
+        "pvp_type":"Retro Open PvP",
+        "premium_only":false,
+        "transfer_type":"blocked",
+        "battleye_protected":true,
+        "battleye_date":"release",
+        "game_world_type":"regular",
+        "tournament_world_type":""
+      },
+      {
+        "name":"World-b",
+        "status":"online",
+        "players_online":359,
+        "location":"Europe",
+        "pvp_type":"Open PvP",
+        "premium_only":false,
+        "transfer_type":"regular",
+        "battleye_protected":true,
+        "battleye_date":"2017-08-29",
+        "game_world_type":"regular",
+        "tournament_world_type":""
+      },
+      {
+        "name":"World-c",
+        "status":"online",
+        "players_online":136,
+        "location":"North America",
+        "pvp_type":"Optional PvP",
+        "premium_only":false,
+        "transfer_type":"regular",
+        "battleye_protected":true,
+        "battleye_date":"2017-09-12",
+        "game_world_type":"regular",
+        "tournament_world_type":""
+      },
+      {
+        "name":"World-e",
+        "status":"online",
+        "players_online":235,
+        "location":"South America",
+        "pvp_type":"Optional PvP",
+        "premium_only":false,
+        "transfer_type":"regular",
+        "battleye_protected":true,
+        "battleye_date":"2017-06-22",
+        "game_world_type":"regular",
+        "tournament_world_type":""
+      },
+      {
+        "name":"World-f",
+        "status":"online",
+        "players_online":235,
+        "location":"South America",
+        "pvp_type":"Optional PvP",
+        "premium_only":false,
+        "transfer_type":"regular",
+        "battleye_protected":true,
+        "battleye_date":"2017-06-22",
+        "game_world_type":"regular",
+        "tournament_world_type":""
+      }
+    ],
+    "tournament_worlds":null
+  },
+  "information":{
+    "api":{
+      "version":4,
+      "release":"4.2.2",
+      "commit":"d406c2f2ad1ccafeca1631cc8c265031f1d1c552"
+    },
+    "timestamp":"2024-07-29T14:52:08Z",
+    "status":{
+      "http_code":200
+    }
+  }
+}

@@ -29,7 +29,7 @@ public class GetCharacterWithCorrelationsQueryHandler : IRequestHandler<GetChara
         _validator.ValidSearchTextLenght(request.Name);
         _validator.ValidSearchTextCharacters(request.Name);
 
-        var character = await _tibiaDataClient.FetchCharacter(request.Name.Trim(), false);
+        var character = await _tibiaDataClient.FetchCharacterWithoutRetry(request.Name.Trim());
         if (character is null)
         {
             throw new TibiaDataApiConnectionException();
