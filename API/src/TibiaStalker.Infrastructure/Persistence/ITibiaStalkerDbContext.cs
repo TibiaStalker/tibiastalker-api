@@ -9,7 +9,6 @@ public interface ITibiaStalkerDbContext
 {
     DatabaseFacade Database { get; }
     ChangeTracker ChangeTracker { get; }
-    EntityEntry<TEntry> Entry<TEntry>(TEntry entry) where TEntry : class;
 
     DbSet<World> Worlds { get; set; }
     DbSet<WorldScan> WorldScans { get; set; }
@@ -20,5 +19,4 @@ public interface ITibiaStalkerDbContext
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task ExecuteRawSqlAsync(string rawSql, int? timeOut = null, CancellationToken cancellationToken = default);
-    DbSet<TEntity> Set<TEntity>() where TEntity : class;
 }
