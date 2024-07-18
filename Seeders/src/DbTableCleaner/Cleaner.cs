@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Shared.Database.Queries.Sql;
 using TibiaStalker.Infrastructure.Persistence;
 
 namespace DbCleaner;

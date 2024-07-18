@@ -34,7 +34,7 @@ public class AnalyserService : IAnalyserService
                 {
                     var stopwatch = Stopwatch.StartNew();
 
-                    var worldScans = _analyser.GetWorldScansToAnalyse(worldId);
+                    var worldScans = _analyser.GetTwoWorldScansToAnalyse(worldId);
                     _logger.LogInformation("GetWorldScansToAnalyseAsync - execution time: {time} ms.",
                         stopwatch.ElapsedMilliseconds);
 

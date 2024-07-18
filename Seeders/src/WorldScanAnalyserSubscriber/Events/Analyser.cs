@@ -51,12 +51,13 @@ public class Analyser : ActionRule, IAnalyser
         {
             _logger.LogInformation("Logout or Login names empty. WorldScans({worldScanId1}/{worldScanId2}) - World({worldId}). Execution time: {time} ms",
                 worldScans[0].WorldScanId, worldScans[1].WorldScanId, worldScans[0].WorldId, stopwatch.ElapsedMilliseconds);
-            return;
         }
-
-        await _logDecorator.Decorate(SeedCharacters, worldScans);
-        await _logDecorator.Decorate(UpdateOrCreateCorrelationsAsync, worldScans);
-        await _logDecorator.Decorate(RemoveImpossibleCorrelationsAsync, worldScans);
+        else
+        {
+            await _logDecorator.Decorate(SeedCharacters, worldScans);
+            await _logDecorator.Decorate(UpdateOrCreateCorrelationsAsync, worldScans);
+            await _logDecorator.Decorate(RemoveImpossibleCorrelationsAsync, worldScans);
+        }
 
         await _dbContext.WorldScans.Where(ws => ws.WorldScanId == worldScans[0].WorldScanId).ExecuteDeleteAsync();
         _dbContext.ChangeTracker.Clear();
@@ -77,6 +78,7 @@ public class Analyser : ActionRule, IAnalyser
 
     private async Task SeedCharacters(WorldScan[] worldScans)
     {
+        // TODO: Think aboat library https://github.com/borisdj/EFCore.BulkExtensions
         var worldId = worldScans[0].WorldId;
         var names = new List<string>();
         names.AddRange(_loginNames);

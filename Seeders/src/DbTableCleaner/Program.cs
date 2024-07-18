@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using DbCleaner.Configuration;
+using DbCleaner.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TibiaStalker.Infrastructure.Builders;

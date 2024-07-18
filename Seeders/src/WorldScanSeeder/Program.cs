@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TibiaStalker.Infrastructure.Builders;
-using WorldScanSeeder.Configuration;
+using WorldScanSeeder.Services;
 
 namespace WorldScanSeeder;
 

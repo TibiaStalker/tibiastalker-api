@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using ChangeNameDetector.Validators;
 using ChangeNameDetectorSubscriber.Dtos;
 using ChangeNameDetectorSubscriber.Handlers;
 using ChangeNameDetectorSubscriber.Subscribers;
+using ChangeNameDetectorSubscriber.Validators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -73,10 +73,10 @@ public class ChangeNameDetectorEventSubscriber : IEventSubscriber
 
         async Task Action()
         {
-            var fetchedCharacter = await _tibiaDataClient.FetchCharacter(oldCharacter.Name);
+            var fetchedCharacter = await _tibiaDataClient.FetchCharacterWithRetry(oldCharacter.Name);
             if (fetchedCharacter is null)
             {
-                _logger.LogInformation("Method '{methodName}' returned 'null'.", nameof(_tibiaDataClient.FetchCharacter));
+                _logger.LogInformation("Method '{methodName}' returned 'null'.", nameof(_tibiaDataClient.FetchCharacterWithRetry));
             }
 
             // If Character was not Traded and Character Name is still in database just Update Verified Date.

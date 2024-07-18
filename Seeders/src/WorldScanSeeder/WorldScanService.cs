@@ -2,7 +2,7 @@
 
 namespace WorldScanSeeder;
 
-public class WorldScanService : IWorldScanService
+public class WorldScanService
 {
     private readonly IScanSeeder _scanSeeder;
     private readonly IScanSeederLogDecorator _logDecorator;

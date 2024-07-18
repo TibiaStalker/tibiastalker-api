@@ -1,6 +1,6 @@
 ﻿using TibiaStalker.Application.TibiaData.Dtos;
 
-namespace ChangeNameDetector.Validators;
+namespace ChangeNameDetectorSubscriber.Validators;
 
 public interface INameDetectorValidator
 {

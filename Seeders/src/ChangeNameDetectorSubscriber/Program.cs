@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
-using ChangeNameDetectorSubscriber.Configurations;
-using ChangeNameDetectorSubscriber.Subscribers;
+using ChangeNameDetectorSubscriber.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -31,7 +30,7 @@ public class Program
 
             var initializer = ActivatorUtilities.CreateInstance<InitializationRabbitMqTaskRunner>(host.Services);
             await initializer.StartAsync();
-            var service = ActivatorUtilities.CreateInstance<ChangeNameDetectorRabbitSubscriber>(host.Services);
+            var service = ActivatorUtilities.CreateInstance<Subscribers.ChangeNameDetectorSubscriber>(host.Services);
             service.Subscribe();
             await host.WaitForShutdownAsync();
 

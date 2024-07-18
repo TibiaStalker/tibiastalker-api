@@ -3,32 +3,32 @@
 public class CharacterCorrelation : IEntity
 {
     /// <summary>
-    /// Id of specific correlation between two characters
+    /// ID of specific correlation between two characters
     /// </summary>
     public long CorrelationId { get; set; }
 
     /// <summary>
-    /// Id of specific character that logout
+    /// ID of specific character that logout
     /// </summary>
     public int LogoutCharacterId { get; set; }
 
     /// <summary>
-    /// Id of specific character that login
+    /// ID of specific character that login
     /// </summary>
     public int LoginCharacterId { get; set; }
 
     /// <summary>
     /// Quantity occurrence of combination
     /// </summary>
-    public short NumberOfMatches { get; set; }
+    public int NumberOfMatches { get; set; }
 
     /// <summary>
-    /// Date of first occurance
+    /// Date of first occurence
     /// </summary>
     public DateOnly CreateDate { get; set; }
 
     /// <summary>
-    /// Date of last occurance
+    /// Date of last occurence
     /// </summary>
     public DateOnly LastMatchDate { get; set; }
 
