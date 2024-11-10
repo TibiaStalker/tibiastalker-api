@@ -38,7 +38,7 @@ public class TestDatabaseSeederWorldScanAnalyser : TestDatabaseSeeder
             new()
             {
                 WorldScanId = 110, IsDeleted = false, WorldId = 11,
-                ScanCreateDateTime = DateTime.UtcNow,
+                ScanCreateDateTime = TimeNowPlusMinutes(0),
                 CharactersOnline = "name-a|name-b|name-c|name-d"
             },
             new()
@@ -76,7 +76,7 @@ public class TestDatabaseSeederWorldScanAnalyser : TestDatabaseSeeder
             new()
             {
                 WorldScanId = 220, IsDeleted = false, WorldId = 12,
-                ScanCreateDateTime = DateTime.UtcNow,
+                ScanCreateDateTime = TimeNowPlusMinutes(0),
                 CharactersOnline = "name-aa|name-bb|name-cc|name-dd"
             },
             new()

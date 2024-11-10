@@ -57,8 +57,7 @@ public static class ConfigureApplication
         return services;
     }
 
-    public static IServiceCollection AddTibiaHealthChecks(this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddTibiaHealthChecks(this IServiceCollection services, IConfiguration configuration)
     {
         var rabbitSection = configuration.GetSection(RabbitMqSection.SectionName);
         var rabbitOptions = rabbitSection.Get<RabbitMqSection>();

@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using BenchmarkDotNet.Running;
-using Seeders.Benchmark;
+using TibiaStalker.Benchmark;
 
 Console.WriteLine("Hello, World!");
 

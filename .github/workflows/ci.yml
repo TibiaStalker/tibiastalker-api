@@ -25,10 +25,12 @@ jobs:
         env:
           Serilog.WriteTo.2.Args.serverUrl: http://localhost:5341
           Serilog.WriteTo.2.Args.apiKey: xxxxxx
-          RabbitMq.username: guest
-          RabbitMq.password: guest
-          RabbitMq.port: 5672
-          RabbitMq.hostUrl: amqp://localhost
+          RabbitMq.Username: guest
+          RabbitMq.Password: guest
+          RabbitMq.Port: 5672
+          RabbitMq.HostUrl: amqp://localhost
+          TibiaData.BaseAddress: http://localhost:5000
+          TibiaData.ApiVersion: v3/
 
       - name: Restore NuGet Packages
         run: dotnet restore

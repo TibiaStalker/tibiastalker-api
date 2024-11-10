@@ -1,10 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using Microsoft.EntityFrameworkCore;
-using Shared.Database.Queries.Sql;
-using TibiaStalker.Infrastructure.Persistence;
 
-namespace Seeders.Benchmark;
+namespace TibiaStalker.Benchmark;
 
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
