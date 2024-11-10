@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
 
-namespace Seeders.Benchmark;
+namespace TibiaStalker.Benchmark;
 
 [MemoryDiagnoser]
 // [Orderer(SummaryOrderPolicy.FastestToSlowest)]

@@ -41,7 +41,7 @@ public class TibiaSeederFactory : WebApplicationFactory<Startup>, IAsyncLifetime
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         var rabbitPort = _rabbitMqContainer.GetMappedPublicPort(5672).ToString();
-        IConfigurationRoot configuration = null;
+        IConfigurationRoot configuration = null!;
 
         builder.UseTestServer(options => options.PreserveExecutionContext = true);
         builder.ConfigureAppConfiguration((_, config) =>

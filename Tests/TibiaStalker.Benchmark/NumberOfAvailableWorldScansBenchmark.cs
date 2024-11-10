@@ -3,17 +3,17 @@ using BenchmarkDotNet.Order;
 using Microsoft.EntityFrameworkCore;
 using TibiaStalker.Infrastructure.Persistence;
 
-namespace Seeders.Benchmark;
+namespace TibiaStalker.Benchmark;
 
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [RankColumn]
 public class NumberOfAvailableWorldScansBenchmark
 {
-    private const string _connectionString = "Server=localhost;Port=5432;Database=local_database;User Id=sa;Password=pass;";
+    private const string ConnectionString = "Server=localhost;Port=5432;Database=local_database;User Id=sa;Password=pass;";
 
     private readonly TibiaStalkerDbContext _dbContext = new (new DbContextOptionsBuilder<TibiaStalkerDbContext>()
-            .UseNpgsql(_connectionString).UseSnakeCaseNamingConvention().Options);
+            .UseNpgsql(ConnectionString).UseSnakeCaseNamingConvention().Options);
     
     [Benchmark(Baseline = true)]
     public Task<int> NumberOfAvailableWorldScansAsync()

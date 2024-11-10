@@ -235,6 +235,7 @@ public class CharacterNameDetectorSubscriberTests : IAsyncLifetime
         character.VerifiedDate.Should().Be(DateOnly.FromDateTime(DateTime.Now));
 
         characterCorrelations.Count.Should().Be(2);
+        // UNDONE: dodać dateTimeProvidera bo mi testy po północy nie przechodzą
     }
 
     public async Task InitializeAsync()
