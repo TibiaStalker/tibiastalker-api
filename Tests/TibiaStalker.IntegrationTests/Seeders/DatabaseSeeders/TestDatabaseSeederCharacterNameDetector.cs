@@ -1,4 +1,5 @@
-﻿using TibiaStalker.Domain.Entities;
+﻿using TibiaStalker.Application.Interfaces;
+using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
 
 namespace TibiaStalker.IntegrationTests.Seeders.DatabaseSeeders;
@@ -6,10 +7,12 @@ namespace TibiaStalker.IntegrationTests.Seeders.DatabaseSeeders;
 public class TestDatabaseSeederCharacterNameDetector : TestDatabaseSeeder
 {
     private readonly ITibiaStalkerDbContext _dbContext;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public TestDatabaseSeederCharacterNameDetector(ITibiaStalkerDbContext dbContext) : base(dbContext)
+    public TestDatabaseSeederCharacterNameDetector(ITibiaStalkerDbContext dbContext, IDateTimeProvider dateTimeProvider) : base(dbContext)
     {
         _dbContext = dbContext;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     protected override async Task SeedDatabase()
@@ -34,8 +37,8 @@ public class TestDatabaseSeederCharacterNameDetector : TestDatabaseSeeder
         return new List<Character>
         {
             new() { CharacterId = 111, Name = "name-d", WorldId = 11 },
-            new() { CharacterId = 112, Name = "name-e", WorldId = 11, TradedDate = DateOnly.FromDateTime(DateTime.Now), VerifiedDate = DateOnly.FromDateTime(DateTime.Now) },
-            new() { CharacterId = 113, Name = "name-f", WorldId = 11, TradedDate = DateOnly.FromDateTime(DateTime.Now), VerifiedDate = DateOnly.FromDateTime(DateTime.Now) },
+            new() { CharacterId = 112, Name = "name-e", WorldId = 11, TradedDate = _dateTimeProvider.DateOnlyUtcNow, VerifiedDate = _dateTimeProvider.DateOnlyUtcNow },
+            new() { CharacterId = 113, Name = "name-f", WorldId = 11, TradedDate = _dateTimeProvider.DateOnlyUtcNow, VerifiedDate = _dateTimeProvider.DateOnlyUtcNow },
             new() { CharacterId = 114, Name = "name-g", WorldId = 11, DeleteApproachNumber = 4 }
         };
     }
@@ -62,8 +65,8 @@ public class TestDatabaseSeederCharacterNameDetector : TestDatabaseSeeder
         };
     }
 
-    private static DateOnly DateTodayMinusDays(int days)
+    private DateOnly DateTodayMinusDays(int days)
     {
-        return DateOnly.FromDateTime(DateTime.Today).AddDays(-days);
+        return _dateTimeProvider.DateOnlyUtcNow.AddDays(-days);
     }
 }

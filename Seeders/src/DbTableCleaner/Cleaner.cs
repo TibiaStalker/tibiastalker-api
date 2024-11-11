@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TibiaStalker.Application.Interfaces;
 using TibiaStalker.Infrastructure.Persistence;
 
 namespace DbCleaner;
@@ -7,10 +8,12 @@ public class Cleaner : ICleaner
 {
     private const int Minute = 60;
     private readonly ITibiaStalkerDbContext _dbContext;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public Cleaner(ITibiaStalkerDbContext dbContext)
+    public Cleaner(ITibiaStalkerDbContext dbContext, IDateTimeProvider dateTimeProvider)
     {
         _dbContext = dbContext;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task ClearUnnecessaryWorldScans()
@@ -22,10 +25,11 @@ public class Cleaner : ICleaner
 
     public async Task DeleteIrrelevantCharacterCorrelations()
     {
-        var thresholdDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
+        var thresholdDate = _dateTimeProvider.DateOnlyUtcNow.AddDays(-30);
+        const int thresholdNumberOfMatches = 3;
 
         await _dbContext.CharacterCorrelations
-            .Where(c => c.NumberOfMatches < 3 && c.LastMatchDate < thresholdDate)
+            .Where(c => c.NumberOfMatches < thresholdNumberOfMatches && c.LastMatchDate < thresholdDate)
             .ExecuteDeleteAsync();
     }
 

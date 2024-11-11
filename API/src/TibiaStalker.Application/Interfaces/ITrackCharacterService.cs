@@ -1,4 +1,4 @@
-﻿namespace TibiaStalker.Application.Services;
+﻿namespace TibiaStalker.Application.Interfaces;
 
 public interface ITrackCharacterService
 {

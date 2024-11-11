@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using TibiaStalker.Application.Services;
+using TibiaStalker.Application.Interfaces;
 
 namespace TibiaStalker.Infrastructure.Hubs;
 

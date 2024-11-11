@@ -1,5 +1,6 @@
 using ChangeNameDetector.Services;
 using FluentAssertions;
+using TibiaStalker.Application.Interfaces;
 using TibiaStalker.Infrastructure.Persistence;
 using TibiaStalker.IntegrationTests.Configuration;
 using TibiaStalker.IntegrationTests.Seeders.DatabaseSeeders;
@@ -23,6 +24,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         using var scope = _factory.Services.CreateScope();
         var changeNameDetector = scope.ServiceProvider.GetRequiredService<IChangeNameDetectorService>();
         var dbContext = scope.ServiceProvider.GetRequiredService<ITibiaStalkerDbContext>();
+        var dateTimeProvider = scope.ServiceProvider.GetRequiredService<IDateTimeProvider>();
 
         // Act
         await changeNameDetector.Run();
@@ -30,7 +32,7 @@ public class CharacterNameDetectorTests : IAsyncLifetime
         var characters = dbContext.Characters.ToList();
 
         // Assert
-        characters.All(ch => ch.VerifiedDate == DateOnly.FromDateTime(DateTime.Now)).Should().BeTrue();
+        characters.All(ch => ch.VerifiedDate == dateTimeProvider.DateOnlyUtcNow).Should().BeTrue();
     }
 
     public async Task InitializeAsync()

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Shared.RabbitMQ.EventBus;
 using Shared.RabbitMQ.Events;
+using TibiaStalker.Application.Interfaces;
 
 namespace WorldScanAnalyser;
 
@@ -10,12 +11,14 @@ public class AnalyserService : IAnalyserService
     private readonly ILogger<AnalyserService> _logger;
     private readonly IAnalyser _analyser;
     private readonly IEventPublisher _publisher;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public AnalyserService(ILogger<AnalyserService> logger, IAnalyser analyser, IEventPublisher publisher)
+    public AnalyserService(ILogger<AnalyserService> logger, IAnalyser analyser, IEventPublisher publisher, IDateTimeProvider dateTimeProvider)
     {
         _logger = logger;
         _analyser = analyser;
         _publisher = publisher;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task Run()
@@ -38,7 +41,7 @@ public class AnalyserService : IAnalyserService
                     _logger.LogInformation("GetWorldScansToAnalyseAsync - execution time: {time} ms.",
                         stopwatch.ElapsedMilliseconds);
 
-                    await _publisher.PublishAsync($"'{worldScans[0].WorldScanId}/{worldScans[1].WorldScanId}' ({DateTime.Now})",
+                    await _publisher.PublishAsync($"'{worldScans[0].WorldScanId}/{worldScans[1].WorldScanId}' ({_dateTimeProvider.DateTimeUtcNow})",
                         new WorldScansAnalyserEvent(worldScans[0].WorldScanId, worldScans[1].WorldScanId));
 
                     await _analyser.SoftDeleteWorldScanAsync(worldScans[0].WorldScanId);

@@ -3,5 +3,5 @@
 public abstract record IntegrationEvent : IIntegrationEvent
 {
     public Guid Id { get; } = Guid.NewGuid();
-    public DateTime OccurredOn { get; } = DateTime.Now;
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
 }
