@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TibiaStalker.Application.Exceptions;
 using TibiaStalker.Application.Interfaces;
-using TibiaStalker.Application.Services;
 using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
 

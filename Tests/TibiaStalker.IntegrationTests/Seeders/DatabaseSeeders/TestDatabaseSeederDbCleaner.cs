@@ -1,4 +1,5 @@
-﻿using TibiaStalker.Domain.Entities;
+﻿using TibiaStalker.Application.Interfaces;
+using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
 
 namespace TibiaStalker.IntegrationTests.Seeders.DatabaseSeeders;
@@ -6,11 +7,13 @@ namespace TibiaStalker.IntegrationTests.Seeders.DatabaseSeeders;
 public class TestDatabaseSeederDbCleaner : TestDatabaseSeeder
 {
 	private readonly ITibiaStalkerDbContext _dbContext;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
-	public TestDatabaseSeederDbCleaner(ITibiaStalkerDbContext dbContext) : base(dbContext)
+    public TestDatabaseSeederDbCleaner(ITibiaStalkerDbContext dbContext, IDateTimeProvider dateTimeProvider) : base(dbContext)
     {
-		_dbContext = dbContext;
-	}
+        _dbContext = dbContext;
+        _dateTimeProvider = dateTimeProvider;
+    }
 
     protected override async Task SeedDatabase()
     {
@@ -60,16 +63,16 @@ public class TestDatabaseSeederDbCleaner : TestDatabaseSeeder
         };
     }
 
-    private static IEnumerable<CharacterCorrelation> GetCharacterCorrelations()
+    private IEnumerable<CharacterCorrelation> GetCharacterCorrelations()
     {
         return new List<CharacterCorrelation>
         {
-            new() { LoginCharacterId = 120, LogoutCharacterId = 121, NumberOfMatches = 1, LastMatchDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-40))},
-            new() { LoginCharacterId = 120, LogoutCharacterId = 122, NumberOfMatches = 1, LastMatchDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-50)) },
-            new() { LoginCharacterId = 120, LogoutCharacterId = 123, NumberOfMatches = 1, LastMatchDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-20)) },
-            new() { LoginCharacterId = 121, LogoutCharacterId = 122, NumberOfMatches = 3, LastMatchDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-40)) },
-            new() { LoginCharacterId = 121, LogoutCharacterId = 123, NumberOfMatches = 6, LastMatchDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-20)) },
-            new() { LoginCharacterId = 122, LogoutCharacterId = 123, NumberOfMatches = 6, LastMatchDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-40)) }
+            new() { LoginCharacterId = 120, LogoutCharacterId = 121, NumberOfMatches = 1, LastMatchDate = _dateTimeProvider.DateOnlyUtcNow.AddDays(-40)},
+            new() { LoginCharacterId = 120, LogoutCharacterId = 122, NumberOfMatches = 1, LastMatchDate = _dateTimeProvider.DateOnlyUtcNow.AddDays(-50) },
+            new() { LoginCharacterId = 120, LogoutCharacterId = 123, NumberOfMatches = 1, LastMatchDate = _dateTimeProvider.DateOnlyUtcNow.AddDays(-20) },
+            new() { LoginCharacterId = 121, LogoutCharacterId = 122, NumberOfMatches = 3, LastMatchDate = _dateTimeProvider.DateOnlyUtcNow.AddDays(-40) },
+            new() { LoginCharacterId = 121, LogoutCharacterId = 123, NumberOfMatches = 6, LastMatchDate = _dateTimeProvider.DateOnlyUtcNow.AddDays(-20) },
+            new() { LoginCharacterId = 122, LogoutCharacterId = 123, NumberOfMatches = 6, LastMatchDate = _dateTimeProvider.DateOnlyUtcNow.AddDays(-40) }
         };
     }
 }

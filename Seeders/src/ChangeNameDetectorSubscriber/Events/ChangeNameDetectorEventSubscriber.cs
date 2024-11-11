@@ -24,6 +24,7 @@ public class ChangeNameDetectorEventSubscriber : IEventSubscriber
     private readonly IRabbitMqConventionProvider _conventionProvider;
     private readonly ITibiaDataClient _tibiaDataClient;
     private readonly INameDetectorValidator _validator;
+    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ITibiaStalkerDbContext _dbContext;
 
     public ChangeNameDetectorEventSubscriber(
@@ -32,7 +33,8 @@ public class ChangeNameDetectorEventSubscriber : IEventSubscriber
         IRabbitMqConventionProvider conventionProvider,
         ITibiaStalkerDbContext dbContext,
         ITibiaDataClient tibiaDataClient,
-        INameDetectorValidator validator)
+        INameDetectorValidator validator,
+        IDateTimeProvider dateTimeProvider)
     {
         _logger = logger;
         _eventResultHandler = eventResultHandler;
@@ -40,6 +42,7 @@ public class ChangeNameDetectorEventSubscriber : IEventSubscriber
         _dbContext = dbContext;
         _tibiaDataClient = tibiaDataClient;
         _validator = validator;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public string GetQueueName()
@@ -153,7 +156,7 @@ public class ChangeNameDetectorEventSubscriber : IEventSubscriber
 
         await _dbContext.Characters.Where(c => c.CharacterId == character.CharacterId)
             .ExecuteUpdateAsync(update => update
-                .SetProperty(c => c.TradedDate, DateOnly.FromDateTime(DateTime.Now))
+                .SetProperty(c => c.TradedDate, _dateTimeProvider.DateOnlyUtcNow)
                 .SetProperty(c => c.DeleteApproachNumber, 0),
                 cancellationToken);
 

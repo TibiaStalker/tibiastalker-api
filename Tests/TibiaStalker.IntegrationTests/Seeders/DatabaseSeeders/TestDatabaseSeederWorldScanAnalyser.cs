@@ -1,4 +1,5 @@
-﻿using TibiaStalker.Domain.Entities;
+﻿using TibiaStalker.Application.Interfaces;
+using TibiaStalker.Domain.Entities;
 using TibiaStalker.Infrastructure.Persistence;
 
 namespace TibiaStalker.IntegrationTests.Seeders.DatabaseSeeders;
@@ -6,10 +7,12 @@ namespace TibiaStalker.IntegrationTests.Seeders.DatabaseSeeders;
 public class TestDatabaseSeederWorldScanAnalyser : TestDatabaseSeeder
 {
     private readonly ITibiaStalkerDbContext _dbContext;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public TestDatabaseSeederWorldScanAnalyser(ITibiaStalkerDbContext dbContext) : base(dbContext)
+    public TestDatabaseSeederWorldScanAnalyser(ITibiaStalkerDbContext dbContext, IDateTimeProvider dateTimeProvider) : base(dbContext)
     {
         _dbContext = dbContext;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     protected override async Task SeedDatabase()
@@ -112,8 +115,8 @@ public class TestDatabaseSeederWorldScanAnalyser : TestDatabaseSeeder
         };
     }
 
-    private static DateTime TimeNowPlusMinutes(int minutes)
+    private DateTime TimeNowPlusMinutes(int minutes)
     {
-        return DateTime.UtcNow + TimeSpan.FromMinutes(minutes);
+        return _dateTimeProvider.DateTimeUtcNow.AddMinutes(minutes);
     }
 }
