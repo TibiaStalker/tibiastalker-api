@@ -1,0 +1,22 @@
+﻿{
+  "characters": {
+    "character": {
+      "name": "",
+      "sex": "",
+      "title": "",
+      "unlocked_titles": 0,
+      "vocation": "",
+      "level": 0,
+      "achievement_points": 0,
+      "world": "",
+      "residence": "",
+      "guild": {},
+      "account_status": ""
+    },
+    "account_information": {}
+  },
+  "information": {
+    "api_version": 3,
+    "timestamp": "2024-07-23T15:30:07Z"
+  }
+}

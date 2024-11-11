@@ -2,7 +2,7 @@
 
 public interface ISeederService
 {
-    public Task Seed();
+    Task Seed();
 }
 
 public interface ISeeder<T>

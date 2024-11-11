@@ -28,7 +28,7 @@ public class Analyser : ActionRule, IAnalyser
         return result;
     }
 
-    public List<WorldScan> GetWorldScansToAnalyse(short worldId)
+    public List<WorldScan> GetTwoWorldScansToAnalyse(short worldId)
     {
         var result = _dbContext.WorldScans
             .Where(scan => scan.WorldId == worldId && !scan.IsDeleted)

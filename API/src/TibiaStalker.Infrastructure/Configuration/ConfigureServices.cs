@@ -52,7 +52,7 @@ public static class ConfigureApplication
                 httpClient.Timeout = TimeSpan.Parse(configuration[$"{TibiaDataSection.SectionName}:{nameof(TibiaDataSection.Timeout)}"]!);
             })
             .AddHttpMessageHandler<HttpClientDecompressionHandler>()
-            .AddPolicyHandler(CommunicationPolicies.GetTibiaDataRetryPolicy());
+            .AddPolicyHandler(CommunicationPolicies.GetHttpClientRetryPolicy());
 
         return services;
     }
@@ -63,10 +63,7 @@ public static class ConfigureApplication
         var rabbitOptions = rabbitSection.Get<RabbitMqSection>();
 
         services.AddHealthChecks()
-            .AddRabbitMQ(options =>
-            {
-                options.Connection = rabbitOptions.GetRabbitMqConnection("healthChecks");
-            })
+            .AddRabbitMQ(op => op.ConnectionFactory = rabbitOptions.GetRabbitMqConnectionFactory())
             .AddCheck<DatabaseHealthCheck>("Database");
 
         return services;

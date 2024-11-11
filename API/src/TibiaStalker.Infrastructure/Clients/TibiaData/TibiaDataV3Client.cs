@@ -1,41 +1,42 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Polly;
-using Polly.Retry;
 using TibiaStalker.Application.Exceptions;
 using TibiaStalker.Application.Interfaces;
 using TibiaStalker.Application.TibiaData.Dtos;
 using TibiaStalker.Application.TibiaData.Dtos.v3;
+using TibiaStalker.Infrastructure.Policies;
 
 namespace TibiaStalker.Infrastructure.Clients.TibiaData;
 
 public class TibiaDataV3Client : ITibiaDataClient
 {
+    public const int TotalRetryAttempts = 3;
     private readonly HttpClient _httpClient;
     private readonly ILogger<TibiaDataV3Client> _logger;
-    private readonly string _apiVersion;
-    private readonly AsyncRetryPolicy _retryPolicy;
-    private readonly AsyncRetryPolicy _withoutRetryPolicy;
+    private readonly TibiaDataSection _tibiaDataSection;
+    private readonly ITibiaDataRetryPolicy _retryPolicy;
 
-    public TibiaDataV3Client(HttpClient httpClient, IOptions<TibiaDataSection> tibiaData, ILogger<TibiaDataV3Client> logger)
+    public TibiaDataV3Client(HttpClient httpClient, IOptions<TibiaDataSection> tibiaData, ILogger<TibiaDataV3Client> logger, ITibiaDataRetryPolicy retryPolicy)
     {
         _httpClient = httpClient;
+
         _logger = logger;
-        _apiVersion = tibiaData.Value.ApiVersion;
-        _retryPolicy = Policy.Handle<TaskCanceledException>().Or<Exception>().WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(1.5, retryAttempt)));
-        _withoutRetryPolicy = Policy.Handle<TaskCanceledException>().Or<Exception>().WaitAndRetryAsync(0, i => TimeSpan.FromSeconds(i));
+        _tibiaDataSection = tibiaData.Value;
+        _retryPolicy = retryPolicy;
     }
+
 
     public async Task<IReadOnlyList<string>> FetchWorldsNames()
     {
-        var retryCount = 1;
+        var retryCount = 0;
+        var retryPolicy = _retryPolicy.GetRetryPolicy(TotalRetryAttempts);
 
-        return await _retryPolicy.ExecuteAsync(async () =>
+        return await retryPolicy.ExecuteAsync(async () =>
         {
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiVersion}worlds");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_tibiaDataSection.ApiVersion}worlds");
                 using var response = await _httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
@@ -45,6 +46,7 @@ public class TibiaDataV3Client : ITibiaDataClient
                 {
                     throw new TibiaDataApiEmptyResponseException();
                 }
+
                 var worldNames = contentDeserialized.Worlds.RegularWorlds.Select(world => world.Name).ToArray();
 
                 return worldNames;
@@ -52,13 +54,13 @@ public class TibiaDataV3Client : ITibiaDataClient
             catch (TaskCanceledException)
             {
                 _logger.LogError("{exceptionName} during invoke method {method}, attempt {retryCount}.",
-                    nameof(TaskCanceledException), nameof(FetchWorldsNames), retryCount);
+                    nameof(TaskCanceledException), nameof(FetchWorldsNames), retryCount++);
                 throw;
             }
             catch (Exception exception)
             {
                 _logger.LogError("Method {method} problem, attempt {retryCount}. Exception {exception}",
-                    nameof(FetchWorldsNames), retryCount, exception.Message);
+                    nameof(FetchWorldsNames), retryCount++, exception.Message);
                 throw;
             }
         });
@@ -66,13 +68,14 @@ public class TibiaDataV3Client : ITibiaDataClient
 
     public async Task<IReadOnlyList<string>> FetchCharactersOnline(string worldName)
     {
-        var retryCount = 1;
+        var retryCount = 0;
+        var retryPolicy = _retryPolicy.GetRetryPolicy(TotalRetryAttempts);
 
-        return await _retryPolicy.ExecuteAsync(async () =>
+        return await retryPolicy.ExecuteAsync(async () =>
         {
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiVersion}world/{worldName}");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_tibiaDataSection.ApiVersion}world/{worldName}");
                 using var response = await _httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
@@ -114,46 +117,57 @@ public class TibiaDataV3Client : ITibiaDataClient
         });
     }
 
-    public async Task<CharacterResult> FetchCharacter(string characterName, bool withRetryPolicy = true)
+    public async Task<CharacterResult> FetchCharacterWithRetry(string characterName)
     {
-        var retryCount = withRetryPolicy ? 1 : 4;
-        var retry = withRetryPolicy ? _retryPolicy : _withoutRetryPolicy;
+        return await FetchCharacterInternal(characterName, true);
+    }
 
-        return await retry.ExecuteAsync(async () =>
+    public async Task<CharacterResult> FetchCharacterWithoutRetry(string characterName)
+    {
+        return await FetchCharacterInternal(characterName, false);
+    }
+
+    private async Task<CharacterResult> FetchCharacterInternal(string characterName, bool withRetryPolicy)
+    {
+        var retryCount = withRetryPolicy ? 0 : TotalRetryAttempts;
+        var retryPolicy = withRetryPolicy ? _retryPolicy.GetRetryPolicy(TotalRetryAttempts) : _retryPolicy.GetRetryPolicy(0);
+
+        TibiaDataV3CharacterResponse contentDeserialized = null;
+
+        await retryPolicy.ExecuteAsync(async () =>
         {
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiVersion}character/{characterName}");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_tibiaDataSection.ApiVersion}character/{characterName}");
                 using var response = await _httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 string content = await response.Content.ReadAsStringAsync();
-                var contentDeserialized = JsonConvert.DeserializeObject<TibiaDataV3CharacterResponse>(content);
+                contentDeserialized = JsonConvert.DeserializeObject<TibiaDataV3CharacterResponse>(content);
                 if (string.IsNullOrWhiteSpace(contentDeserialized.Characters.Character.Name))
                 {
-                    if (retryCount > 3)
+                    if (retryCount < TotalRetryAttempts)
                     {
-                        return contentDeserialized.MapToCharacterResult();
+                        throw new TibiaDataApiEmptyResponseException();
                     }
-
-                    throw new TibiaDataApiEmptyResponseException();
                 }
-
-                return contentDeserialized.MapToCharacterResult();
             }
             catch (TaskCanceledException)
             {
                 _logger.LogError(
                     "{exceptionName} during invoke method {method}, character: '{characterName}', attempt {retryCount}.",
-                    nameof(TaskCanceledException), nameof(FetchCharacter), characterName, retryCount++);
+                    nameof(TaskCanceledException), nameof(FetchCharacterInternal), characterName, retryCount++);
                 throw;
             }
             catch (Exception exception)
             {
-                _logger.LogError("Method {method} problem, character: '{characterName}', attempt {retryCount}. Exception {exception}",
-                    nameof(FetchCharacter), characterName, retryCount++, exception.Message);
+                _logger.LogError(
+                    "Method {method} problem, character: '{characterName}', attempt {retryCount}. Exception {exception}",
+                    nameof(FetchCharacterInternal), characterName, retryCount++, exception.Message);
                 throw;
             }
         });
+
+        return contentDeserialized.MapToCharacterResult();
     }
 }

@@ -29,48 +29,49 @@ public class WorldSeederService : IWorldSeederService
 
     public async Task Seed()
     {
-            var newWorlds = _worldsNamesFromTibiaDataProvider
-                .Where(name => !_worldsFromDb.Select(world => world.Name).Contains(name))
-                .Select(name =>
-                {
-                    return CreateWorld(name);
-                })
-                .ToList();
+        var newWorlds = _worldsNamesFromTibiaDataProvider
+            .Where(name => !_worldsFromDb.Select(world => world.Name).Contains(name))
+            .Select(name => { return CreateWorld(name); })
+            .ToList();
 
-            await _dbContext.Worlds.AddRangeAsync(newWorlds);
-            await _dbContext.SaveChangesAsync();
+        await _dbContext.Worlds.AddRangeAsync(newWorlds);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task TurnOffIfWorldIsUnavailable()
     {
-            var unavailableWorlds = _worldsFromDb
-                .Where(world => !_worldsNamesFromTibiaDataProvider.Contains(world.Name))
-            .Select(world => { world.IsAvailable = false; return world; }).ToList();
-
-            foreach (var world in unavailableWorlds)
+        var unavailableWorlds = _worldsFromDb
+            .Where(world => !_worldsNamesFromTibiaDataProvider.Contains(world.Name))
+            .Select(world =>
             {
-                await _dbContext.Worlds
-                    .Where(w => w.WorldId == world.WorldId)
-                    .ExecuteUpdateAsync(update => update
-                        .SetProperty(w => w.IsAvailable, world.IsAvailable));
-            }
+                world.IsAvailable = false;
+                return world;
+            }).ToList();
+
+        foreach (var world in unavailableWorlds)
+        {
+            await _dbContext.Worlds
+                .Where(w => w.WorldId == world.WorldId)
+                .ExecuteUpdateAsync(update => update
+                    .SetProperty(w => w.IsAvailable, world.IsAvailable));
+        }
     }
 
     public async Task TurnOnIfWorldIsAvailable()
     {
-            var worldsToTurnOn = _worldsFromDb
-                .Where(world => _worldsNamesFromTibiaDataProvider.Contains(world.Name) && !world.IsAvailable);
+        var worldsToTurnOn = _worldsFromDb
+            .Where(world => _worldsNamesFromTibiaDataProvider.Contains(world.Name) && !world.IsAvailable);
 
-            foreach (var world in worldsToTurnOn)
-            {
-                await _dbContext.Worlds
-                    .Where(w => w.WorldId == world.WorldId)
-                    .ExecuteUpdateAsync(update => update
-                        .SetProperty(w => w.IsAvailable, true));
-            }
+        foreach (var world in worldsToTurnOn)
+        {
+            await _dbContext.Worlds
+                .Where(w => w.WorldId == world.WorldId)
+                .ExecuteUpdateAsync(update => update
+                    .SetProperty(w => w.IsAvailable, true));
+        }
     }
 
-    private World CreateWorld(string worldName)
+    private static World CreateWorld(string worldName)
     {
         return new World()
         {
@@ -80,7 +81,7 @@ public class WorldSeederService : IWorldSeederService
         };
     }
 
-    private string BuildWorldUrl(string worldName)
+    private static string BuildWorldUrl(string worldName)
     {
         return $"{MainUrl}&world={worldName}";
     }

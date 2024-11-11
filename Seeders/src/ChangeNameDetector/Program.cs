@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using ChangeNameDetector.Configuration;
 using ChangeNameDetector.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -22,7 +21,7 @@ public class Program
                 (context, services) =>
                 {
                     services.AddNameDetector();
-                    services.AddRabbitMqPublisher(context.Configuration, projectName);
+                    services.AddRabbitMqPublisher(context.Configuration, projectName!);
                 });
 
             Log.Information("Starting application");

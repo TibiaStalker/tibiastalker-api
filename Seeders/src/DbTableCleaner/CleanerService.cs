@@ -4,7 +4,7 @@ using TibiaStalker.Application.Configuration.Settings;
 
 namespace DbCleaner;
 
-public class CleanerService : ICleanerService
+public class CleanerService
 {
     private readonly ICleaner _cleaner;
     private readonly IDbCleanerLogDecorator _logDecorator;

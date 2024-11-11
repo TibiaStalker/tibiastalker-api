@@ -9,15 +9,17 @@ public class ScanSeeder : IScanSeeder
 {
     private readonly ITibiaStalkerDbContext _dbContext;
     private readonly ITibiaDataClient _tibiaDataClient;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
     private List<World> _availableWorlds;
 
     public List<World> AvailableWorlds => _availableWorlds;
 
-    public ScanSeeder(ITibiaStalkerDbContext dbContext, ITibiaDataClient tibiaDataClient)
+    public ScanSeeder(ITibiaStalkerDbContext dbContext, ITibiaDataClient tibiaDataClient, IDateTimeProvider dateTimeProvider)
     {
         _dbContext = dbContext;
         _tibiaDataClient = tibiaDataClient;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task SetProperties()
@@ -41,7 +43,7 @@ public class ScanSeeder : IScanSeeder
         {
             CharactersOnline = string.Join("|", charactersOnline).ToLower(),
             WorldId = world.WorldId,
-            ScanCreateDateTime = DateTime.UtcNow,
+            ScanCreateDateTime = _dateTimeProvider.DateTimeUtcNow,
         };
     }
 }

@@ -5,7 +5,7 @@ using Serilog;
 using Shared.RabbitMQ.Extensions;
 using Shared.RabbitMQ.Initializers;
 using TibiaStalker.Infrastructure.Builders;
-using WorldScanAnalyserSubscriber.Configurations;
+using WorldScanAnalyserSubscriber.Configuration;
 using WorldScanAnalyserSubscriber.Subscribers;
 
 namespace WorldScanAnalyserSubscriber;
@@ -31,7 +31,7 @@ public class Program
 
             var initializer = ActivatorUtilities.CreateInstance<InitializationRabbitMqTaskRunner>(host.Services);
             await initializer.StartAsync();
-            var service = ActivatorUtilities.CreateInstance<WorldScansAnalyserRabbitSubscriber>(host.Services);
+            var service = ActivatorUtilities.CreateInstance<WorldScansAnalyserSubscriber>(host.Services);
             service.Subscribe();
             await host.WaitForShutdownAsync();
 

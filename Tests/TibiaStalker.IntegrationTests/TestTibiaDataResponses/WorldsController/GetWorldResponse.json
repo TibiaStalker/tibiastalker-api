@@ -1,0 +1,61 @@
+﻿{
+  "worlds":{
+    "world":{
+      "battleye_date":"2017-08-29",
+      "battleye_protected":true,
+      "creation_date":"1997-01",
+      "game_world_type":"regular",
+      "location":"Europe",
+      "name":"Antica",
+      "online_players":[
+        {
+          "name": "Name-a",
+          "level": 678,
+          "vocation": "Elder Druid"
+        },
+        {
+          "name": "Name-b",
+          "level": 7,
+          "vocation": "Knight"
+        },
+        {
+          "name": "Name-c",
+          "level": 405,
+          "vocation": "Master Sorcerer"
+        },
+        {
+          "name": "Name-d",
+          "level": 208,
+          "vocation": "Elite Knight"
+        },
+        {
+          "name": "Name-e",
+          "level": 52,
+          "vocation": "Elite Knight"
+        },
+        {
+          "name": "Name-f",
+          "level": 327,
+          "vocation": "Royal Paladin"
+        }
+      ],
+      "players_online":423,
+      "premium_only":false,
+      "pvp_type":"Open PvP",
+      "record_date":"2020-05-01T15:58:30Z",
+      "record_players":1055,
+      "status":"online",
+      "tournament_world_type":"string",
+      "transfer_type":"regular",
+      "world_quest_titles":[
+        "Rise of Devovorga",
+        "Demon's Lullaby",
+        "A Piece of Cake",
+        "Bewitched",
+        "The Colours of Magic",
+        "Orcsoberfest",
+        "Winterlight Solstice"
+      ]
+    }
+  }
+}
