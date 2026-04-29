@@ -12,13 +12,15 @@ public class GlobalRateLimiterPolicy : AbstractRateLimiterPolicy, IRateLimiterPo
 
     public override RateLimitPartition<string> GetPartition(HttpContext httpContext)
     {
-        var sessionId = httpContext.Session.Id;
-
-        return RateLimitPartition.GetFixedWindowLimiter(sessionId,
+        var partitionKey = httpContext.User.Identity?.Name 
+                           ?? httpContext.Connection.RemoteIpAddress?.ToString() 
+                           ?? "unknown";
+        
+        return RateLimitPartition.GetFixedWindowLimiter(partitionKey,
             _ => new FixedWindowRateLimiterOptions
             {
                 AutoReplenishment = true,
-                PermitLimit = 5,
+                PermitLimit = 3,
                 Window = TimeSpan.FromSeconds(5),
             });
     }

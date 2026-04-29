@@ -5,6 +5,7 @@ using TibiaStalker.Application.Dapper;
 using TibiaStalker.Application.Dtos;
 using TibiaStalker.Application.Exceptions;
 using TibiaStalker.Application.Interfaces;
+using TibiaStalker.Application.TibiaData.Dtos;
 using TibiaStalker.Application.Validations;
 
 namespace TibiaStalker.Application.Queries.Character;
@@ -28,12 +29,28 @@ public class GetCharacterWithCorrelationsQueryHandler : IRequestHandler<GetChara
     {
         _validator.ValidSearchTextLenght(request.Name);
         _validator.ValidSearchTextCharacters(request.Name);
+        CharacterResult character;
 
-        var character = await _tibiaDataClient.FetchCharacterWithoutRetry(request.Name.Trim());
-        if (character is null)
+        try
         {
-            throw new TibiaDataApiConnectionException();
+            character = await _tibiaDataClient.FetchCharacterWithoutRetry(request.Name.Trim());
         }
+        catch (Exception e)
+        {
+            character = new CharacterResult
+            {
+                Name = request.Name,
+                FormerNames = Array.Empty<string>(),
+                FormerWorlds = Array.Empty<string>(),
+                Level = 0,
+                Traded = false,
+                Vocation = "unknown",
+                World = "unknown",
+                LastLogin = "unknown",
+                OtherCharacters = Array.Empty<string>(),
+            };
+        }
+
         if (string.IsNullOrWhiteSpace(character.Name))
         {
             throw new NotFoundException(nameof(Character), request.Name);
