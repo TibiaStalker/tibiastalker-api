@@ -1,42 +1,41 @@
 name: CI
 on:
-  pull_request:
-    branches: [ main, develop ]
-  workflow_dispatch:
+    pull_request:
+        branches: [main, develop]
+    workflow_dispatch:
 
 jobs:
-  build:
+    build:
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-20.04
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3.3.0
+            - name: Setup .NET Core SDK
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: 7.0.x
 
-      - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v3.0.3
-        with:
-          dotnet-version: 7.0.x
+            - name: App Settings Variable Substitution
+              uses: microsoft/variable-substitution@v1
+              with:
+                  files: "./API/src/TibiaStalker.Api/appsettings.json"
+              env:
+                  Serilog.WriteTo.2.Args.serverUrl: http://localhost:5341
+                  Serilog.WriteTo.2.Args.apiKey: xxxxxx
+                  RabbitMq.Username: guest
+                  RabbitMq.Password: guest
+                  RabbitMq.Port: 5672
+                  RabbitMq.HostUrl: amqp://localhost
+                  TibiaData.BaseAddress: http://localhost:5000
+                  TibiaData.ApiVersion: v3/
 
-      - name: App Settings Variable Substitution
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: './API/src/TibiaStalker.Api/appsettings.json'
-        env:
-          Serilog.WriteTo.2.Args.serverUrl: http://localhost:5341
-          Serilog.WriteTo.2.Args.apiKey: xxxxxx
-          RabbitMq.Username: guest
-          RabbitMq.Password: guest
-          RabbitMq.Port: 5672
-          RabbitMq.HostUrl: amqp://localhost
-          TibiaData.BaseAddress: http://localhost:5000
-          TibiaData.ApiVersion: v3/
+            - name: Restore NuGet Packages
+              run: dotnet restore
 
-      - name: Restore NuGet Packages
-        run: dotnet restore
+            - name: Run Build
+              run: dotnet build --no-restore
 
-      - name: Run Build
-        run: dotnet build --no-restore
-
-      - name: Run Tests
-        run: dotnet test --no-build
+            - name: Run Tests
+              run: dotnet test --no-build
